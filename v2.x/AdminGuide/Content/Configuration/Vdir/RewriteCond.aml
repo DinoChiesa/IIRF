@@ -1,0 +1,811 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="39dbb30e-2afd-4cb1-aaff-45497fe2cbe6" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <para>
+        This directive applies a condition to the next following
+        <link xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule</link>,
+        <link xlink:href="c699ba60-fe15-4e90-ac4b-74598b5c352e">RedirectRule</link>,
+        <link xlink:href="3d1ea0d0-eabd-43b3-a913-de7128a74bb6">RewriteHeader</link>,
+        or <link xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link>
+        directive.
+      </para>
+
+      <autoOutline />
+    </introduction>
+
+
+    <section address="Basics">
+      <title>Basic Syntax and Usage</title>
+      <content>
+
+        <para>
+          <code lang="ini">
+            RewriteCond &lt;test-string&gt; &lt;pattern&gt; [&lt;modifier[,...]&gt;]
+          </code>
+        </para>
+
+        <para>
+          When a <codeInline>RewriteCond</codeInline> is present, the action
+          (rewrite URL or header, redirect, or proxy) is applied only when the
+          condition supplied in the <codeInline>RewriteCond</codeInline> directive
+          evaluates to true.  For IIRF v2.0.1.11 and later, you can prepend a
+          <literal>!</literal> to the pattern to negate it - in this case the
+          pattern must evaluate to FALSE in order for the condition to evaluate to
+          TRUE.
+        </para>
+
+        <para>
+          The evaluation of each <codeInline>RewriteCond</codeInline> is done
+          per-request. The test string may include plain text, rule-pattern back
+          references of the form <codeInline>$N</codeInline> (N=1,2,3...),
+          Condition back references of the form <codeInline>*N</codeInline>, or
+          references to server variables of the form
+          <codeInline>%{NAME}</codeInline>, lookups in maps (see <link
+          xlink:href='6d072500-64b1-4efc-970a-64e94faf1bbd'>RewriteMap</link>),
+          URL-encoding opcodes (#X..#E), as well as the case-folding operations
+          <codeInline>#L #U #E #l #u</codeInline>.  See the documentation on <link
+          xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule</link> for
+          more information on back references, server variable references, map
+          lookups, url encoding, and case-folding.
+        </para>
+
+
+        <para>
+          Example: <code lang="ini">
+            RewriteCond %{HTTP_HOST}   ^alias\.domain\.com$  [I]
+            ProxyPass ^/(.*)$          http://internal-server/$1
+          </code>
+        </para>
+
+        <para>
+          The
+          above <link xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link>
+          directive applies when the hostname matches "alias.domain.com".
+        </para>
+
+
+        <para>
+          Example: <code lang="ini">
+            RewriteCond %{HTTP_REFERER} !^https?://www\.mysite\.net/     [I]
+            RewriteRule \.(?:gif|jpg|jpeg|png)$ /blocked.png             [I,L]
+          </code>
+        </para>
+
+        <para>
+          This rewrite rule will block direct image linking, except from a
+          designated server, to prevent bandwidth leeching.  The rule pattern says
+          "match any URL that ends in a .gif, jpg, jpeg or png."  If this match
+          happens, the URL gets rewritten to blocked.png.  But, this
+          <codeInline>RewriteRule</codeInline> is in effect only if the
+          <codeInline>RewriteCond</codeInline> applies, if it evaluates to TRUE.  In
+          this case, the <codeInline>RewriteCond</codeInline> says, "when
+          HTTP_REFERER is NOT the given pattern."  This example shows how you can
+          block remote access to images or other resources on your server.
+          Sometimes people call this "preventing image leeching."
+        </para>
+
+        <para>
+          Example: <code lang="ini">
+            RewriteCond %{HTTP_REFERER} ^(?!https?://www\.mysite\.net/)   [I]
+            RewriteRule \.(?:gif|jpg|jpeg|png)$ /blocked.png              [I,L]
+          </code>
+        </para>
+
+        <para>
+          This rewrite rule does the same thing, but rather than using the ! as a
+          negation prefix on the pattern, it uses the non-capturing
+          negative-lookahead construct from the regular expression
+          language. Notice the <literal>?!</literal> preceding each pattern - this
+          is the negative lookahead.  And the pattern is the hostname of the
+          allowed referrer.
+        </para>
+
+        <para>
+          In both examples, the <codeInline>[I]</codeInline> modifier specifies that
+          the matching is done in a case-insensitive manner.  The
+          <codeInline>[L]</codeInline> modifier indicates this is the last rule to
+          be processed.
+        </para>
+
+      </content>
+
+    </section>
+
+
+    <section address="Chaining">
+      <title>Chaining RewriteCond directives</title>
+      <content>
+
+        <para>
+          You can insert multiple
+          <codeInline>RewriteCond</codeInline> directives in series in
+          the ini file.  When using this syntax, the action
+          (<codeInline>RewriteRule</codeInline>, <codeInline>RedirectRule</codeInline>,
+          <codeInline>RewriteHeader</codeInline>, or <codeInline>ProxyPass</codeInline>)
+          is applied when the entire chain of <codeInline>RewriteCond</codeInline> directives
+          evaluates to true.
+        </para>
+
+        <para>
+          By default successive <codeInline>RewriteCond</codeInline> directives are linked by a
+          logical AND. There is an optional modifier, <codeInline>[OR]</codeInline>, that allows
+          you to chain the next <codeInline>RewriteCond</codeInline> with a logical OR.
+        </para>
+
+
+        <para>
+          Example: <code lang="ini">
+            RewriteCond %{HTTP_COOKIE} !ECDB=.+
+            RewriteCond %{HTTP_HOST}   ^alias\.domain\.com$  [I]
+            RedirectRule ^/(.*)$       /login.aspx?page=$1
+          </code>
+        </para>
+
+
+
+        <para>
+          The above rule applies only when the HTTP_COOKIE contains the string ECDB=
+          , <legacyItalic>and</legacyItalic> the HTTP_HOST is the given value. In
+          that case, any URL is redirected to a login page.
+        </para>
+      </content>
+    </section>
+
+
+
+    <section address="ServerVars">
+      <title>Server Variables in the RewriteCond test-string</title>
+      <content>
+        <para>
+          A typical use of the <codeInline>RewriteCond</codeInline>
+          directive is to do pattern matching against a server
+          variable.  The list of server variables is available in
+          the documentation on
+          <link xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule</link>.
+        </para>
+
+        <para>
+          Example: <code lang="ini">
+            # check for existence of the cookie, before allowing download
+            RewriteCond %{HTTP_COOKIE} (?!LicenseAcceptance=.+)   [I]
+            RedirectRule ^/download/.*  /license.php?doc=$0      [I,L]
+          </code>
+        </para>
+
+        <para>
+          The redirect fires if the LicenseAcceptance cookie is not
+          present, and if a URL path beginning
+          with <literal>/download</literal> has been requested. In that
+          case, the request gets redirected to the license page, passing
+          the original URL path as a query parameter. That page presents
+          the license and a button labeled "I accept".  Once the button
+          is clicked, the license page might send a response to the
+          browser with a <codeInline>Set-Cookie</codeInline> header.
+          The browser sets the cookie, and redirects back to the
+          original download path, which should now succeed. You could
+          also make it a Rewrite instead of a Redirect.
+        </para>
+
+
+        <para>
+          As describebd previously, you could also use the leading ! to negate the
+          regex, when checking for the existence of a cookie.  This is
+          equivalent to the previous example: <code lang="ini">
+            # check for existence of the cookie, before allowing download
+            RewriteCond %{HTTP_COOKIE}  !LicenseAcceptance=.+   [I]
+            RedirectRule ^/download/.*  /license.php?doc=$0      [I,L]
+          </code>
+        </para>
+
+        <para>
+          Request headers can be retrieved via server variable references. For
+          each request header, IIS publishes a server variable with a name derived from
+          the header. The server variable name prefixes <codeInline>HTTP_</codeInline>
+          and replaces each dash with underscore. For example, to retrieve the value of
+          the <codeInline>Accept</codeInline> header, use
+          <codeInline>%{HTTP_ACCEPT}</codeInline> to reference the derived server
+          variable in a <codeInline>RewriteCond</codeInline>.
+        </para>
+
+
+        <para>
+          Example: <code lang="ini">
+            RewriteCond  %{HTTP_USER_AGENT}  ^Mozilla.*
+            RewriteRule  ^/$                 /homepage.moz.html  [L]
+          </code>
+          This rule says, if the <literal>User-Agent</literal> header in the request starts with "Mozilla", and the URL itself
+          is <leacyItalic>nothing</leacyItalic>, the empty string, then rewrite to
+          a special html page.
+        </para>
+
+        <para>
+          You can also blacklist web bots this way, for example: <code lang="ini">
+            RewriteCond  %{HTTP_USER_AGENT}   .*Java.*
+            RewriteRule  ^/.*$                 -  [F]
+          </code>
+          This rule says, if the <literal>User-Agent</literal> includes the word "Java", and the URL
+          itself is <legacyItalic>anything</legacyItalic>then return a
+          403 Forbidden response.
+        </para>
+
+        <para>Remember when using the <literal>User-Agent</literal> header in
+          a <codeInline>RewriteCond</codeInline> that the HTTP protocol allows the
+          header to be omitted. In general, your rules must not rely on User-Agent
+          being non-empty.
+        </para>
+
+      </content>
+    </section>
+
+
+
+    <section address="Backrefs">
+      <title>Back-References in the RewriteCond test-string</title>
+      <content>
+
+        <para>
+          It may be a bit counter-intuitive at first, so I will repeat it here for
+          clarity: it is possible to include back-references of the form $n in the
+          test-string for <codeInline>RewriteCond</codeInline>.  These
+          back-references refer to matched substrings (or captured groups) from the
+          <legacyItalic>following</legacyItalic>
+          <link xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule</link>,
+          <link xlink:href="c699ba60-fe15-4e90-ac4b-74598b5c352e">RedirectRule</link>,
+          or <link xlink:href="3d1ea0d0-eabd-43b3-a913-de7128a74bb6">RewriteHeader</link>,
+          or <link xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link>
+          directive.
+        </para>
+
+        <para>
+          This may be contrary to expectation, because the
+          <codeInline>RewriteCond</codeInline> actually lies BEFORE the applicable directive
+          in the ini file. But in fact, the pattern in
+          the <codeInline>RewriteRule</codeInline>, <codeInline>RedirectRule</codeInline>,
+          <codeInline>RewriteHeader</codeInline>,
+          or <codeInline>ProxyPass</codeInline> is evaluated, but
+          not applied, BEFORE the associated chained set
+          of <codeInline>RewriteCond</codeInline> statements.  Only
+          if the pattern matches, and any associated chain
+          of <codeInline>RewriteCond</codeInline> statements
+          evaluates to TRUE, will
+          the <codeInline>RewriteRule</codeInline>, <codeInline>RedirectRule</codeInline>,
+          <codeInline>RewriteHeader</codeInline>,
+          or <codeInline>ProxyPass</codeInline> actually be applied. Therefore
+          captures from the rule pattern are available in the condition pattern.
+        </para>
+
+        <para>
+          Example: <code lang="ini">
+            RewriteCond $1                    ^(products|departments)$ [I]
+            RewriteRule ^/([^/]+)/([^/.]+)$   /$1.aspx?id=$2           [L]
+          </code>
+        </para>
+
+        <para>
+          The rule fires with a URL of the form <literal>/products/hammers</literal>
+          or <literal>/departments/tools</literal>.  The result of the rewrite would
+          be <literal>/products.aspx?id=hammers</literal>
+          or  <literal>/departments.aspx?id=tools</literal>.  A URL
+          like <literal>/housewares/sale</literal> will not be rewritten.
+        </para>
+
+        <para>This is a somewhat contrived example because it might be clearer and easier
+          to just specify the RewriteRule with no RewriteCond, like so:
+          <code lang="ini">
+            RewriteRule ^/(products|departments)/([^/.]+)$   /$1.aspx?id=$2     [L]
+          </code>
+        </para>
+
+        <para>
+          But some advanced scenarios need the ability to use back-references
+          to the matched url-pattern in the RewriteCond, and IIRF allows it.
+        </para>
+
+        <para>
+          Conversely, the replacement pattern for the rule can include references to
+          the capture groups from the most recent <codeInline>RewriteCond</codeInline>.
+          Here again, this should make sense, when you consider order of evaluation.
+          The order is:
+          <list class="ordered">
+            <listItem>The <phrase>url pattern</phrase> or <phrase>test pattern</phrase>
+              on the <codeInline>RewriteRule</codeInline>,
+              <codeInline>RewriteHeader</codeInline>, <codeInline>RedirectRule</codeInline>,
+              or <codeInline>ProxyPass</codeInline>.
+            </listItem>
+            <listItem>The chain of attached <codeInline>RewriteCond</codeInline>
+              directives, if any.
+            </listItem>
+            <listItem>The replacement string in the rule.
+            </listItem>
+          </list>
+        </para>
+
+        <mediaLink>
+          <caption placement="after" lead="Figure 1">Order of Evaluation</caption>
+          <image placement="center" xlink:href="52008f57-c654-4f68-8993-30fd3da8204a"/>
+        </mediaLink>
+
+      </content>
+    </section>
+
+    <section address="Modifiers">
+      <title>Modifier flags</title>
+      <content>
+        <para>
+          There are two modifier flags supported on a RewriteCond:
+        </para>
+        <list class="bullet">
+          <listItem>  I = case insensitive matching.  See the documentation for
+            the <codeInline>[I]</codeInline> modifier in the
+            <link xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule</link> section.</listItem>
+
+          <listItem>  NC = not case sensitive.  Same as <codeInline>[I]</codeInline>. </listItem>
+
+          <listItem>  OR = combine rule conditions with a logical OR. Without this,
+            successive RewriteCond directives are joined by a logical AND.
+          </listItem>
+        </list>
+
+        <para>
+          Example: <code lang="ini">
+            RewriteCond %{HTTP_HOST} ^www\.domain1\.com$           [OR]
+            RewriteCond %{HTTP_HOST} ^www\.domain2\.com$
+            RewriteRule ^/(?!index.php)(?!.*\/$)(?!.*\.html$)(.*)$   /index.php?$1
+          </code>
+          In English, what this says is, <phrase>when the incoming URL does not
+          begin with /index.php, does not end in a slash, and does not end in a
+          .html, then match everything following the first slash, and rewrite it to
+          prepend index.php? to it.  And, apply this rule only when the HTTP_HOST
+          matches www.domain1.com or www.domain2.com</phrase> .
+        </para>
+
+        <para>
+          With this rule, we get these outputs, when the domain name
+          is www.domain1.com:
+        </para>
+
+        <table>
+          <tableHeader>
+            <row>
+              <entry>incoming request</entry>
+              <entry> result</entry>
+            </row>
+          </tableHeader>
+
+          <row>
+            <entry>/news/2006-04/newsitem.html</entry>
+            <entry> No Rewrite (ends in .html)</entry>
+          </row>
+          <row>
+            <entry>/news/</entry>
+            <entry> No Rewrite (ends in a slash)</entry>
+          </row>
+          <row>
+            <entry>/news</entry>
+            <entry> /index.php?news</entry>
+          </row>
+          <row>
+            <entry>/foo/bar/bah/</entry>
+            <entry> No Rewrite (ends in a slash)</entry>
+          </row>
+          <row>
+            <entry>/foo/bar/bah</entry>
+            <entry> /index.php?foo/bar/bah</entry>
+          </row>
+          <row>
+            <entry>/news/index.php/newsitem.html</entry>
+            <entry> No Rewrite (ends in .html)</entry>
+          </row>
+          <row>
+            <entry>/news/index.php/newsitem.js</entry>
+            <entry> /index.php?news/index.php/newsitem.js</entry>
+          </row>
+          <row>
+            <entry>/news/index.php/newsitem</entry>
+            <entry> /index.php?news/index.php/newsitem</entry>
+          </row>
+          <row>
+            <entry>/news/index.php-04/newsitem.html</entry>
+            <entry> No Rewrite  (ends in .html)</entry>
+          </row>
+          <row>
+            <entry>/news/index.php-04/newsitem.js</entry>
+            <entry> /index.php?news/index.php-04/newsitem.js</entry>
+          </row>
+          <row>
+            <entry>/news/index.php-04/newsitem</entry>
+            <entry> /index.php?news/index.php-04/newsitem</entry>
+          </row>
+          <row>
+            <entry>/news/foo-index.php/newsitem.html</entry>
+            <entry> No Rewrite (ends in .html) </entry>
+          </row>
+          <row>
+            <entry>/news/foo-index.php/newsitem.js</entry>
+            <entry> /index.php?news/foo-index.php/newsitem.js</entry>
+          </row>
+          <row>
+            <entry>/news/foo-index.php/newsitem</entry>
+            <entry> /index.php?news/foo-index.php/newsitem</entry>
+          </row>
+        </table>
+
+      </content>
+    </section>
+
+
+    <section address="SpecialPatterns">
+      <title>Special Variants</title>
+      <content>
+        <para>RewriteCond supports some special condition variants, as an
+          alternative to using a regular expression. There are two
+          types of special variant: filesystem status and lexicographic comparison.
+        </para>
+      </content>
+
+      <sections>
+        <section address="FilesystemStatus">
+          <title>Filesystem Status</title>
+          <content>
+
+            <para>
+              With these condition variants, a <codeInline>RewriteCond</codeInline>
+              can test the status of the filesystem.
+            </para>
+
+            <table>
+              <tableHeader>
+                <row>
+                  <entry>pattern</entry>
+                  <entry>meaning</entry>
+                </row>
+              </tableHeader>
+
+              <row>
+                <entry>  -d</entry>
+                <entry>  Treats the <phrase>test-string</phrase> as a pathname and tests if it exists,
+                  and is a directory.
+                </entry>
+              </row>
+
+              <row>
+                <entry>  -f</entry>
+                <entry>  Treats the <phrase>test-string</phrase> as a pathname and tests if it exists and
+                  is a regular file (and not a symbolic link).
+                </entry>
+              </row>
+
+              <row>
+                <entry>  -s </entry>
+                <entry>  Treats the <phrase>test-string</phrase> as a pathname and tests if it exists and
+                  is a regular file with size greater than zero.
+                </entry>
+              </row>
+
+              <row>
+                <entry>  -l</entry>
+                <entry> (that is a lowercase L) Treats the
+                <phrase>test-string</phrase> as a pathname and tests if
+                it exists, and is a symbolic link. First supported in v2.1.1.28.
+                </entry>
+              </row>
+
+              <row>
+                <entry>  -j</entry>
+                <entry> Treats the <phrase>test-string</phrase> as a
+                pathname and tests if it exists, and is a junction point
+                (a link to a directory). First supported in v2.1.1.28.
+                </entry>
+              </row>
+
+            </table>
+
+            <para>
+              These may be particularly useful when employed with the server variables such
+              as: <literal>PATH_TRANSLATED</literal>, the translated PATH_INFO for the
+              request, or <literal> SCRIPT_TRANSLATED</literal>, which is new for IIS6.
+              Probably what you want. The flags may also be used with the special
+              pseudo-server variable
+              <literal>REQUEST_FILENAME</literal> that is known within IIRF.  </para>
+
+            <para>
+              Each of these special patterns can be logically negated with
+              a <literal>!</literal> prepended to the special pattern.  As
+              an example, <codeInline>!-s</codeInline> evaluates to TRUE,
+              when the <phrase>test-string</phrase> is not a valid file, or when the test
+              string is a directory, or when the test string is a file of
+              zero length. That can be confusing, so be careful with negations.
+            </para>
+
+            <alert class="note">
+              The logical negation can also apply to regular expressions, starting with IIRF
+              V2.0.1.11.  In order to negate regular expression patterns, you can either
+              use the simple ! prefix, or the regex non-capturing negative lookahead syntax,
+              which often means (?!<newTerm>pattern</newTerm>).
+            </alert>
+
+            <para>Example: <code lang="ini">
+                RewriteCond %{HTTP_URL}             (/|\.htm|\.php|\.html|/[^.]*)$   [I]
+                RewriteCond %{REQUEST_FILENAME}     !-f
+                RewriteCond %{REQUEST_FILENAME}     !-d
+                RewriteRule ^.*$                    /index.aspx                      [U,L]
+              </code>
+            </para>
+
+            <para>
+              Notice the rule uses a chained set of conditions. This rule, with its
+              conditions, says: if the URL ends in .htm, .php, or .html (case insensitive);
+              AND the physical path associated to the URL is not a file AND it is not a
+              directory, then rewrite the URL to index.aspx, and parse no more rules. Also,
+              log the original (un-rewritten) URL in the log file. Something close
+              to this should work for Joomla and OpenSEF, but I don&apos;t test those
+              things so I cannot verify that.
+            </para>
+
+            <para>
+              Here&apos;s a review of the server variables most commonly used with the -f,
+              -d, and  -s flags.
+            </para>
+
+            <table>
+              <tableHeader>
+                <row>
+                  <entry>Variable</entry>
+                  <entry>meaning</entry>
+                </row>
+              </tableHeader>
+
+              <row>
+                <entry>
+                  PATH_INFO
+                </entry>
+                <entry>The extra path information, as given by the
+                  client. In other words, scripts can be accessed by their
+                  virtual pathname, followed by extra information at the end
+                  of this path. The extra information is sent as
+                  PATH_INFO. This information should be decoded by the
+                  server if it comes from a URL before it is passed to the
+                  CGI script.
+                </entry>
+              </row>
+
+              <row>
+                <entry>
+                  PATH_TRANSLATED
+                </entry>
+                <entry>
+                  The server provides a translated version of
+                  PATH_INFO, which takes the path and does any
+                  virtual-to-physical mapping to it.  This gets set
+                  only if PATH_INFO is set!
+                </entry>
+              </row>
+
+              <row>
+                <entry>
+                  SCRIPT_NAME
+                </entry>
+                <entry>
+                  A virtual path to the script being executed, used
+                  for self-referencing URLs.
+                </entry>
+              </row>
+
+              <row>
+                <entry>
+                  REQUEST_FILENAME
+                </entry>
+                <entry>
+                  <para> Evaluates to the physical path of the requested URL, given the
+                    PATH_INFO.  This value may or may not correspond to an existing
+                    file.</para>
+                  <para>
+                    As noted elsewhere, this is <legacyItalic>not</legacyItalic> a bona-fide
+                    IIS Server Variable - you won&apos;t find it in any other ISAPI, and you
+                    cannot get it from within PHP or ASPX as far as I know.  It is a
+                    pseudo-Server Variable in IIRF, and its value is generated within IIRF,
+                    and known and usable only within IIRF.
+                  </para>
+                </entry>
+              </row>
+
+              <row>
+                <entry>
+                  SCRIPT_TRANSLATED
+                </entry>
+                <entry>
+                  May be the same as REQUEST_FILENAME. Added in IIS6.
+                </entry>
+              </row>
+
+            </table>
+
+
+            <alert class="note">You should not count on PATH_TRANSLATED to be the
+              same as REQUEST_FILENAME.  It is not the same, consult the
+              section in this documentation on server variables for more information on
+              this.
+            </alert>
+
+            <para>See also,
+              <externalLink>
+                <linkText>David Wang&apos;s relevant blog post</linkText>
+                <linkUri>http://blogs.msdn.com/david.wang/archive/2005/08/04/What-is-PATH-TRANSLATED.aspx</linkUri>
+              </externalLink>
+            </para>
+
+
+            <para>Example:
+              <code lang="ini">
+                CondSubstringBackrefFlag %
+                RewriteCond %{SERVER_NAME}          ^([^\.]+)\.chiesa\.net$               [I]
+                RewriteCond c:\Inetpub\wwwroot\%1   !-d
+                RewriteRule ^(.*)$                  /NotFound.htm                         [U,I,L]
+
+                RewriteCond %{SERVER_NAME}          ^([^\.]+)\.chiesa\.net$               [I]
+                RewriteCond c:\Inetpub\wwwroot\%1   -d
+                RewriteRule ^(.*)$                  /common/driver.aspx?url=$1&amp;host=%1    [U,I,L]
+              </code>
+              This pair of rules redirects a request based on the hostname specified in
+              the request. The hostname regex in the first <codeInline>RewriteCond</codeInline> ends in <literal>.chiesa.net</literal>,
+              and you will notice that the dots need to be escaped, as without the
+              slashes, they are interpreted as wildcards, matching any character.  We don&apos;t
+              want to match "any character"; we want to match the dot itself.  So it
+              gets an escape.
+            </para>
+
+            <para>
+              The second RewriteCond attached to the first rule is true if there is no
+              subdirectory under <literal>c:\InetPub\wwwroot</literal> with the same name as
+              the hostname specified in the request. Check that again: The %1 in the second
+              <codeInline>RewriteCond</codeInline> is a reference to the 1st capture in the
+              previously evaluated <codeInline>RewriteCond</codeInline>.  According to that
+              first <codeInline>RewriteCond</codeInline>, that captues will be the first
+              segment in the dot-separated hostname.  The test is <literal>!-d</literal>,
+              which evaluates to true if there is no subdirectory by that name.  As
+              described above in the section on chaining,
+              the <codeInline>RewriteCond</codeInline> statements are implicitly AND&apos;d
+              together.
+            </para>
+
+            <para>If both conditions are true, then the first rule fires, and the user gets
+              a <literal>NotFound.htm</literal> page.  What this means in practice is, if I
+              surf to <literal>http://dino.chiesa.net</literal> and there is no directory
+              named <literal>c:\inetpub\wwwroot\dino</literal>, then the request is
+              rewritten to the NotFound document.
+            </para>
+
+            <para>
+              If there <legacyItalic>is</legacyItalic> a sub-directory, then the 2nd
+              rule fires and the incoming request is rewritten to a common
+              driver.aspx, specifying the hostname (back-ref %1) and the URL request
+              (back-ref $1) to that driver.
+            </para>
+
+            <para>In this way the rewriter changes its behavior depending on the state of
+              the filesystem underlying the IIS server.  For example, when you register new
+              users or new hosts, you might create a new file or directory in the
+              filesystem.  When a request comes in, the rewriter can check for the file or
+              directory and rewrite accordingly. You don&apos;t need to change the IIRF
+              configuration file for each additional user that you add.
+            </para>
+
+          </content>
+
+        </section>
+
+
+        <section address="Lexicographic">
+          <title>Lexicographic String Comparison</title>
+          <content>
+
+            <para>
+              With these simple variants, IIRF performs a lexicographic
+              comparison of the <phrase>test-string</phrase> and
+              the <phrase>pattern</phrase>, rather than evaluating the
+              pattern as a regular expression.
+            </para>
+
+            <table>
+              <tableHeader>
+                <row>
+                  <entry>pattern</entry>
+                  <entry>meaning</entry>
+                </row>
+              </tableHeader>
+
+              <row>
+                <entry> &lt;<phrase>comparison-string</phrase>
+                </entry>
+                <entry>
+                  Returns true when the <phrase>test-string</phrase>
+                  lexicographically precedes the <phrase>comparison-string</phrase>.
+                </entry>
+              </row>
+
+              <row>
+                <entry> &gt;<phrase>comparison-string</phrase>
+                </entry>
+                <entry>
+                  Returns true when the <phrase>test-string</phrase>
+                  lexicographically follows the <phrase>comparison-string</phrase>.
+                </entry>
+              </row>
+
+              <row>
+                <entry> &gt;<phrase>comparison-string</phrase>
+                </entry>
+                <entry>
+                  Returns true when the <phrase>test-string</phrase>
+                  is lexicographically equal to the <phrase>comparison-string</phrase>.
+                </entry>
+              </row>
+
+            </table>
+
+            <para>
+              As with the filesystem status patterns, each of the
+              lexicographic comparison patterns can be logically negated
+              with a leading <literal>!</literal> .  As an
+              example, <codeInline>!&lt;</codeInline> evaluates to
+              TRUE, when the <phrase>test-string</phrase> does not
+              lexicographically precede
+              the <phrase>comparison-string</phrase>.
+            </para>
+
+            <para>
+              If you apply the <literal>[I]</literal> modifier (or its
+              synonym, <literal>[NC]</literal>) to
+              the <codeInline>RewriteCond</codeInline>, IIRF will perform
+              the lexicographic comparison in a case-insensitive manner.
+            </para>
+
+            <para>
+              Example: Conditions using lexicographic comparisons, coupled
+              with <codeInline>RedirectRule</codeInline>, can be used to
+              distribute requests among three different servers:
+              <code lang="ini">
+                RewriteCond $1              &gt;Q  [I]
+                RedirectRule ^/info/(.*)$   http://server-1.example.com/info/$1
+
+                RewriteCond $1              &gt;K  [I]
+                RedirectRule ^/info/(.*)$   http://server-2.example.com/info/$1
+
+                RedirectRule ^/info/(.*)$   http://server-3.example.com/info/$1
+
+              </code>
+            </para>
+
+            <para>
+              Conditions employing lexicographic comparisons can also be
+              used on other types of rules,
+              including <codeInline>RewriteRule</codeInline>
+              and <codeInline>ProxyPass</codeInline>, and on a <phrase>test-string</phrase>
+              composed from server variables, back-references, and so on.
+            </para>
+          </content>
+        </section>
+
+      </sections>
+
+    </section>
+
+
+    <relatedTopics>
+      <link xlink:href="2a84f55d-b0ae-422a-9071-a31e35b7d3e3">Please Donate</link>
+    </relatedTopics>
+
+  </developerConceptualDocument>
+</topic>
+
+
+
+
+
+
+
+

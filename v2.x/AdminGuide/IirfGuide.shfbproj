@@ -1,0 +1,345 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <!-- The configuration and platform will be used to determine which
+         assemblies to include from solution and project documentation
+         sources -->
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{c7da4509-da57-4624-babb-88288873072a}</ProjectGuid>
+    <SHFBSchemaVersion>1.9.0.0</SHFBSchemaVersion>
+    <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual
+         Studio adds them anyway -->
+    <AssemblyName>Documentation</AssemblyName>
+    <RootNamespace>Documentation</RootNamespace>
+    <Name>Documentation</Name>
+    <!-- SHFB properties -->
+    <OutputPath>.\Help\</OutputPath>
+    <HtmlHelpName>IirfGuide</HtmlHelpName>
+    <ProjectSummary>
+    </ProjectSummary>
+    <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace, TypeParameter</MissingTags>
+    <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected</VisibleItems>
+    <HtmlHelp1xCompilerPath>
+    </HtmlHelp1xCompilerPath>
+    <HtmlHelp2xCompilerPath>
+    </HtmlHelp2xCompilerPath>
+    <SandcastlePath>
+    </SandcastlePath>
+    <WorkingPath>
+    </WorkingPath>
+    <BuildLogFile>
+    </BuildLogFile>
+    <FrameworkVersion>2.0.50727</FrameworkVersion>
+    <HelpTitle>IIRF v2.1 Operator`s Guide</HelpTitle>
+    <CopyrightHref>http://IIRF.CodePlex.com/</CopyrightHref>
+    <CopyrightText>IIRF on CodePlex</CopyrightText>
+    <FeedbackEMailAddress>dpchiesa%40hotmail.com</FeedbackEMailAddress>
+    <PresentationStyle>vs2005</PresentationStyle>
+    <HelpFileVersion>1.0.0.0</HelpFileVersion>
+    <HelpAttributes>
+      <HelpAttribute name="DocSet" value="{@HtmlHelpName}" xmlns="" />
+      <HelpAttribute name="DocSet" value="NetFramework" xmlns="" />
+      <HelpAttribute name="TargetOS" value="Windows" xmlns="" />
+    </HelpAttributes>
+    <PlugInConfigurations>
+      <PlugInConfig id="Additional Content Only" enabled="True" xmlns="">
+        <configuration />
+      </PlugInConfig>
+    </PlugInConfigurations>
+    <FooterText>IIRF v2.1.2.2</FooterText>
+    <ComponentConfigurations>
+      <ComponentConfig id="Post-transform Component" enabled="True">
+        <component id="Post-transform Component" type="SandcastleBuilder.Components.PostTransformComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
+          <!-- Code colorizer files (required).
+                 Attributes:
+                    Stylesheet file (required)
+                    Script file (required)
+                    "Copy" image file (required) -->
+          <colorizer stylesheet="{@SHFBFolder}Colorizer\highlight.css" scriptFile="{@SHFBFolder}Colorizer\highlight.js" copyImage="{@SHFBFolder}Colorizer\CopyCode.gif" />
+          <!-- Base output paths for the files (required).  These should match
+                 the parent folder of the output path of the HTML files (see
+                 each of the SaveComponent instances below). -->
+          <outputPaths>
+{@HelpFormatOutputPaths}
+            </outputPaths>
+          <!-- Logo image file (optional).  Filename is required. The height,
+                 width, altText, placement, and alignment attributes are
+                 optional. -->
+          <logoFile filename="{@ProjectFolder}Media\IirfLogo1.jpg" height="0" width="0" altText="IIRF Logo" placement="left" alignment="left" />
+        </component>
+      </ComponentConfig>
+    </ComponentConfigurations>
+    <HelpFileFormat>HtmlHelp1, Website</HelpFileFormat>
+  </PropertyGroup>
+  <!-- There are no properties for these two groups but they need to appear in
+       order for Visual Studio to perform the build. -->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Content\Configuration\Vdir\" />
+    <Folder Include="Content\Configuration\Site\" />
+    <Folder Include="Content\Configuration\Global\" />
+    <Folder Include="Content\Example Ini Files\" />
+    <Folder Include="Content\Configuration\" />
+    <Folder Include="Content\Installing\" />
+    <Folder Include="ConceptualTemplates\" />
+    <Folder Include="ExampleFiles\" />
+    <Folder Include="Content\VersionHistory\" />
+    <Folder Include="Media\" />
+    <Folder Include="Content\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Tokens Include="IirfGuide.tokens" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\Example Ini Files\Virtual-Hosts-for-Users.aml" />
+    <None Include="Content\Example Ini Files\Transform-Domain-to-Query-Param.aml" />
+    <None Include="Content\Example Ini Files\Route-By-Hostname.aml" />
+    <None Include="Content\Example Ini Files\Domain-Name-Migration.aml" />
+    <None Include="Content\Example Ini Files\Prevent-Leeching.aml" />
+    <None Include="Content\Example Ini Files\Proxy.aml" />
+    <None Include="Content\Example Ini Files\Consolidate.aml" />
+    <None Include="Content\Example Ini Files\ASPNET-MVC.aml" />
+    <None Include="Content\Example Ini Files\Redirect to HTTPS.aml" />
+    <None Include="Content\Example Ini Files\Redirect-to-WWW.aml" />
+    <None Include="Content\Example Ini Files\Redirect based on Cookie.aml" />
+    <None Include="Content\Example Ini Files\Redirect based on a Map.aml" />
+    <None Include="Content\Example Ini Files\Rewrite based on a Map.aml" />
+    <None Include="Content\Example Ini Files\Mambo-Default.aml" />
+    <None Include="Content\Example Ini Files\Block-useragent.aml" />
+    <None Include="Content\Example Ini Files\Block-Allow-ipaddr.aml" />
+    <None Include="Content\Example Ini Files\Example INI Files.aml" />
+    <None Include="Content\Example Ini Files\CakePHP.aml" />
+    <None Include="Content\Example Ini Files\Chained RewriteCond.aml" />
+    <None Include="Content\Example Ini Files\Clean URLs.aml" />
+    <None Include="Content\Example Ini Files\Clean URLs 2.aml" />
+    <None Include="Content\Example Ini Files\Natural Languages.aml" />
+    <None Include="Content\Example Ini Files\Internationalized-URLs.aml" />
+    <None Include="Content\ASPNET4.aml" />
+    <None Include="Content\IIRF is DonationWare.aml" />
+    <None Include="Content\Other Tools.aml" />
+    <None Include="Content\Differences-with-Apache.aml" />
+    <None Include="Content\Support.aml" />
+    <None Include="Content\Upgrading.aml" />
+    <None Include="Content\Feedback.aml" />
+    <None Include="Content\Redirect versus Rewrite.aml" />
+    <None Include="Content\Proxy.aml" />
+    <None Include="Content\Regular Expressions.aml" />
+    <None Include="Content\Configuration\Vdir\CondSubstringBackrefFlag.aml" />
+    <None Include="Content\Configuration\Vdir\FlagCharacters.aml" />
+    <None Include="Content\Configuration\Vdir\ProxyPass.aml" />
+    <None Include="Content\Configuration\Vdir\ProxyPassReverse.aml" />
+    <None Include="Content\Configuration\Vdir\ProxyPreserveHost.aml" />
+    <None Include="Content\Configuration\Vdir\ProxyTimeouts.aml" />
+    <None Include="Content\Configuration\Vdir\RewriteEngine.aml" />
+    <None Include="Content\Configuration\Vdir\StatusInquiry.aml" />
+    <None Include="Content\Configuration\Vdir\RedirectRule.aml" />
+    <None Include="Content\Configuration\Vdir\RewriteRule.aml" />
+    <None Include="Content\Configuration\Vdir\RewriteBase.aml" />
+    <None Include="Content\Configuration\Vdir\RewriteCond.aml" />
+    <None Include="Content\Configuration\Vdir\RewriteHeader.aml" />
+    <None Include="Content\Configuration\Vdir\IncludeIni.aml" />
+    <None Include="Content\Configuration\Vdir\IterationLimit.aml" />
+    <None Include="Content\Configuration\Vdir\MaxMatchCount.aml" />
+    <None Include="Content\Configuration\Vdir\UrlDecoding.aml" />
+    <None Include="Content\Configuration\Vdir\RewriteLogLevel.aml" />
+    <None Include="Content\Configuration\Vdir\RewriteLog.aml" />
+    <None Include="Content\Configuration\Vdir\RewriteMap.aml" />
+    <None Include="Content\Configuration\Vdir\Vdir Directives.aml" />
+    <None Include="Content\Configuration\Global\RewriteEngine.aml" />
+    <None Include="Content\Configuration\Global\StatusInquiry.aml" />
+    <None Include="Content\Configuration\Global\Directives.aml" />
+    <None Include="Content\Configuration\Global\RewriteFilterPriority.aml" />
+    <None Include="Content\Configuration\Global\NotifyLog.aml" />
+    <None Include="Content\Configuration\Global\MaxFieldLength.aml" />
+    <None Include="Content\Configuration\Global\EventsForIniOpen.aml" />
+    <None Include="Content\Configuration\IIRF Logging.aml" />
+    <None Include="Content\Configuration\Configuring IIRF.aml" />
+    <None Include="Content\Installing\Installing with the MSI.aml" />
+    <None Include="Content\Installing\Installing IIRF Tools.aml" />
+    <None Include="Content\Installing\Verifying and Troubleshooting.aml" />
+    <None Include="Content\Installing\IIS Metabase.aml" />
+    <None Include="Content\Installing\Running IIRF on Multiple Web sites.aml" />
+    <None Include="Content\Installing\Installing IIRF on IIS7.aml" />
+    <None Include="Content\Installing\Installing on IIS6.aml" />
+    <None Include="Content\Installing\Installing IIRF.aml" />
+    <None Include="Content\WhatIsUrlRewriting.aml" />
+    <None Include="Content\Glossary.aml" />
+    <None Include="Content\Introduction.aml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ContentLayout Include="IirfGuide.content" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Media\ws2003-AdminTools.gif">
+      <AlternateText>WS2003 Admin Tools</AlternateText>
+      <CopyToMedia>False</CopyToMedia>
+      <ImageId>8075a972-6f3b-44f9-aaee-5780630cf4f2</ImageId>
+    </Image>
+    <Image Include="Media\IirfLogo1.jpg">
+      <AlternateText>IIRF Logo</AlternateText>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Media\SmallInformation.png">
+      <ImageId>4cfacbe8-d100-471c-9d69-1dbcce50e316</ImageId>
+      <AlternateText>Information</AlternateText>
+    </Image>
+    <Image Include="Media\IirfStatus-1.png">
+      <ImageId>496ac428-2346-4407-a2e9-916f5ffebca7</ImageId>
+      <AlternateText>An Iirf Status Report</AlternateText>
+    </Image>
+    <Image Include="Media\IirfStatus-2.png">
+      <ImageId>d1fc7872-c5e0-4754-a2bf-6404df472efc</ImageId>
+      <AlternateText>An Iirf Status Report</AlternateText>
+    </Image>
+    <Image Include="Media\IIS75-Error-Page.png">
+      <ImageId>a7801d65-6840-4915-a096-dc24c1fa1ae7</ImageId>
+      <AlternateText>Error Page</AlternateText>
+    </Image>
+    <Image Include="Media\Depends-missing-msvcr90.png">
+      <ImageId>46a8a3fc-2f43-47b0-91ff-aee40a54392d</ImageId>
+      <AlternateText>Depends.exe</AlternateText>
+    </Image>
+    <Image Include="Media\SecuritySuccess.png">
+      <ImageId>b5d069f7-5daf-45ae-882c-4596ab2b724a</ImageId>
+    </Image>
+    <Image Include="Media\HandlerMappings-1.png">
+      <ImageId>b5d174d9-6217-4dd4-b8b5-7723f51b1af3</ImageId>
+    </Image>
+    <Image Include="Media\HandlerMappings-2.png">
+      <ImageId>63e29a6b-9f1e-4491-9cba-2d010a4426c7</ImageId>
+    </Image>
+    <Image Include="Media\HandlerMappings-3.png">
+      <ImageId>c4ccb4ca-8a0a-4771-bfcc-dd028f5c7a76</ImageId>
+    </Image>
+    <Image Include="Media\IIS-Manager-1.gif">
+      <ImageId>4d7eb605-9b87-4095-8d18-2014d4da765a</ImageId>
+    </Image>
+    <Image Include="Media\IIS-Restart.jpg">
+      <ImageId>85bb8538-8fce-40f1-9f0a-bc2645f82eed</ImageId>
+    </Image>
+    <Image Include="Media\WinXP-ctrlPanel-AdminTools.gif">
+      <ImageId>3348dfdf-49b4-46ed-8d08-94019f52aa7b</ImageId>
+    </Image>
+    <Image Include="Media\WS2003-IIS-Manager-2.gif">
+      <ImageId>6e5abc65-1206-4a59-8bb2-4340f90186d2</ImageId>
+    </Image>
+    <Image Include="Media\WS2003-AdminTools-2.jpg">
+      <ImageId>6e33decb-12c8-42f2-8b4b-6de2b61bd4ac</ImageId>
+    </Image>
+    <Image Include="Media\IISMgr-Properties.jpg">
+      <ImageId>b8a7cb78-d57a-4e2d-95df-dc67d15736ea</ImageId>
+    </Image>
+    <Image Include="Media\ISAPI-Filters-Add.jpg">
+      <ImageId>db899141-1641-46b5-aa1b-7ec31fae4852</ImageId>
+    </Image>
+    <Image Include="Media\ISAPI-Filters-tab.jpg">
+      <ImageId>838862a9-c315-4e2f-a6aa-8e4d961ea23e</ImageId>
+    </Image>
+    <Image Include="Media\WebServiceExtensions-2.jpg">
+      <ImageId>1af3af59-9b6a-4ba6-aec4-b27147820f71</ImageId>
+    </Image>
+    <Image Include="Media\ISAPI-Filters-Status.jpg">
+      <ImageId>eb7f0d57-471e-4872-ab7e-46cb7bf71563</ImageId>
+    </Image>
+    <Image Include="Media\Vista-AdminTools.png">
+      <ImageId>ed1abf04-276e-423d-a594-c2caa5b8e327</ImageId>
+    </Image>
+    <Image Include="Media\Vista-AdminTools-2.png">
+      <ImageId>cf526a39-a82a-4040-af48-30d4a430df66</ImageId>
+    </Image>
+    <Image Include="Media\Vista-IIS-Manager.png">
+      <ImageId>838a6000-8b40-4b1f-8488-fb8c0e7db9c9</ImageId>
+    </Image>
+    <Image Include="Media\Vista-IIS-Manager-3.png">
+      <ImageId>7ee69cb5-7cef-4c65-af55-1c1cf723e21c</ImageId>
+    </Image>
+    <Image Include="Media\Vista-IIS-Manager-2.png">
+      <ImageId>a432121f-b736-47b6-96df-0c05a6dc9b5c</ImageId>
+    </Image>
+    <Image Include="Media\Vista-IIS-Manager-4.png">
+      <ImageId>ada049da-1da7-46d5-82bf-7c96fb34f9b9</ImageId>
+    </Image>
+    <Image Include="Media\Vista-IIS-Manager-5.png">
+      <ImageId>3acef5cf-1877-4c2d-a1d3-73715f4dcbab</ImageId>
+    </Image>
+    <Image Include="Media\Vista-IIS-Manager-6.png">
+      <ImageId>131e3e24-0ba9-494e-93d7-810f1bfb98d0</ImageId>
+    </Image>
+    <Image Include="Media\IirfStatus.png">
+      <ImageId>42fa3e23-4b26-441c-ab57-c30711516ed8</ImageId>
+    </Image>
+    <Image Include="Media\VerifyingPermissions.png">
+      <ImageId>725e5631-5207-4286-b698-c83ae6c13890</ImageId>
+    </Image>
+    <Image Include="Media\EffectivePermissions.png">
+      <ImageId>3399d03b-5a41-46a7-a97b-50b0ee9b03e4</ImageId>
+    </Image>
+    <Image Include="Media\Explorer-WS2003.png">
+      <ImageId>3cc09fdb-91d9-4656-ae2f-4696c2c32a5e</ImageId>
+    </Image>
+    <Image Include="Media\Explorer-WS2003-Props.png">
+      <ImageId>c03f414c-195c-4c81-842a-7f7a1d94f7e8</ImageId>
+    </Image>
+    <Image Include="Media\Explorer-WS2003-Add.png">
+      <ImageId>1b7878e8-7bee-4efa-8c62-2da4f592ee26</ImageId>
+    </Image>
+    <Image Include="Media\Explorer-WS2003-CreateIni.png">
+      <ImageId>919fad8e-d2af-48b1-aa54-efd80e17bafb</ImageId>
+    </Image>
+    <Image Include="Media\WS2003-IISMgr-Websites.png">
+      <ImageId>fdce7818-59b9-4e66-bf07-03adbb8d194b</ImageId>
+    </Image>
+    <Image Include="Media\WS2003-IISMgr-Websites-Props.png">
+      <ImageId>a89400ed-daed-45c3-8529-1273476a4e3a</ImageId>
+    </Image>
+    <Image Include="Media\WS2003-IISMgr-Websites-AppConfig.png">
+      <ImageId>5e2ee39c-4cce-4b8d-adb3-d293db2f224a</ImageId>
+    </Image>
+    <Image Include="Media\WS2003-IISMgr-Websites-AddExtension.png">
+      <ImageId>0c24028d-9f37-4d9c-a3a6-f692174b2cca</ImageId>
+    </Image>
+    <Image Include="Media\MSI-installer-1.png">
+      <ImageId>e688d743-1522-42fb-be39-86baa41cbbfd</ImageId>
+    </Image>
+    <Image Include="Media\MSI-installer-2.png">
+      <ImageId>d6ad6116-c33d-49e9-aafa-b8116a32aead</ImageId>
+    </Image>
+    <Image Include="Media\MSI-installer-3.png">
+      <ImageId>55023eb9-bf8f-44f8-81f1-8e964980bb64</ImageId>
+    </Image>
+    <Image Include="Media\MSI-installer-4.png">
+      <ImageId>55725039-06be-4231-908a-61dec302c909</ImageId>
+    </Image>
+    <Image Include="Media\FileProperties.png">
+      <ImageId>91bdb136-1ef4-42ac-a6e2-89ae0af06260</ImageId>
+    </Image>
+    <Image Include="Media\OrderOfEval.png">
+      <ImageId>52008f57-c654-4f68-8993-30fd3da8204a</ImageId>
+    </Image>
+    <Image Include="Media\IIS7-Select-Website.png">
+      <ImageId>7855ef52-7ae2-45e3-ac8f-be65a1393aac</ImageId>
+    </Image>
+    <Image Include="Media\IIS7-Select-ISAPI-Filters.png">
+      <ImageId>5fce57e0-9ed8-4848-b195-2c3b29880dd2</ImageId>
+    </Image>
+    <Image Include="Media\IIS7-ISAPI-Filters-Status.png">
+      <ImageId>cb88e5e7-e951-4e3f-9df0-745584f58cc3</ImageId>
+    </Image>
+    <Image Include="Media\IIS7-Event-Viewer-1.png">
+      <ImageId>1db6634c-8b0b-4895-bb40-0eda00bd62d1</ImageId>
+    </Image>
+    <Image Include="Media\IIS7-Event-Viewer-2.png">
+      <ImageId>b0350deb-f31e-42f4-8864-0ae68ac9cf7b</ImageId>
+    </Image>
+    <Image Include="Media\IIS7-Event-Viewer-3.png">
+      <ImageId>cbd729f9-132a-46ec-b77c-f17b7ccbff6d</ImageId>
+    </Image>
+  </ItemGroup>
+  <!-- Import the SHFB build targets -->
+  <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />
+</Project>

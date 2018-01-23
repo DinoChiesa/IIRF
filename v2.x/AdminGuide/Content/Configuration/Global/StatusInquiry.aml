@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="073042fc-11c2-4c9a-a28a-49d07447685b" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>StatusInquiry {ON|OFF}</title>
+      <content>
+        <para>
+          This is a simple directive that enables or disables the
+          status inquiry capability of IIRF.  It can be present either in
+          IirfGlobal.ini , or in Iirf.ini . It has different syntax,
+          depending on the type of ini file in which it appears.
+        </para>
+
+        <para>
+          IIRF can return a simple status report on itself.  In some
+          cases you may want to disable this capability, globally.
+          Using this directive in the IirfGlobal.ini file
+          allows you to do that.
+        </para>
+
+        <para>Example usage: <code lang="ini">
+              StatusInquiry OFF
+          </code>
+        </para>
+
+        <para>
+          When <codeInline>StatusInquiry ON</codeInline> is present in
+          the global ini file, or when
+          no <codeInline>StatusInquiry</codeInline> directive is present
+          at all, then status inquiries are enabled, and any
+          <link xlink:href="06643ce7-6c93-4d2f-ad3b-01e97fade9ef">
+            StatusInquiry</link>
+          directives in the vdir-specific ini files are effective.
+          When <codeInline>StatusInquiry OFF</codeInline> is present in
+          the global ini file, none of the
+          <codeInline>StatusInquiry</codeInline>
+          directives in any
+          of the vdir-specific ini files are effective.
+        </para>
+
+        <para>
+          If you specify a <codeInline>StatusInquiry</codeInline> directive in the global ini
+          file (IirfGlobal.ini), it applies to all virtual directories
+          in all sites, and you cannot
+          change this setting until you restart the filter or restart
+          IIS itself.
+        </para>
+
+      </content>
+    </section>
+
+    <relatedTopics>
+      <link xlink:href="06643ce7-6c93-4d2f-ad3b-01e97fade9ef">StatusInquiry directive
+      for vdir-specific ini files</link>
+    </relatedTopics>
+
+  </developerConceptualDocument>
+</topic>
+
+
+

@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="8f5e8495-babc-4dfb-9da9-4e9101e8d029" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <!--
+        <summary>
+          <para>Optional summary abstract</para>
+        </summary>
+        -->
+    <introduction>
+      <autoOutline />
+      <para>
+        IIRF obtains its configuration settings from a set of
+        initialization files, also known as <phrase>.ini files</phrase>.
+        These are files that you must create.  The configuration
+        information you provide in those files sets the rules that
+        describe how to rewrite or redirect URLs and headers.
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>INI files in IIRF</title>
+      <content>
+
+        <para>
+          IIRF reads its configuration from simple text files, also
+          known as "ini files".  You must create these files; you&apos;ll specify
+          all of the settings for the filter within them.  The names of
+          these files are not case-sensitive.
+        </para>
+
+
+        <para>There are two kinds of ini files: </para>
+
+        <list class="bullet">
+
+          <listItem>
+            <para>
+              <legacyBold>IirfGlobal.ini</legacyBold>: The filter-wide
+              ini file, also known as the global ini file.  For each
+              installation of IIRF, you will provide exactly one
+              IirfGlobal.ini file.  This file contains settings for the
+              filter across all web sites.  See
+              <link xlink:href="38b088f3-528b-4741-a65e-40a42095762b">this link</link>
+              for information on the directives supported in this ini
+              file.
+            </para>
+            <para>
+              Put the IirfGlobal.ini file in the same directory as the
+              IIRF.dll.  If IIRF does not find the IirfGlobal.ini file,
+              it continues loading, and accepts defaults for all the
+              settings that could be changed in the global ini file.
+              IIRF will emit a warning in the log file if this happens,
+              but the rewriting will function normally.
+            </para>
+          </listItem>
+
+          <listItem>
+            <para>
+              <legacyBold>IIRF.ini</legacyBold>: the ini files specific
+              for each virtual directory or IIS application.  There
+              should be one of these files for each specific vdir, or
+              IIS Application.  The settings specified here include
+              settings for the URLs that should be rewritten,
+              redirected, or proxied; whether the IIRF engine should be
+              enabled for that vdir or application; and so on. For each
+              installation of IIRF, you will provide at least one, and
+              possibly many more, IIRF.ini files.
+            </para>
+
+            <para>
+              Put the Iirf.ini file in the root physical path for each
+              web site or web application for which you&apos;d like to
+              configure the filter.  For example, in <literal>c:\inetpub\wwwroot</literal>
+              or in the physical path for the web application under that
+              root.  You may place a different IIRF.ini file in the
+              physical directory that represents each <phrase>IIS
+              Application</phrase> in IIS.
+            </para>
+
+            <alert class="note">
+              <para>
+                This documentation often refers to <phrase>vdir-specific ini
+                files</phrase>.  This is, strictly speaking, inaccurate.
+                Actually, it is not possible to specify IIRF configuration for
+                each <phrase>virtual directory</phrase> or "vdir".  IIS
+                distinguishes between the concept of "vdir" and <phrase>IIS
+                application</phrase>.  Each <phrase>IIS application</phrase> or
+                web site may contain multiple <phrase>vdirs</phrase>.  They will
+                all share the configuration specified in the ini file that applies
+                to the containing <phrase>IIS application</phrase>, found at the
+                root physical path for the IIS application, or if there is no IIS
+                application, the root physical path for the IIS web site.
+              </para>
+
+              <para>
+                Because the concept of "vdir" is
+                close enough to the concept of "IIS application" that in
+                this documentation, and because most web administrators
+                understand what a vdir is, I use "vdir" informally, in place
+                of the more lengthy "IIS application". Keep that in
+                mind, when this documentation uses the term
+                "vdir-specific ini file", it is actually referring to an
+                "ini file specific to the IIS application".
+              </para>
+
+              <para>
+                If you don&apos;t clearly understand the distinction between
+                IIS web sites, IIS Applications and IIS virtual directories, don&apos;t
+                worry. The way IIS has done things is confusing.  Consult Microsoft&apos;s
+                explanation in <token>UnderstandingIIS1</token>.
+              </para>
+
+              <para>
+                My simple summary: the distinction between a vdir and an
+                IIS application is that for an IIS app, you&apos;ve
+                ticked the checkbox in the IIS Manager that says "this
+                is an application."  In practical terms it means there
+                is an extra entry in the IIS configuration schema for
+                IIS applications as compared to vdirs, and it is this
+                extra field in the configuration that IIRF uses to
+                locate its configuration files.  In short, the IIS
+                application is a unit of administrative organization
+                that IIRF uses to organize its configuration settings.
+              </para>
+            </alert>
+
+          </listItem>
+        </list>
+
+        <para>
+          In a single server, you will have just one IirfGlobal.ini file, and
+          potentially many IIRF.ini files, one for each virtual
+          directory or IIS application, for which you&apos;d like to perform rewriting.
+        </para>
+
+        <para>
+          Changes in the vdir-specific ini files are automatically reloaded when
+          the next http request arrives.  Changes in the filter-wide ini file
+          are effective only when the filter restarts, or when IIS restarts.
+        </para>
+
+        <para>
+          Take care to save valid .ini files.
+          IIRF attempts to be tolerant of errors in the ini files.  For an ini file with
+          10 rules, one of which has an error (let&apos;s say an invalid regular expression),
+          IIRF will load the 9 rules that are valid, and will log a message to indicate
+          the error. Every time you modify the IIRF.ini file, you should
+          check the IIRF logfile, to verify that the ini file you save, has actually
+          been successfully loaded without errors.
+          Or, browse
+          to <link xlink:href="06643ce7-6c93-4d2f-ad3b-01e97fade9ef">the
+          IIRF Status
+          inquiry page</link>, to verify that the rules in your ini file
+          are valid and no warnings or errors were issued by IIRF.
+          Syntax errors can creep in unexpectedly,
+          so you should always confirm that IIRF has parsed your ini file properly.
+        </para>
+
+        <para>
+          You can also use the TestParse.exe utility to verify your ini
+          file syntax. For more on that useful tool, see
+          <link xlink:href="6484f8dd-f1e4-4b74-917c-56d63e76d415">the
+          relevant documentation</link>.
+        </para>
+
+        <para>The format of the ini files for IIRF is similar to the format of
+          the properties file used by Apache&apos;s mod_rewrite. It&apos;s simple: Each
+          line that begins with # is treated as a comment.  Each blank line is
+          ignored.  All other lines are parsed as <newTerm>Directives</newTerm>.
+          For example:
+          <code lang="ini">
+              # IIRF ini file
+              # version 1.1
+              # Sat, 11 Jul 2009  12:44
+              #
+              # ============================================
+
+              <em>directive</em>
+              <em>directive</em>
+              <em>directive</em>
+              <em>...</em>
+
+          </code>
+        </para>
+
+        <para>
+          Each directive contains a single statement that affects the operation of
+          the filter. You&apos;ll find a list of directives for the global ini file
+          <link xlink:href="38b088f3-528b-4741-a65e-40a42095762b">here</link>, and
+          for the vdir-specific (or application-specific) ini files
+          <link xlink:href="01dedcdc-e657-4519-8bdb-848a1eef1e0e">here</link>,
+          You can make your ini file any arbitrary length.
+        </para>
+
+        <para>The global ini file is automatically loaded when the
+          filter starts, and is only reloaded when you restart the IIS
+          Server or the IIRF filter.  IIRF reloads vdir-specific INI
+          files automatically when the ini file changes.  You don&apos;t
+          need to restart IIS in order to load in new settings in a
+          vdir-specific ini file.
+        </para>
+
+        <para>
+          If you save an empty vdir-specific ini file, IIRF will revert
+          to the <newTerm>last good configuration</newTerm> for that
+          site.  If you would prefer to not have rewriting at all,
+          rather than saving an empty ini file, either remove (delete)
+          the iirf.ini file completely, or just disable the filter,
+          either server-wide through IIS Manager, or for an individual
+          website or application using the <link
+          xlink:href="e4d59f04-fd89-447a-ba23-60bb8b4c9a68">RewriteEngine</link>
+          directive within the ini file.
+        </para>
+
+        <para>
+          If you make many small, partial
+          changes in the ini file, saving the file in each step, while
+          IIS is serving requests, IIRF will will try to reload the
+          settings after each save.  It is better to
+          make all the changes and save the file once, or make the
+          changes "offline".  You may find it most
+          helpful to edit the file in a different location, and copy it to the
+          IIRF deployment directory each time you are finished modfying
+          it.
+        </para>
+
+        <alert class="note">
+          The maximum length of an ini-file line is 1024 characters in
+          IIRF v2.1.1.23 and prior.  It is 4096 characters in IIRF
+          v2.1.1.24 and later.  If your line is longer than this, it may
+          not be read properly. As always, check the /iirfstatus URL to
+          verify that your rules have been properly read.
+        </alert>
+
+      </content>
+
+      <sections>
+        <section address="Section1-sub1">
+          <title>The INI file is code</title>
+          <content>
+
+            <para>
+              Think of the INI file as a versionable file in the code
+              that makes up a web site.
+              Treat it as you would any other source code. For example,   if
+              you use a version control system or source code management system,
+              consider putting the ini file into the system for management and
+              versioning.
+            </para>
+
+            <para>Also, for production sites, testing of the INI file should be
+              rigorous, as rigorous as you test any other code you deploy to
+              your website.  IIRF ini files can get fairly long and involved,
+              with hundreds or even thousands of rules, rewriting,
+              proxying, and redirecting. Use a web test system to verify that
+              "good" urls as well as "bad" URLs behave as expected and desired.  Many
+              requests that arrive on public websites are not in the form your
+              applications expect, and you should test such URLs with the INI
+              file in place to insure that the behavior of the filter
+              configuration is correct, even in the face of "bad" or unexpected
+              URL input.
+            </para>
+          </content>
+        </section>
+      </sections>
+    </section>
+
+    <section address="Section2">
+      <title>Processing Directives</title>
+      <content>
+        <para>
+          The ini file is composed of multiple statements,
+          or <phrase>directives</phrase>. Directives
+          let you define how IIRF  should operate, which URLs it
+          should rewrite, which URLs it should redirect, how it
+          should perform logging, and so on.
+        </para>
+
+        <para>
+          In general, directives are processed in the order in which they appear in the
+          file. Understanding this is important, when configuring IIRF rules.
+        </para>
+
+        <para>
+          First, though, there are exceptions to this ordering.  The ini file is
+          processed in several passes.  The first pass reads and
+          interprets the <codeInline>RewriteLog</codeInline>
+          and <codeInline>RewriteLogLevel</codeInline> directives, to
+          enable and begin logging. After that first pass, the
+          additional directives are read in.
+          Because of the multi-pass approach to reading the ini file, if
+          you set the <codeInline>RewriteLog</codeInline> directive at
+          the end of the ini file, logging will work the same as if you
+          put that directive at the beginning of the ini file.  Even so,
+          for clarity I recommend that you put
+          the <codeInline>RewriteLog</codeInline>
+          and <codeInline>RewriteLogLevel</codeInline> directives near
+          the beginning of the IIRF ini file.
+        </para>
+
+        <para>
+          Another exception, sort of, relates to the use of the
+          <link xlink:href='bc80da98-83e2-4d22-8b71-2fd116e2610a'>RewriteBase </link> directive. Regardless
+          where this appears in the ini file, it will apply to all
+          rules, even those rules that appear before it.
+        </para>
+
+        <para>
+          Now, back to the ordering of rules. If you are a programmer,
+          the rules act as "cases"  in a large switch statement from Java, C
+          or C#, or a cond statement in Lisp. If the first
+          <codeInline>RewriteRule</codeInline> rewrites every incoming URL to "foo", and the next
+          <codeInline>RewriteRule</codeInline> never matches "foo", then the
+          second <codeInline>RewriteRule</codeInline> will never be satisfied.
+          The ordering of directives is important.
+        </para>
+
+        <para>
+          Consider the case where you would like to rewrite a few URLs, but
+          many URLs should not be rewritten.  A good approach to this is to
+          define a <codeInline>RewriteRule</codeInline> that matches the requests
+          that <legacyItalic>should not</legacyItalic> be rewritten, thus
+          excluding them from additional processing using
+          the <literal>[L]</literal> flag.
+          Example: <code lang="ini">
+              RewriteRule ^/.+\.xml$   -        [L]
+          </code>
+        </para>
+
+        <para>
+          This has the effect of "handling" all requests for XML files, so
+          that they will not be rewritten, and will not be evaluated against
+          any patterns occuring later in the ini file.  Using this approach to
+          categorize and handle requests can greatly simplify your ini file.
+        </para>
+
+        <para>
+          Finally, you should think of your IIRF ini file as code or logic
+          that needs to be tested and verified before you put it into
+          production. In simple cases it is easy to assure yourself of the
+          correctness of the ini file by visual inspection.  In more complex
+          cases with conditionals, looping, maps, or complicated regular expression
+          matching, it is better to test the directives using a web test engine.
+        </para>
+
+      </content>
+    </section>
+
+
+    <section address="Section3">
+      <title>Unrecognized Directives and Errors in the Ini file</title>
+      <content>
+        <para>
+          Any unrecognized directives in the INI file will be tolerated
+          without generating any exception or causing a filter error.  An error
+          like that will cause an error to be logged in the logfile, but sometimes
+          people forget to check the IIRF logfile after a change to the ini
+          file. So, be careful of spelling.
+        </para>
+
+        <para>
+          If you specify
+          <code lang="ini">
+            RWriterule xyz abc
+          </code>
+        </para>
+
+        <para>
+          ...(notice the missing E) the filter won&apos;t do anything except
+          emit an Error message in the log. If you don&apos;t check the log, or the status
+          via <link xlink:href="06643ce7-6c93-4d2f-ad3b-01e97fade9ef">an HTTP Status
+          inquiry</link>, you may be unaware that the directive was incorrect.
+        </para>
+
+        <para>
+          As noted elsewhere in this documentation, case is not important in the directive name,
+          so <codeInline> ReWrItERUle</codeInline> is as good as <codeInline>
+            RewriteRule</codeInline>, which is as good as <codeInline>
+            rewriterule</codeInline>.
+          All of them are accepted and interpreted.  It is probably
+          best form and most readable to use <codeInline>RewriteRule</codeInline>.
+        </para>
+
+
+        <para>
+          Any unrecognized directives will be logged with a WARNING, and
+          ignored.  Also, incorrectly formatted directives - for example a
+          RewriteLogLevel that does not specify an integer -  will
+          result in a WARNING or an ERROR in the log file.  If you have
+          such problems in the ini file, it may
+          materially affect the operation of the filter, so do check them..
+        </para>
+
+        <para>
+          Treat your
+          ini file and the directives within it as <phrase>application program
+            code</phrase>.  Test IIRF with your ini file, via web test
+          tools, just as
+          with any computer application.
+        </para>
+
+        <para>
+          There is a tool in the IIRF distribution
+          called <link xlink:href="6484f8dd-f1e4-4b74-917c-56d63e76d415">TestParse.exe</link>,
+          which will load an ini file and display the log messages for parsing
+          the file.  TestParse does not test the operation or behavior of the filter, it
+          only loads the ini file and verifies syntax.  It can be handy in doing first-pass
+          checking on ini files.
+        </para>
+      </content>
+    </section>
+
+
+
+    <section address="Section4">
+      <title>Checking that IIRF INI files are properly loaded</title>
+      <content>
+        <para>
+          The HTTP Status inquiry, mentioned above several times, is an easy way to
+          quickly check that the ini files used by IIRF are valid and have been properly
+          loaded.  See
+          the <link xlink:href="06643ce7-6c93-4d2f-ad3b-01e97fade9ef">StatusInquiry</link>
+          directive for details.
+        </para>
+
+        <para>
+          For more detailed explanation of exactly what is happening in
+          the filter, IIRF&apos;s logging facility is your friend.  The IIRF
+          log is the best place to verify that IIRF has loaded the INI
+          file properly, and that all the rules in the file were understood
+          properly.  You can also use the log to examine the processing of each URL as
+          the filter examines it.  This can help you to troubleshoot rules and patterns
+          in your rules.
+        </para>
+
+        <para>
+          If your ini file has been parsed and loaded successfully by
+          IIRF, and you have a <codeInline>RewriteLog</codeInline> level
+          greater than 0 (zero), you will see a line similar to this in
+          the Iirf log file:
+          <markup>
+            <br/>
+          </markup>
+          <computerOutputInline>ReadConfig: Done reading, found 11 rules (0 errors, 0 warnings) on 36 lines</computerOutputInline>
+        </para>
+
+        <alert class="note">
+          The location of the IIRF log file is set according to the
+          <link xlink:href="f370a131-d13c-4d01-ab91-2f629641954e">RewriteLog</link> directive.
+        </alert>
+
+        <para>Be sure to check the IIRF log file for a happy status
+          message like this.  If you have any errors or warnings, your
+          IIRF configuration will not perform as you expected.  IIRF may
+          completely ignore rules that have bad syntax or incorrect
+          format.  To be sure, check the log file each time you modify the
+          ini file.
+        </para>
+
+        <alert class="important">
+          The log file is generated when IIRF begins to run and detects a change in the
+          ini file, or when IIRF starts up for the first time.  On IIS6 and IIS7, IIS
+          worker processes are loaded <phrase>on demand</phrase> and are shut down after
+          an idle period when no requests have come in.  On these versions of IIS, you
+          may have to send an HTTP request to the IIS server - surf to a page from the
+          server in the browser - in order to get IIS to start a worker process and load
+          IIRF, thus generating the initial log file.  Sending a status  inquiry request
+          (see the <link xlink:href="06643ce7-6c93-4d2f-ad3b-01e97fade9ef">StatusInquiry</link>
+          directie) works just fine for this purpose.
+        </alert>
+      </content>
+    </section>
+
+
+    <relatedTopics>
+      <link xlink:href="6e3750a8-96e1-4f4b-95ad-8c6c98a45d40">Verifying Installation</link>
+      <link xlink:href="2a84f55d-b0ae-422a-9071-a31e35b7d3e3">Please Donate</link>
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>
+
+

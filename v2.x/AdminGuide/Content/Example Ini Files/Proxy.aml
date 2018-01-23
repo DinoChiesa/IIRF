@@ -1,0 +1,55 @@
+<topic id="c01af086-562e-41bb-a60e-f33ca073499a" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <introduction>
+      <!-- autoOutline / -->
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Proxy requests to a remote website </title>
+      <content>
+        <para>
+          This ini file configures IIRF to act as a proxy for a remote
+          website.
+          The <link xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link>
+          and
+          <link xlink:href="e4088625-c729-4a3f-9e1a-19b2edda2e19">ProxyPassReverse</link>
+          are both needed to insure correct operation of the proxy
+          behavior for www.php.net.  The latter is needed because
+          www.php.net issues  302 redirects, and when that happens
+          it&apos;s necessary to transform the response with <codeInline>ProxyPassReverse</codeInline>.
+        </para>
+
+<code lang="ini">
+# IIRF.ini
+#
+# ini file for proxying a website
+#
+
+RewriteLog c:\logs\iirf
+RewriteLogLevel 1
+IterationLimit 10
+MaxMatchCount 10
+RewriteEngine ON
+StatusInquiry ON
+
+
+# act as a proxy the www.php.net site
+ProxyPass          ^/(.*)$   http://www.php.net/$1
+ProxyPassReverse   /         http://www.php.net/
+
+</code>
+      </content>
+    </section>
+
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+
+

@@ -1,0 +1,22 @@
+# SampleUrls.txt
+# 
+# Expected result may be a URL, or one of the following: 
+#
+#     NO REWRITE 
+#     FORBIDDEN
+#     REDIRECT <code>  <URL>
+#     NOT FOUND 
+#
+#
+
+
+# Incoming URL                    Expected Result
+#---------------------------------------------------------------------- 
+#
+/index.html                       /6/index.html
+/1/index.html                     /7/index.html
+/2/index.html                     /7/index.html
+/3/index.html                     /7/index.html
+
+
+

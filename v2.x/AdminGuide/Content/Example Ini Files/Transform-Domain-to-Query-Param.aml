@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="1f3f41aa-75d4-4873-9c9a-5b41c2f97a01" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <!--
+        <summary>
+          <para>Optional summary abstract</para>
+        </summary>
+        -->
+    <introduction>
+      <!-- Uncomment this to generate an outline of the section and sub-section
+           titles.  Specify a numeric value as the inner text to limit it to
+           a specific number of sub-topics when creating the outline.  Specify
+           zero (0) to limit it to top-level sections only.  -->
+      <!-- <autoOutline /> -->
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Example: Transforming Domain names to Query String parameters</title>
+      <content>
+
+        <code lang="ini">
+          # IIRF.ini
+          #
+          # demonstrates transforming domain names to querystring params.
+          #
+
+          RewriteEngine ON
+          RewriteLog c:\inetpub\iirfLogs\iirf
+          RewriteLogLevel 1
+          StatusInquiry ON
+          CondSubstringBackrefFlag *
+
+          # +++++++++++++++++++++++++++++++++
+
+          # Transform any domain name that is not www, into a query
+          # string param.  The reference character for captured
+          # groups in the RewriteCond, is * , according to the
+          # CondSubstringBackrefFlag directive.  (* is also the default).
+
+          RewriteCond %{HTTP_HOST} ^(?!www)([^.]+)\.mydomain\.com [I]
+          RewriteRule ^/(.*)$      /mypage?host=*1 [U,L]
+
+        </code>
+
+      </content>
+    </section>
+
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+
+

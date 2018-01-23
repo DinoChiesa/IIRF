@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="c76efb95-05ba-4383-8022-7eff3e1174d0" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>Installation of <legacyBold>IIRF</legacyBold> is pretty
+        simple.
+        Use the MSI package to install IIRF through the Windows
+        Installer system.  Or, you can install IIRF "manually".  See the
+        links below for detailed instructions.
+      </para>
+    </introduction>
+
+    <section>
+      <title>Installation Instructions</title>
+      <content>
+        <para>
+          To get URL rewriting, you must install IIRF on your Web server
+          machine.  The machine can run Windows Vista, Server 2003, Server
+          2008, and service packs of same.  I haven&apos;t yet tested it on
+          Windows 7.
+        </para>
+        <para>
+          The easiest way to install IIRF is to
+          <link xlink:href="d39d25f5-db8b-4ae0-9258-562d6bf4a591">
+            run the IIRF MSI file.</link>
+        </para>
+
+        <para>
+          The MSI will guide you through installing IIRF on your platform.
+          It will allow you to select:
+        </para>
+
+        <list class="bullet">
+          <listItem>
+            which parts of IIRF you want to install
+          </listItem>
+          <listItem>
+            the website for which IIRF should be configured
+          </listItem>
+          <listItem>
+            the installation location for IIRF
+          </listItem>
+        </list>
+
+        <para>
+          The installer will also configure the security settings on the
+          IIRF.dll for your version of Windows.  You can also view
+          <link xlink:href="d39d25f5-db8b-4ae0-9258-562d6bf4a591">
+            a walkthrough of
+            the MSI.</link>
+        </para>
+
+        <para>
+          If you like, you can also install IIRF manually.  To do that,
+          you have to copy IIRF to a particular directory, then configure
+          IIRF.dll as an ISAPI filter on the IIS Server through the IIS Manager, and set
+          permissions.  Follow the link for your platform for further
+          instructions.
+        </para>
+
+
+        <list class="bullet">
+          <listItem>
+            <link xlink:href="6b426152-704a-4907-b87e-2e1938a89cad" />
+          </listItem>
+          <listItem>
+            <link xlink:href="153e7d87-ace3-4fd1-bead-86bd248f6087" />
+          </listItem>
+        </list>
+
+        <para>
+          In addition to the filter DLL, IIRF also includes various
+          utilities, including IirfVersion.exe, TestParse.exe, and
+          TestDriver.exe, to help you out as you run and operate IIRF.
+          you may find it convenient to copy the exe&apos;s into the same
+          directory as you copied the IIRF.dll during
+          installation.  Or, you can set up a separate directory, off
+          the web server completely.  Either way, I encourage you to
+          become familiar with these tools.
+        </para>
+
+      </content>
+    </section>
+
+    <relatedTopics>
+      <link xlink:href="2a84f55d-b0ae-422a-9071-a31e35b7d3e3">Please Donate</link>
+    </relatedTopics>
+
+  </developerConceptualDocument>
+</topic>
+
+
+
+
+
+
+

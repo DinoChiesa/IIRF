@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="85e56ec7-6769-4a34-bb91-e843e02fba37" revisionNumber="1">
+  <developerConceptualDocument
+      xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+      xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <section address="Section1">
+      <title>INI file to Redirect to www host when 2-part hostname is used</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline -->
+        <!-- <autoOutline /> -->
+
+        <!-- from workitem 29475 -->
+        <!-- http://iirf.codeplex.com/Thread/View.aspx?ThreadId=233470 -->
+        <para>
+          Suppose you would like to redirect to a www host when a 2-part hostname is
+          used in the request. For example, if the request looks like
+          <literal>http://domain.com/something</literal>, then you would like to
+          redirect to <literal>http://www.domain.com/something</literal>.
+        </para>
+
+        <para>
+          In this case, you need to use a <codeInline>RewriteCond</codeInline> to test
+          if the hostname is a 2-part name.  If that is true, then use
+          <codeInline>RedirectRule</codeInline> to redirect to the correct hostname,
+          using the same URL path and query. It looks like this:
+        </para>
+
+
+        <code lang="ini">
+          # Iirf.ini
+          #
+          # ini file to redirect to www host
+          #
+
+          RewriteLog c:\logs\iirf
+          RewriteLogLevel 1
+          IterationLimit 10
+          MaxMatchCount 10
+          RewriteEngine ON
+          StatusInquiry ON
+
+          RewriteCond %{HTTP_HOST} ^(?!www)[^\.]+\.[^\.]+$ [I]
+          RedirectRule ^/(.*) http://www.%{HTTP_HOST}/$1 [R=301]
+        </code>
+
+        <para>
+          If the incoming request uses a 2-part hostname, then it will be redirected (with a
+          301 "Moved Permanently" return code) to the www hostname.  If your user requests a
+          URL with a 3-part name, such as sub.domain.com, or a hostname with more than 3
+          parts, then no www gets prepended.
+        </para>
+
+        <para>
+          Let's break down the regex in the <codeInline>RewriteCond</codeInline>,
+          just to clarify. The regex begins with <literal>^</literal>. This is a
+          beginning-of-line assertion. It says, "only allow this pattern to match at
+          the beginning of the line (or input)". That is in there because otherwise
+          the regex can be matched at any point in the subject string. And, just for
+          completeness, the subject string is the thing we're applying the regex to,
+          which in this case is whatever the server variable
+          <literal>HTTP_HOST</literal> holds.)
+        </para>
+
+        <para>
+          Immediately following the <literal>^</literal> is
+          <literal>(?!www)</literal>, which says "anything that does not begin with
+          www". That <literal>?!</literal> prefix signals a negative-lookahead
+          assertion in regex-speak. In English it just means "only match if the next
+          bit in the subject string doesn't match what immediately follows ?!" . And
+          what follows ?! is www, so .... that assertion matches, or returns TRUE,
+          only when the next three characters are not www . The
+          <literal>?!</literal> is a zero-width assertion, meaning it does not
+          advance the "cursor" in the subject string. So as far as the regex engine
+          is concerned, it's still looking at the beginning-of-line.
+        </para>
+
+        <para>
+          Next, comes a range with a quantifier. The square brackets denote a range, and the +
+          following the <literal>[...]</literal> are a quantifier, denoting "1 or more of the
+          previous atom". The range is actually a negated range, because the first char is
+          <literal>^</literal> . (Hmm, as I write this out I see that this is actually getting
+          pretty complicated, but keep with me here.) When you see
+          <literal>[^.....]</literal>, where .... is replaced by a set of characters, that
+          regex matches "any character NOT in that set". In this particular example there is
+          just a single character in the set, and it is the dot. Because the dot is meaningful
+          to regex, it needs to be escaped - hence backslash-dot, or <literal>\.</literal>
+          . OK, so <literal>[^\.]</literal> matches anything that is not a dot, and it is
+          followed by a + quantifier, which matches 1 or more of the preceding thing. So,
+          <literal>[^\.]+</literal> in English, matches "a series of 1 or more of any
+          characters that are not dot". Got it? This is intended to match a segment in a
+          hostname. When the subject is "domain.com", this portion of the regex would match
+          "domain".
+        </para>
+
+        <para>
+          Next in the regex is <literal>\.</literal> , which matches a dot. Again we
+          have to escape the dot.
+        </para>
+
+        <para>
+          Next is another <literal>[^\.]+</literal> , which matches another segment
+          in the hostname, as described above.
+        </para>
+
+        <para>
+          Next is <literal>$</literal>, which is a zero-width assertion that matches
+          only at the end-of-line (or end-of-string) .
+        </para>
+
+        <para>
+          Therefore, the entire regex in the RewriteCond matches ONLY a string with
+          exactly 2 segments, separated by a dot. <literal>domain.com</literal>
+          matches, but <literal>arf.domain.com</literal> does not. Therefore the
+          <codeInline>RewriteCond</codeInline> itself returns TRUE only when a
+          2-segment hostname is in use, which means the associated
+          <codeInline>RedirectRule</codeInline> applies only when a 2-segment
+          hostname is in use.
+        </para>
+
+      </content>
+    </section>
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+

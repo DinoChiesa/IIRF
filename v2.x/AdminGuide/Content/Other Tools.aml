@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="6484f8dd-f1e4-4b74-917c-56d63e76d415" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <autoOutline lead="The IIRF installation includes a few
+        other tools that can help an operator use and administer IIRF." />
+      <para>The IIRF filter is implemented in the file,
+        IIRF.dll.  The other tools are implemented in
+        independent .exe files.  </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>TestDriver.exe</title>
+      <content>
+
+        <para>
+          The testdriver is the most useful of the tools shipped with IIRF.  It is
+          indispensable when evaluating whether the sets of rules you&apos;ve
+          constructed actually do what you expect for the vareity of combinations
+          of URLs.
+        </para>
+
+        <para>
+          TestDriver is a command-line tool, that allows you to run the
+          IIRF logic upon batches of URLs.  TestDriver starts up, loads
+          IIRF.dll, and then reads in an IIRF ini file, just as
+          it would if running as an ISAPI.  The file must be called
+          IIRF.ini.
+        </para>
+
+        <para>
+          TestDriver then reads in a separate text file, called SampleUrls.txt,
+          that includes set of sample URLs and an expected
+          <newTerm>result</newTerm> for each of those URLs.  It evaluates the
+          rules for each of the sample URLs, just as IIRF would when running as an
+          ISAPI.  TestDriver then compares the actual result with the expected
+          result.
+        </para>
+
+        <para>
+          The format of the ini file is described elsewhere.  The SampleUrls.txt
+          file should have one or more lines, each containing an incoming URL,
+          followed optionally by an expected result. The incoming URL can be a URL
+          path and query string, or it can include an http scheme, domain, and
+          port number.  The # character as the first character in any line
+          indicates a comment. For example:
+        </para>
+
+        <code lang="ini">
+          # Incoming URL                      Expected Result
+          #-----------------------------------------------------
+
+          /products/gardening/9               /products.aspx?productId=9
+          /index.jsp                          /index.asp
+          /hello                              /Components.php
+          http://domain.com/search/findthis   http://domain.com/index.asp?q=findthis
+          /query/Foo                          /tags.php?s=Foo
+          /do_nothing/family9.html            NO REWRITE
+          /catalog/product5                   REDIRECT 301  /catalog/prod/5
+        </code>
+
+        <para>
+          The first non-comment line in the ini file above says, for an incoming URL of
+          <literal>/products/gardening/9</literal> the rewrite result is expected to be
+          <literal>/products.aspx?productId=9</literal>.
+        </para>
+
+        <para>
+          The second parameter on each line specifes the expected result.  It may
+          be a URL, or one of the following:
+        </para>
+        <list class="bullet">
+          <listItem> NO REWRITE </listItem>
+          <listItem> FORBIDDEN</listItem>
+          <listItem> REDIRECT &lt;code&gt;  &lt;URL&gt;</listItem>
+          <listItem> NOT FOUND </listItem>
+        </list>
+
+        <para>
+          The TestDriver program accepts a -d switch, which tells it where to load
+          the ini and SampleUrls.txt file.
+        </para>
+
+        <para>
+          When you run the TestDriver.exe, the ISAPI reads the
+          <literal>Iirf.ini</literal> file from the specified directory.  to
+          determine the Logging level (0,1,2,3...) and the various rules to
+          use. In order to get diagnostic messages, the
+          <literal>RewriteLog</literal> directive must be present; but, the
+          logfile setting is overridden - using the TestDriver, all logging info
+          is sent to the standard output stream, the console. The
+          <codeInline>RewriteLogLevel</codeInline> in the ini file is used, so if
+          you specify a RewriteLogLevel of zero, you will see no output from
+          TestDriver.exe, which is probably not what you want.
+        </para>
+
+        <para>
+          The TestDriver then sends each one of the sample URLs into the filter,
+          and then compares the output with your expected result.  The TestDriver
+          produces a message line for each URL processed, and a summary report for
+          the full run.  It's exit value is the number of errors generated during
+          the run.  In this way you can test a set of URLs against a set of rules,
+          and can do so in an automated fashion in a post-build step, for
+          example. It&apos;s very easy to see if your rules are doing what you
+          expect them to do.
+        </para>
+
+        <para>
+          Take care in designing the set of sample URLs.  Be sure to specify edge
+          cases and "illegal" URLs - to make sure that your rewrite rules
+          gracefully handle URLs that are outside the expected format.
+        </para>
+
+        <para>
+          Using the -d switch, you can use different directories to store multiple
+          independent ini files and url sample sets.  Within the <literal>tests</literal> directory
+          in the source distribution zipfile, there are several subdirectories
+          that illustrate the point.  This command will
+          load the ini file and test the SampleUrls.txt in the directory,
+          "tests\CaseInsensitive" :<markup>
+            <br/>
+            <br/>
+          </markup>
+          <computerOutputInline>   testdriver.exe -d tests\CaseInsensitive
+          </computerOutputInline>
+        </para>
+
+
+        <para>
+          Please note: the TestDriver.exe program is a useful testing tool, but it
+          does not and cannot replace actual testing in the context of a web
+          server. The testdriver does not run within the context of an HTTP
+          server, and so does have access to actual HTTP Server variables.  In
+          particular, if you use RewriteCond in the ini files that you test with
+          TestDriver.exe, and those RewriteCond statements reference Server
+          variables (eg %{HTTP_ACCEPT} or %{HTTP_REFERER}) , those RewriteCond
+          statements will not behave in the TestDriver the same way they will
+          behave in an ISAPI. Tests of such conditions will not be useful in
+          verifying actual operational behavior.
+        </para>
+
+        <para>
+          Likewise, in general, if you reference server variables in the
+          replacement pattern, it won&apos;t work the way you might hope.  In
+          general, it is difficult to use TestDriver to evaluate any ruleset that
+          relies on HTTP Server variables. For that you need an actual web client
+          test program, and an actual IIS with IIRF installed.
+        </para>
+
+        <para>
+          As of IIRF V2.1.1.26, the TestDriver does provide mock values for these
+          server variables: REQUEST_URI, URL, QUERY_STRING, HTTPS, HTTP_HOST,
+          SERVER_PORT. These are all obtained from the incoming URL itself, and so
+          are synthesized to reasonable values in the test program, outside the
+          scope of an IIS Server. If your logic relies only on a subset of these
+          variables, then the TestDriver will work fine for you. If your logic
+          relies on other server variables, you will need to test it within the
+          IIS Server itself.
+        </para>
+      </content>
+    </section>
+
+    <section address="Section2">
+      <title>TestParse.exe</title>
+      <content>
+
+        <para>
+          TestParse is a command line tool.  It parses an ini file and indicates
+          whether the file is well formed. Think of it as a syntax checker and
+          validator for the ini file.  It will not help you test whether your
+          rules do what you want them to do.  All it does is check the syntax of
+          the file.  When writing a new ini file, it&apos;s helpful to run it
+          through the TestParse program before you begin evaluating whether the
+          rule set does what you want.
+        </para>
+
+        <para>
+          TestParse.exe can catch misspellings of directives, repeated directives,
+          and syntax problems like missing parameters or arguments in directives.
+          It will not catch mis-spellings of server variables.
+        </para>
+      </content>
+    </section>
+
+    <section address="Section3">
+      <title>IirfVersion.exe</title>
+      <content>
+
+        <para>IirfVersion is another command-line tool. It simply prints and
+          displays the the version of the IIRF tool.  This can be helpful
+          in problem diagnosis.
+        </para>
+
+        <para>
+          For a more interactive way of determining the version of IIRF
+          you have, use Windows Explorer and browse the properties of
+          the IIRF.dll file.
+        </para>
+        <mediaLink>
+          <caption placement="after" lead="Figure 1">IIRF File Properties</caption>
+          <image placement="center" xlink:href="91bdb136-1ef4-42ac-a6e2-89ae0af06260"/>
+        </mediaLink>
+      </content>
+    </section>
+
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+

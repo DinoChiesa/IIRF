@@ -1,0 +1,372 @@
+<?xml version='1.0'?>
+<Wix xmlns      = 'http://schemas.microsoft.com/wix/2006/wi'
+     xmlns:iis  = 'http://schemas.microsoft.com/wix/IIsExtension'
+     xmlns:util = 'http://schemas.microsoft.com/wix/UtilExtension'
+     >
+
+<!-- Keep the UpgradeCode constant for the lifetime of the product family, -->
+<!-- if you want to support upgrades.  Change the id (in MSI parlance, it's -->
+<!-- the ProductCode) when changing minor versions.  -->
+<!-- -->
+
+<!-- http://stackoverflow.com/questions/1838009/platform/1860161#1860161 -->
+
+<?if $(var.Platform) = x64 ?>
+  <?define pkgDescription = "IIRF v2.1 Package (x64)" ?>
+  <?define msiProductId = "f68bd7ff-a518-48bd-b056-fa47b928da4e" ?>
+  <?define Win64 = "yes" ?>
+  <?define programFilesFolder = "ProgramFiles64Folder" ?>
+  <?define guidBinFiles = "7821227d-0fe2-426e-a7e2-88ec78c8250f" ?>
+  <?define guidFilter1 = "7821227d-0fe2-426e-a7e2-88ec78c82508" ?>
+  <?define guidFilter2 = "7821227d-0fe2-426e-a7e2-88ec78c82506" ?>
+  <?define guidExtension = "7821227d-0fe2-426e-a7e2-88ec78c82505" ?>
+<?else ?>
+  <?define pkgDescription = "IIRF v2.1 Package (x86)" ?>
+  <?define msiProductId = "2530efe6-3506-4e92-8846-f8f4325fe745" ?>
+  <?define Win64 = "no" ?>
+  <?define programFilesFolder = "ProgramFilesFolder" ?>
+  <?define guidBinFiles = "678184c4-0556-4893-88bc-2b8ec5f3aa0f" ?>
+  <?define guidFilter1 = "678184c4-0556-4893-88bc-2b8ec5f3aa08" ?>
+  <?define guidFilter2 = "678184c4-0556-4893-88bc-2b8ec5f3aa06" ?>
+  <?define guidExtension = "678184c4-0556-4893-88bc-2b8ec5f3aa05" ?>
+<?endif ?>
+
+  <Product Id           ="$(var.msiProductId)"
+           Name         ="Ionic's ISAPI Rewrite Filter 2.1"
+           Language     ='1033'
+           UpgradeCode  ='ab6955b9-396a-40e5-98cb-535d80eee53b'
+           Version      ='2.1.1.26'
+           Manufacturer ='Ionic Shade'>
+
+    <Package Description      ="$(var.pkgDescription)"
+             Comments         ='Produced: Sun 17 April 2011'
+             Manufacturer     ="Ionic Shade"
+             InstallerVersion ='200'
+             Platform         ='$(var.Platform)'
+             Compressed       ='yes' />
+
+    <!-- Must specify the Platform attribute here. -->
+    <!-- For an alternative, see the -arch flag on candle.exe . -->
+    <!-- http://www.joyofsetup.com/2010/05/14/working-hard-or-hardly-working/ -->
+
+
+    <!-- need a Media element to specify the source for installation.
+         EmbedCab='yes' implies that this cab will be stuffed into the
+         MSI file, which is what we want, usually.
+
+         The Cabinet name can be anything you want. Not really important.
+
+      -->
+    <Media Id='1' Cabinet='product.cab' EmbedCab='yes' />
+
+    <Property Id="PRIORINSTALL">
+      <RegistrySearch Id   ='IirfRegistry'
+                      Type ='raw'
+                      Root ='HKLM'
+                      Key  ='Software\Ionic Shade\IIRF'
+                      />
+    </Property>
+
+    <!-- store which site IIRF was installed to -->
+    <Property Id="IIRF_SITE">
+      <RegistrySearch Id="IirfRegistryWebSite"
+                      Type="raw"
+                      Root="HKLM"
+                      Key  ='Software\Ionic Shade\IIRF'
+                      Name="WebSite"
+                      />
+    </Property>
+
+
+
+   <PropertyRef Id="IISMAJORVERSION"/>
+   <PropertyRef Id="IISMINORVERSION"/>
+
+   <!-- don't install if IIS is not present -->
+   <!-- IIS Version 6 or higher check. -->
+   <Condition Message="IIRF cannot be installed at this time. You must install IIS before installing IIRF.">
+     IISMAJORVERSION &gt;= "#6"
+   </Condition>
+
+    <!-- don't install if the IIRF regy key exists -->
+    <Condition Message="You must uninstall prior versions of IIRF before installing this MSI.">
+      PRIORINSTALL = ""
+    </Condition>
+
+<?if $(var.Platform) = x64 ?>
+    <Condition Message="This package can be installed only on an x64 version of Windows.">
+      VersionNT64
+    </Condition>
+<?else ?>
+    <Condition Message="This package of IIRF cannot be installed on an x64 version of Windows. You need to get the x64 version of IIRF.">
+      NOT VersionNT64
+    </Condition>
+
+<?endif ?>
+
+    <!-- no install on Windows XP or Windows 2000 -->
+    <Condition Message="IIRF cannot be installed on this computer. IIRF is supported on Windows Server 2003, Windows Vista, or later.">
+      <![CDATA[Installed OR (VersionNT >= 502)]]>
+    </Condition>
+
+    <!--
+
+        must be installed for all users
+
+        <Property Id="ALLUSERS" Secure="yes"/>
+        <Condition Message="IIRF cannot be installed on a per-user basis.">
+          ALLUSERS
+        </Condition>
+
+    -->
+
+    <InstallUISequence>
+
+      <!-- <Custom Action="CA.EnumerateWebSites"  After="CostFinalize" Overridable="yes">NOT Installed</Custom> -->
+      <Custom Action="CA.SetAuthProps"       After="CostFinalize" Overridable="yes">NOT Installed</Custom>
+
+      <!-- Unset the property WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT to
+           hide the auto-added checkbox, if the user has not requested
+           to install the helpfile.  -->
+      <Custom Action="CA.HidePostInstallCheckboxToLaunchHelp" After="ExecuteAction">NOT &amp;F.Helpfile=3</Custom>
+
+    </InstallUISequence>
+
+
+    <InstallExecuteSequence>
+      <!-- run this CA in the beginning if uninstalling.  It shuts down the IIS Sites, to allow deletion of the DLL. -->
+      <Custom Action="CA.ShutdownIisSites"  After="CostInitialize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+
+      <!-- run this CA in the beginning if uninstalling or upgrading.  It sets the website props by reading the registry. -->
+      <Custom Action="CA.SetWebsitePropsForUninstall" After="CostFinalize">Installed</Custom>
+
+      <!-- Disable the ConfigureIIs action if we don't need it. -->
+      <!-- Notes: &amp; before a feature name evals to "feature action".  ! before a feature name evals to feature state. -->
+      <!-- ref: http://msdn.microsoft.com/en-us/library/aa368012(VS.85).aspx -->
+      <!-- -->
+      <!-- So, this condition says: skip if IIRF is not currently installed, and the F.Binary feature has NOT been selected for install, OR -->
+      <!-- if IIRF is installed (and we're uninstalling) and the F.Binary feature is not currently installed. -->
+      <Custom Action="CA.SkipConfigureIIs" After="InstallFiles">(NOT Installed AND NOT &amp;F.Binary = 3) OR (Installed AND NOT UPGRADINGPRODUCTCODE AND NOT !F.Binary = 3)</Custom>
+
+      <!-- Custom Action="CA.SkipConfigureIIs" After="InstallFiles">NOT &amp;F.Binary = 3</Custom -->
+      <!-- Custom Action="CA.SkipConfigureIIs" After="InstallFiles">(NOT Installed AND NOT &amp;F.Binary = 3) OR (Installed AND NOT UPGRADINGPRODUCTCODE AND )</Custom -->
+
+      <!-- configure extension if we need it -->
+      <Custom Action="CA.AddExtension" After="InstallFiles">NOT Installed AND &amp;F.Binary = 3</Custom>
+
+      <!-- unconfigure extension if appropriate -->
+      <Custom Action="CA.RemoveExtension" After="InstallFiles">(Installed AND NOT UPGRADINGPRODUCTCODE)</Custom>
+
+      <!-- restart IIS after uninstalling, or upgrading (iow, run MSI when IIRF is already installed. -->
+      <Custom Action="CA.StartIisSites" After="StartServices">Installed</Custom>
+
+    </InstallExecuteSequence>
+
+
+<!-- http://wix.mindcapers.com/wiki/Web_Directories -->
+<!--
+ <InstallExecuteSequence>
+    <Custom Action="ConfigureIIs" After="InstallFiles">MYCONDITION</Custom>
+ </InstallExecuteSequence>
+-->
+
+
+    <!--  http://trycatchfail.com/blog/post/2008/07/28/WiX-PermissionEx-problem-solved.aspx -->
+    <Property Id="WEB_USER"          Value="Unset" />
+    <Property Id="WEB_USER_DOMAIN"   Value="Unset" />
+    <Property Id="WEB_GROUP"         Value="Unset" />
+    <Property Id="WEB_GROUP_DOMAIN"  Value="Unset" />
+
+
+    <!-- If I don't set this, and the C.Filter1 component (and its parent feature)
+         is not installed, then I get a runtime error.  Apparently the MSI engine
+         tries to do something with IIS, even though it should be completely
+         unnecessary.  -->
+
+    <Property Id="WEBSITE_PORT" Value="999" />
+    <Property Id="WEBSITE_DESCRIPTION" Value="dummy" />
+
+
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+      <Directory Id='$(var.programFilesFolder)' Name='PFiles'>
+        <Directory Id='CompanyDir' Name='Ionic Shade'>
+          <Directory Id='INSTALLDIR' Name='IIRF 2.1'>
+
+            <Component Id='C.Binfiles' Guid="$(var.guidBinFiles)" Win64="$(var.Win64)">
+              <File Id='IIRF.dll' Name='IIRF.dll'   DiskId='1' Source='..\bin\$(var.Platform)\Release\IIRF.dll' KeyPath='yes'/>
+            </Component>
+
+
+            <!-- this is installed when the Server-wide install is selected for the filter -->
+            <Component Id='C.Filter1' Guid="$(var.guidFilter1)" Win64="$(var.Win64)">
+              <Condition>WEBSITE_DESCRIPTION = "Server"</Condition>
+              <!-- CreateFolder - included to avoid problem with missing KeyPath -->
+              <CreateFolder/>
+              <ServiceControl Id='StopStartIis1' Name='W3SVC' Start='both' Stop='uninstall' Wait='yes'/>
+
+              <!-- see http://wix.sourceforge.net/manual-wix3/iis_xsd_webfilter.htm -->
+              <!-- other props on this elt are: Description, and Flags -->
+              <iis:WebFilter Id="IirfFilter1"
+                             LoadOrder="first"
+                             Name="IIRF - Ionic ISAPI Rewriting Filter"
+                             Path="[INSTALLDIR]IIRF.dll"
+                             />
+            </Component>
+
+
+            <!-- this is installed when a particular site is selected for the filter -->
+            <Component Id='C.Filter2' Guid="$(var.guidFilter2)" Win64="$(var.Win64)">
+              <Condition>NOT WEBSITE_DESCRIPTION = "Server"</Condition>
+              <!-- CreateFolder - included to avoid problem with missing KeyPath -->
+              <CreateFolder/>
+              <ServiceControl Id='StopStartIis2' Name='W3SVC' Start='both' Stop='uninstall' Wait='yes'/>
+              <iis:WebFilter Id="IirfFilter2"
+                             LoadOrder="first"
+                             Name="IIRF - Ionic ISAPI Rewriting Filter"
+                             Path="[INSTALLDIR]IIRF.dll"
+                             WebSite='SelectedWebSite'
+                             />
+            </Component>
+
+            <!-- this allows the ISAPI Extension -->
+            <Component Id='C.AllowExtension' Guid="$(var.guidExtension)" Win64="$(var.Win64)">
+              <CreateFolder/>
+              <iis:WebServiceExtension Id="IirfService"
+                                       Description="IIRF Proxy Extension"
+                                       File="[INSTALLDIR]IIRF.dll"
+                                       UIDeletable="yes"
+                                       Allow="yes" />
+              <!--
+                  <iis:WebApplication>
+                    <iis:WebApplicationExtension
+                       Extension="iirf"
+                       CheckPath="yes"
+                       Script="yes"
+                       Executable="[INSTALLDIR]\IIRF.dll"
+                       Verbs="GET,HEAD,POST,DEBUG" />
+                  </iis:WebApplication>
+                  -->
+
+            </Component>
+
+
+            <Component Id='C.Permissions' Guid="678184c4-0556-4893-88bc-2b8ec5f3aa07" Win64="$(var.Win64)">
+              <!-- http://wix.sourceforge.net/manual-wix2/wix_xsd_webfilter.htm -->
+              <!-- set the permissions of the created folder appropriately -->
+              <CreateFolder>
+                <util:PermissionEx User="Administrators"                    GenericAll="yes"/>
+                <util:PermissionEx User="Users"                             GenericRead="yes" GenericExecute='yes' GenericWrite='no' />
+                <util:PermissionEx Domain="[WEB_USER_DOMAIN]"  User="[WEB_USER]"  GenericRead="yes" GenericExecute='yes' GenericWrite='no' />
+                <util:PermissionEx Domain="[WEB_GROUP_DOMAIN]" User="[WEB_GROUP]" GenericRead="yes" GenericExecute='yes' GenericWrite='no' />
+              </CreateFolder>
+            </Component>
+
+
+            <Component Id='C.Ini' Guid="678184c4-0556-4893-88bc-2b8ec5f3aa0e" Win64="$(var.Win64)">
+              <File Id='IirfGlobal.ini' Name='IirfGlobal.ini'   DiskId='1' Source='IirfGlobal.ini' KeyPath='yes'/>
+            </Component>
+
+            <Component Id='C.Helpfile' Guid="678184c4-0556-4893-88bc-2b8ec5f3aa0d" Win64="$(var.Win64)">
+              <File Id='chmfile' Name='IirfGuide.chm' DiskId='1' Source='..\AdminGuide\Help\IirfGuide.chm' KeyPath='yes'/>
+            </Component>
+
+            <Component Id='C.Textfiles' Guid="678184c4-0556-4893-88bc-2b8ec5f3aa0c" Win64="$(var.Win64)">
+              <File Id='License.rtf' Name='License.rtf'      DiskId='1' Source='..\License.rtf' />
+              <File Id='Readme'      Name='Readme.txt'       DiskId='1' Source='..\Readme.txt'   />
+              <File Id='Relnotes'    Name='ReleaseNotes.txt' DiskId='1' Source='..\ReleaseNotes.txt'   />
+            </Component>
+
+
+            <Component Id='C.Tools' Guid="678184c4-0556-4893-88bc-2b8ec5f3aa09" Win64="$(var.Win64)">
+              <File Id='IirfVersion.exe' Name='IirfVersion.exe' DiskId='1' Source='..\bin\$(var.Platform)\Release\IirfVersion.exe' KeyPath='yes'/>
+              <File Id='TestDriver.exe'  Name='TestDriver.exe'  DiskId='1' Source='..\bin\$(var.Platform)\Release\TestDriver.exe'/>
+              <File Id='TestParse.exe'   Name='TestParse.exe'   DiskId='1' Source='..\bin\$(var.Platform)\Release\TestParse.exe'/>
+            </Component>
+
+
+            <Component Id='C.Registry' Guid="678184c4-0556-4893-88bc-2b8ec5f3aa0b" Win64="$(var.Win64)">
+              <RegistryKey Root='HKLM' Key='Software\[Manufacturer]\IIRF'>
+                <RegistryValue Type='string'                Value=''              KeyPath='yes' />
+                <RegistryValue Type='string' Name='Version' Value='2.1 $(var.Platform)'/>
+                <RegistryValue Type="string" Name="WebSite" Value="[WEBSITE_NAME]"/>
+                <RegistryValue Type="string" Name="Path" Value="[INSTALLDIR]"/>
+              </RegistryKey>
+            </Component>
+
+
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+
+
+    <!-- Nesting WebSite under Product, Fragment, or Module results in a web site
+         "locator" record being created in the IIsWebSite table. This means that
+         the web site itself is neither installed nor uninstalled by the MSI
+         package. It does make the database available for referencing from a
+         WebApplication, WebVirtualDir or WebDir record. This allows an MSI to
+         install WebApplications, WebVirtualDirs or WebDirs to already existing
+         web sites on the machine. The install will fail if the web site does not
+         exist in these cases.
+      -->
+
+    <!-- http://wix.sourceforge.net/manual-wix2/wix_xsd_website.htm -->
+    <!-- The values mentioned here are retrieved from the Custom action, either on install or uninstall. -->
+    <iis:WebSite Id="SelectedWebSite" Description="[WEBSITE_DESCRIPTION]">
+      <iis:WebAddress Id="AllUnassigned" Port="[WEBSITE_PORT]" IP="[WEBSITE_IP]" Header="[WEBSITE_HOSTNAME]" />
+    </iis:WebSite>
+
+
+    <Feature Id='F.Complete'
+             Title='Ionic ISAPI Rewrite Filter'
+             Description='The complete package: The binary files for the ISAPI filter as well as the documentation.'
+             Level='1'
+             AllowAdvertise='no'
+             Display='expand'
+             ConfigurableDirectory='INSTALLDIR'>
+
+      <Feature Id='F.Binary'
+               Title='ISAPI DLL Files'
+               AllowAdvertise='no'
+               Level='1'
+               Description="Binary files required for URL Rewriting. This is the minimum required for IIRF to function.">
+        <ComponentRef Id='C.Binfiles' />
+        <ComponentRef Id='C.Filter1' />
+        <ComponentRef Id='C.Filter2' />
+        <ComponentRef Id='C.Permissions' />
+        <ComponentRef Id='C.Ini' />
+        <ComponentRef Id='C.Textfiles' />
+        <ComponentRef Id='C.Registry' />
+        <ComponentRef Id='C.AllowExtension' />
+      </Feature>
+
+      <Feature Id='F.Tools'
+               Title='IIRF Tools'
+               AllowAdvertise='no'
+               Level='1'
+               Description='Tools to test rulesets or verify IIRF ini files. '>
+        <ComponentRef Id='C.Tools' />
+      </Feature>
+
+      <Feature Id='F.Helpfile'
+               Title='Documentation'
+               AllowAdvertise='no'
+               Level='1'
+               Description="Operator and Administrator documentation for the ISAPI filter">
+        <ComponentRef Id='C.Helpfile' />
+      </Feature>
+    </Feature>
+
+
+    <!-- Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR"/ -->
+
+    <!-- WixUI_FeatureTree -->
+
+    <UIRef Id="IirfUI" />
+
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="View IIRF Help when setup exits" />
+
+
+  </Product>
+</Wix>

@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="5a3d3e7f-5f40-484d-a4af-2f395f94b6f2" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <introduction>
+      <!-- <autoOutline /> -->
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Example: Redirect to Secure Server</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for IIRF
+#
+
+RewriteLogLevel 1
+RewriteLog c:\inetpub\iirfLogs\iirf
+RewriteEngine ON
+StatusInquiry ON
+IterationLimit 5
+
+RewriteCond %{HTTPS} off
+RewriteCond %{SERVER_PORT} ^80$
+RedirectRule ^/(.*)$ https://host.domain/$1 [R=301]
+</code>
+
+        <para>
+          Explanation: This file has just one rule, that redirects
+          all insecure URL requests to the secure site.
+        </para>
+
+      </content>
+    </section>
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+
+

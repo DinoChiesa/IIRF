@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="3d1ea0d0-eabd-43b3-a913-de7128a74bb6" revisionNumber="1">
+
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+        <para>
+          <codeInline>RewriteHeader</codeInline> tells IIRF to set a
+          request header to a particular value, when the rule fires.
+        </para>
+
+      <autoOutline />
+    </introduction>
+
+    <section address="Usage">
+      <title>Basic Syntax and Usage</title>
+      <content>
+        <para>Syntax:
+          <code lang="ini">
+            RewriteHeader &lt;header-name&gt; &lt;pattern&gt; &lt;replacement-string&gt;   [&lt;modifiers&gt;]
+          </code>
+        </para>
+
+        <para>
+          <codeInline>RewriteHeader</codeInline> works much like the <link
+          xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule
+          directive</link>, except that it is an HTTP Header that is being
+          rewritten, and the &lt;pattern&gt; matches against the value of the HTTP
+          header specified.  The &lt;replacement-string&gt; and &lt;modifiers&gt;
+          work the same as in <codeInline>RewriteRule</codeInline>.
+        </para>
+
+        <para>
+          If you want to simply set a header unilaterally, potentially overwriting
+          any existing value, you can use a pattern of <literal>.*</literal> , to
+          match anything. I don&apos;t recommend this, because it can lead to
+          logical cycles or loops. If you want to set the header only when the
+          header is empty, then use <literal>^$</literal> as the pattern.
+        </para>
+
+        <para>
+          Back-referencess and Server variables can be used in the replacement
+          string, just as with <link
+          xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule</link> or
+          <link
+          xlink:href="c699ba60-fe15-4e90-ac4b-74598b5c352e">RedirectRule</link>.
+        </para>
+
+        <para>
+          The name of the header to set can be post-fixed with a colon,
+          or not.  The use of the colon can be a helpful visual reminder
+          in the ini file that this should be an HTTP Header.
+        </para>
+
+        <para>
+          Example: <code lang="ini">
+            RewriteCond  %{QUERY_STRING}  ^$
+            RewriteHeader X-Query-Is-Empty: ^$ YaHuh [L]
+          </code>
+        </para>
+
+        <para>
+          The rule above says to set the Header "X-Query-Is-Empty" to the value
+          "Yahuh" when the server variable QUERY_STRING is empty, and when When the
+          "X-Query-Is-Empty" header is empty.  When "X-Query-Is-Empty" is empty, it
+          matches ^$, which implies beginning-of-line followed by end-of-line.  Only
+          when this pattern matches, is the header rewritten.  This ensures that
+          existing values in the "X-Query-Is-Empty" header are not obliterated.
+        </para>
+
+        <code lang="ini">
+          RewriteCond %{QUERY_STRING} ^.+$
+          RewriteHeader X-Query-Is-Not-Empty: ^$ YaHuh [L]
+        </code>
+
+        <para>
+          The rule above says to set the Header "X-Query-Is-Not-Empty" to the value
+          "Yahuh" when the server variable QUERY_STRING is NOT empty, and when
+          the new header <legacyItalic>is</legacyItalic> empty.
+        </para>
+
+        <para>
+          <codeInline>RewriteHeader</codeInline> can be thought of as a generalization of
+          the <codeInline>RewriteRule</codeInline>
+            directive. <codeInline>RewriteHeader</codeInline> can set any HTTP Header, including URL, while
+           <codeInline>RewriteRule</codeInline> works only to rewrite the URL.
+        </para>
+
+        <alert class='note'>
+          According to <token>RFC2616</token>, HTTP Header names are case-insensitive,
+          but in general, the values of HTTP headers are not case-insensitive.
+        </alert>
+      </content>
+    </section>
+
+        <section address="Blanks">
+          <title>Setting Headers to Blank Values</title>
+          <content>
+            <para>
+              Setting a custom request header with
+              the <codeInline>RewriteHeader</codeInline> directive to a blank value
+              causes the header to be deleted or removed, or, if the header had never
+              been set, then it causes no discernable effect.  A blank value can result,
+              for example, if you use a server variable reference as the replacement
+              string, and that server variable is blank.  A good example is
+              the <codeInline>REMOTE_USER</codeInline> variable, which can be blank when
+              the incoming request is unauthenticated.
+              Example: <code lang="ini">
+                RewriteHeader X-Remote-User ^$ %{REMOTE_USER}
+              </code>
+            </para>
+
+            <para>
+              If <codeInline>REMOTE_USER</codeInline> is blank, then the line above will
+              not set the header <codeInline>X-Remote-User</codeInline>, if the rule applies.
+            </para>
+          </content>
+        </section>
+
+        <section address="ServerVariables">
+          <title>Request Headers and Server variables</title>
+          <content>
+            <para>
+              Custom request headers that you set with
+              the <codeInline>RewriteHeader</codeInline> directive can later be
+              retrieved via server variable references. For each request header, IIS
+              publishes a server variable with a name derived from the header. The
+              server variable name prefixes <codeInline>HTTP_</codeInline> and replaces
+              each dash with underscore. For example, if you set
+              the <codeInline>X-Remote-User</codeInline> header in
+              a <codeInline>RewriteHeader</codeInline> directive, you will later be able
+              to retrieve the value of the header via a server variable reference like
+              so: <codeInline>%{HTTP_X_REMOTE_USER}</codeInline>.
+            </para>
+
+<!--
+            <para>
+              As a concrete example, consider the
+              <literal>REQUEST_URI</literal> variable that is present in the Apache HTTP
+              server.  It is defined to contain the full request URI -
+              the query path and query string together in one string.
+              Oddly, there is no single server variable that provides
+              this in IIS. An application would need to combine
+              the value of <literal>PATH_INFO</literal>
+              and  <literal>QUERY_STRING</literal>. But, it is possible
+              to write an IIRF rule that sets an appropriate HTTP
+              request header, like so:
+              <code lang="ini">
+                RewriteCond %{HTTP_X_REQUEST_URI}  ^HTTP_X_REQUEST_URI$
+                RewriteHeader X-REQUEST-URI: .*  %{PATH_INFO}  [QSA]
+              </code>
+            </para>
+
+            <para>
+              What this does: it applies the regex
+              <codeInline>^HTTP_X_REQUEST_URI$</codeInline> to the value of
+              the <literal>HTTP_X_REQUEST_URI</literal> server variable; this will
+              match, and the condition will evaluate to <literal>true</literal>,
+              when the server variable in question is not set at all. If the
+              condition evaluates to <literal>true</literal>, then
+              the <codeInline>RewriteHeader</codeInline> directive is used to set
+              the header corresponding to that server variable, to the value of
+              the <literal>PATH_INFO</literal> server variable.  The application
+              of the <codeInline>[QSA]</codeInline> modifer means the query
+              string, if any, will be applied to the result of the
+              replacement. Used at the top of an ini file, all incoming requests
+              will get the <literal>HTTP_X_REQUEST_URI</literal> server variable
+              set to the full URI of the request, including the query path and the
+              query string, just like
+              the <literal>REQUEST_URI</literal> variable in Apache.
+            </para>
+-->
+          </content>
+        </section>
+
+        <section address="Caution">
+          <title>Take care with RewriteHeader</title>
+          <content>
+
+            <para>
+              You should be careful with <codeInline>RewriteHeader</codeInline>
+              directives.  When any rule, including
+              a <codeInline>RewriteHeader</codeInline>, matches the incoming request,
+              the rule is applied, and evaluation of the URL Request starts over again
+              with the current ruleset, using the existing request, subject to the
+              iteration limit.  For information on this, see
+              the <link xlink:href="2c021ae7-77a1-46d5-83d8-2aac5bad5adb">IterationLimit</link>
+              directive.
+            </para>
+
+            <para>
+              What this means is, it is easy to inadvertently "mask"
+              your <codeInline>RewriteRule</codeInline> directives with a poorly
+              constructed or incorrectly placed <codeInline>RewriteHeader</codeInline>
+              directive. For example, consider this rule:
+              <code lang="ini">
+                RewriteHeader X-Remote-User .* %{REMOTE_USER}
+              </code>
+            </para>
+
+            <para>
+              In English, this says: set the X-Remote-User header, regardless of
+              its current value, to the value of the
+              <codeInline>REMOTE_USER</codeInline> server variable. This rule
+              will always match, and will thus result in a loop in your
+              rules. To prevent that, use a more discriminating pattern, such as
+              <code lang="ini">
+                RewriteHeader X-Remote-User ^$ %{REMOTE_USER}
+              </code>
+              The above sets the header only when it has not already been set.
+            </para>
+
+
+          </content>
+        </section>
+
+
+
+    <relatedTopics>
+      <link xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule </link>
+      <link xlink:href="c699ba60-fe15-4e90-ac4b-74598b5c352e">RedirectRule</link>
+    </relatedTopics>
+
+  </developerConceptualDocument>
+
+</topic>
+
+
+
+
+

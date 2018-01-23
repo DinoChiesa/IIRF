@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="9a6b3c03-fd72-4769-bd09-b5464d11e4bd" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <!--
+        <summary>
+          <para>Optional summary abstract</para>
+        </summary>
+        -->
+    <introduction>
+      <!-- Uncomment this to generate an outline of the section and sub-section
+           titles.  Specify a numeric value as the inner text to limit it to
+           a specific number of sub-topics when creating the outline.  Specify
+           zero (0) to limit it to top-level sections only.  -->
+      <!-- <autoOutline /> -->
+      <para>
+      </para>
+    </introduction>
+    <!-- Add one or more top-level section elements.  These are collapsible.
+         If using <autoOutline />, add an address attribute to identify it
+         and specify a title so that it can be jumped to with a hyperlink. -->
+    <section address="Section1">
+      <title>Support Policy</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+        <para>The policy is <phrase>there is no support.</phrase>
+        </para>
+
+        <para>
+          IIRF is free and open-source.  There&apos;s no "official"
+          support for it, at least not from me.  I make a good faith effort
+          to keep up on
+          <externalLink>
+            <linkText>the IIRF discussion list</linkText>
+            <linkAlternateText>go to the IIRF Forum</linkAlternateText>
+            <linkUri>http://IIRF.codeplex.com/Thread/List.aspx</linkUri>
+          </externalLink>, but I offer no service-level guarantees.
+        </para>
+
+        <para>
+          If you need help, start by perusing the forum to find some
+          answers. Use the search feature to search. Chances are,
+          someone else has already asked the question you have, and
+          gotten a reasonable answer. I try to be thorough and clear in
+          my answers. There&apos;s a good history there now, to be
+          searched.
+        </para>
+
+        <para>
+          Also, please
+          <externalLink>
+            <linkText><phrase>read the fine manual</phrase></linkText>
+            <linkUri>http://en.wikipedia.org/wiki/RTFM</linkUri>
+          </externalLink>. (Maybe that
+          is redundant for someone reading the manual right now?)
+          I&apos;ve tried to be thorough and clear.  You will likely
+          find the answer you need
+          in this documentation. Plus, it is sooo enjoyable to read
+          technical documentation.  Even if you don&apos;t find the
+          answer you seek, think of the pleasure you&apos;ll derive from
+          just immersing yourself in documentation! :)
+        </para>
+
+      </content>
+    </section>
+
+    <section address="Section2">
+      <title>Some Modest Suggestions</title>
+      <content>
+        <para>
+          On the topic of support, I&apos;d like to appeal to your sense
+          of good will. I wrote IIRF and then open-sourced it,
+          willingly.  I hope you all get some benefit from it.  If you
+          have gotten benefit, you might feel the urge to "give back".
+          Here are some good ways to do that.
+        </para>
+
+        <list class='bullet'>
+          <listItem>
+            Participate in the
+          <externalLink>
+            <linkText>online forum</linkText>
+            <linkAlternateText>Go to the IIRF forum on CodePlex</linkAlternateText>
+            <linkUri>http://iirf.codeplex.com/Thread/List.aspx</linkUri>
+          </externalLink>.  Offer help when you can, ask for
+            help when you need it.  Be patient and clear.  We can
+            all help each other.
+          </listItem>
+          <listItem>
+            If you&apos;ve solved a problem with IIRF, post your INI files
+            and an explanation of what you did. Maybe someone else will benefit.  You
+            can post &apos;em on your blog, or on the IIRF forum.
+          </listItem>
+          <listItem>
+          <externalLink>
+            <linkText>Post a review of IIRF</linkText>
+            <linkAlternateText>Post a review of IIRF</linkAlternateText>
+            <linkUri>http://iirf.codeplex.com/releases#ReviewsAnchor</linkUri>
+          </externalLink> on the CodePlex site.
+          </listItem>
+          <listItem>
+            If you&apos;re a coder, and you have the inclination and
+            aptitude, look through the IIRF source. Examine it and if
+            you find problems, or if you can make improvements or add
+            new features,
+          <externalLink>
+            <linkText>submit a patch</linkText>
+            <linkAlternateText>Submit a patch for IIRF</linkAlternateText>
+            <linkUri>http://iirf.codeplex.com/SourceControl/UploadPatch.aspx</linkUri>
+          </externalLink>.  I&apos;ll be very glad if you did.
+          </listItem>
+          <listItem>
+            If you get value from IIRF, consider
+            <link xlink:href="2a84f55d-b0ae-422a-9071-a31e35b7d3e3">a donation</link>.
+          </listItem>
+        </list>
+      </content>
+    </section>
+
+    <relatedTopics/>
+  </developerConceptualDocument>
+</topic>
+

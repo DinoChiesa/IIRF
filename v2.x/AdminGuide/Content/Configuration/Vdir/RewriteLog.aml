@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="f370a131-d13c-4d01-ab91-2f629641954e" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <!-- NOTE: This is similar to the API reference documentation which is
+         produced by the reference build.  You should probably just use that
+         instead of this. -->
+
+    <introduction>
+      <!-- <autoOutline /> -->
+      <para>
+      </para>
+    </introduction>
+
+
+    <section address="Section1">
+      <title>RewriteLog</title>
+      <content>
+        <para>This directive sets the logfile name.
+        </para>
+        <para>
+          The value should specify a <phrase>stub</phrase> filename.  It
+          may be either fully-qualified, or a relative path.  The name
+          specified in the ini file is used as a stub: to this stub, the
+          filter appends the process ID (also known as the 'pid') and
+          ".log" to the provided name to get the final filename.  This
+          is necessary to allow for multiple the worker processes that
+          may run in IIS v6 and later versions.
+        </para>
+
+        <para>
+          Example of a fully-qualified path: <code lang="ini">
+            RewriteLog c:\temp\iirf
+          </code>
+          This results in an IIRF log file with the name
+          <literal> c:\temp\iirf.1672.log </literal> if the process ID
+          of the w3wp.exe is 1672.
+        </para>
+
+        <para>
+          Example of a relatively-qualified path: <code lang="ini">
+            RewriteLog ..\logs\iirf
+          </code>
+          This results in an IIRF log file with the name
+          <literal> c:\wwwroot\logs\iirf.1672.log </literal> if the process ID
+          of the w3wp.exe is 1672, and the document root is
+          c:\wwwroot\appl1.
+        </para>
+
+        <para>Note: You will get multiple logfiles if you have multiple worker
+          processes.
+        </para>
+
+        <para>
+          The file will be created by the ISAPI filter when it loads the
+          ini file, which may be when it handles its first URL, or when
+          it detects a change in the ini file.  If the file path is not
+          valid, or if the ISAPI does not have permissions to write to
+          the specified file path, then no logging will be generated.
+          If you expect to see a logging file and don't see one, check
+          your paths and permissions.
+        </para>
+
+        <alert class="note">
+          If you do not include a RewriteLog directive in your ini file,
+          then you will get no logging at all.  This may be what you
+          want. But it probably isn&apos;t!
+        </alert>
+
+        <para>
+          The RewriteLog directive accepts an argument that includes
+          spaces, in the directory path or the file name stub.  Leading and
+          trailing spaces are stripped.  For example:
+          <code lang="ini">
+            RewriteLog     c:\Websites and Stuff\iirf1.out
+          </code>
+          ...gives a net logfilename of
+          <literal>c:\Websites and Stuff\iirf.out.1882.log</literal> if
+          the process ID of the w3wp.exe is 1882.
+        </para>
+
+        <alert class="note">
+            In the v1.2 versions of IIRF, it was recommended that you
+            should  specify a different directory for the log file than that
+            which contains the .ini file. This is no longer a
+            requirement in IIRF v2.0.
+        </alert>
+
+        <para>
+          As your server runs, IIRF will continue to emit log messages.
+          You should periodically check disk space to insure sufficient
+          space for the IIRF logs.  The same applies to other logs, like
+          the IIS log itself. This is just one more set of log files you
+          will need to manage.</para>
+
+      </content>
+    </section>
+
+
+    <relatedTopics>
+           <link xlink:href="9bde2e1d-f26b-480f-8d75-062cd06cf795"/>
+    </relatedTopics>
+
+  </developerConceptualDocument>
+
+</topic>
+
+

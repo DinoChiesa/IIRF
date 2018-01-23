@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="e4088625-c729-4a3f-9e1a-19b2edda2e19" revisionNumber="1">
+
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+        <para>
+          <codeInline>ProxyPassReverse</codeInline> tells IIRF to
+          perform substitutions in
+          the <literal>Content-Location</literal>
+          and <literal>Location</literal> headers in responses received
+          from proxied requests, before returning the response to the
+          original client.
+        </para>
+
+      <autoOutline />
+    </introduction>
+
+    <section address="Usage">
+      <title>Basic Syntax and Usage</title>
+      <content>
+        <para>Syntax:
+          <code lang="ini">
+            ProxyPassReverse [&lt;path&gt;] &lt;url&gt;
+          </code>
+        </para>
+
+        <para>
+          The &lt;path&gt; is a virtual path.  The &lt;url&gt; is a
+          partial URL for a remote server.
+        </para>
+
+        <para>
+          When this directive is present in the ini file, IIRF will
+          transform the <literal>Content-Location</literal>
+          and <literal>Location</literal> headers in responses received
+          from proxied requests, in this way:  If any value for these headers begins
+          with the value specified in the  &lt;url&gt; parameter in
+          a <codeInline>ProxyPassReverse</codeInline> directive, then
+          the value specified in &lt;url&gt; is replaced with the value
+          specified in &lt;path&gt;.
+        </para>
+
+        <para>
+          If no value is specified in &lt;path&gt;, then the value in
+          &lt;url&gt; is simply removed from the beginning of the HTTP header in
+          question.
+        </para>
+
+        <para>
+          This transformation is done only on response headers, only on
+          those headers specified above, and only on responses for
+          requests that are proxied.  IIRF does not transform URL
+          references inside HTML pages. This means that if the content
+          received from a proxied request contains absolute URL
+          references, they will be sent back to the original client
+          unchanged, exposing the "hidden" name of the proxy server.  To
+          avoid this problem, insure that proxied content doesn&apos;t
+          embed absolute URL references.
+        </para>
+
+        <para>
+          This transformation is essential
+          when <link xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link>
+          is in use, and when the proxied site may issue HTTP Redirect
+          responses (return code 300-399) or HTTP Created responses
+          (return code 201) that
+          embed <literal>Content-Location</literal> response headers.
+        </para>
+
+        <para>
+          Example: <code lang="ini">
+
+            # proxy the www.php.net site
+            ProxyPass          ^/(.*)$   http://www.php.net/$1
+            ProxyPassReverse   /         http://www.php.net/
+          </code>
+        </para>
+
+        <para>
+          The above configuration allows proxying of the www.php.net
+          site.  The site responds with an HTTP 302 (Redirect) when the query
+          path is not a known keyword in PHP.  This 302 redirect is
+          correctly transformed to a local URL via
+          the <codeInline>ProxyPassReverse</codeInline> directive, which
+          keeps the name of the proxied server obscured from clients.
+        </para>
+
+        <para>
+          But, the www.php.net site embeds a this tag in the emitted
+          HTML:
+
+          <code lang="ini">
+            &lt;base href="http://www.php.net/manual-lookup.php" /&gt;
+          </code>
+
+          This means that anchor tags in the HTML will refer to the
+          <literal>www.php.net</literal> site.  This problem is unavoidable, without
+          transforming the returned HTML, or modifying the way
+          the <literal>www.php.net</literal> site works.   IIRF does not perform the
+          former function, and the latter requires a manual fix.
+        </para>
+
+
+        <alert class="note">
+          The <codeInline>ProxyPassReverse</codeInline> directive does
+          not "count" as a rule, in the totals provided by the
+          /iirfStatus page.
+        </alert>
+
+      </content>
+    </section>
+
+
+        <section address="RewriteBase">
+          <title>ProxyPassReverse and RewriteBase</title>
+          <content>
+            <para>
+              The <link xlink:href="bc80da98-83e2-4d22-8b71-2fd116e2610a">RewriteBase</link>
+              directive is used to supply an implicit "base" URL to be
+              used on all test patterns in rules in a vdir-specific ini
+              file.
+            </para>
+
+            <para>
+              Using the <codeInline>RewriteBase</codeInline> directive
+              will also cause the base url path to be prepended to any
+              path substituted with
+              the <codeInline>ProxyPassReverse</codeInline>.
+              The following example will help explain.
+            </para>
+
+            <para>
+              Suppose these rules are in place in a virtual directory
+              located at the root virtual path: <code lang="ini">
+
+            RewriteBase OFF
+            # proxy requests for http://server/manage/* to an internal server
+            ProxyPass          ^/manage/(.*)$   http://iuwow12:81/manage
+            ProxyPassReverse   /manage          http://iuwow12:81/manage
+              </code>
+            </para>
+
+
+            <para>
+              What the <codeInline>ProxyPassReverse</codeInline> says is, any
+              <literal>Location</literal> header in a 301 response received from
+              proxied requests, will get transformed - the internal server URL
+              will be replaced with a URL that specifies the IIRF server,
+              preserving the privacy of the proxied server.
+              Because the <codeInline>RewriteBase</codeInline> directive
+              (whether <literal>ON</literal> or <literal>OFF</literal>)
+              has no practical effect when used at the vdir root,
+              there is no further complication.
+            </para>
+
+            <para>
+              Now, suppose similar rules are used in a virtual directory
+              accessible via the virtual path of /vdir1:
+              <code lang="ini">
+
+            RewriteBase OFF
+            # proxy requests for http://server/vdir1/manage/* to an internal server
+            ProxyPass          ^/vdir1/manage/(.*)$   http://iuwow12:81/manage
+            ProxyPassReverse   /vdir1/manage          http://iuwow12:81/manage
+              </code>
+            </para>
+
+            <para>
+              The results are similar to the prior example. Once again,
+              there is no need to consider the "base" url, because
+              <codeInline>RewriteBase</codeInline>
+              is <literal>OFF</literal>.
+              Supposing, though,
+              that you turn on <codeInline>RewriteBase</codeInline>, then you
+              will need to modify the rules accordingly.
+              <code lang="ini">
+
+            RewriteBase ON
+            # proxy requests for http://server/vdir1/manage/* to an internal server
+            ProxyPass          ^/manage/(.*)$   http://iuwow12:81/manage
+            ProxyPassReverse   /manage          http://iuwow12:81/manage
+              </code>
+            </para>
+
+            <para>
+              The url "base" is stripped from the URL path before
+              applying the test pattern in the <codeInline>ProxyPass</codeInline> rule.  Also,
+              the appropriate headers in any proxied responses will be transformed
+              correctly.
+            </para>
+
+          </content>
+        </section>
+
+
+
+    <relatedTopics>
+      <link xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link>
+      <link xlink:href="2a84f55d-b0ae-422a-9071-a31e35b7d3e3">Please Donate</link>
+    </relatedTopics>
+
+  </developerConceptualDocument>
+</topic>
+

@@ -1,0 +1,483 @@
+Fri, 11 Sep 2009 
+
+v1.2.16 R8 -  11 Sep 2009 
+
+1. RewriteHeader was broken.  (workitem 24619)
+
+
+
+
+v1.2.16 R7 -  18 Aug 2009
+
+1. default to having an iirfStatus if no logfile is read.
+
+
+
+v1.2.16 R6 -  29 July 2009
+
+1. workitem 23639 - RedirectRule was not working properly without [R] modifier
+
+2. workitem 23640 - statusUrl works only if there is 1 or more rules
+
+
+
+
+v1.2.16 R5 -  16 July 2009
+
+1. [G] and [NC] modifiers
+
+
+
+
+v1.2.16 R4 -  12 July 2009
+
+1. bug in time formatting for IIRF Status endpoint
+
+
+
+v1.2.16 R3 -  12 July 2009
+
+1. workitem 23459: StatusUrl directive
+
+2. workitem 23458: RewriteEngine directive
+
+
+
+v1.2.16 -  8 July 2009
+
+1. workitem 19486: implement the [QSA] rule modifier. 
+
+2. CHM helpfile.
+
+
+
+
+v1.2.15 R8 -  8 July 2009
+
+1. For a replacement string that includes a $ reference which does not
+   exist, the filter now replaces it with nothing, rather than leaving
+   the reference there.  
+
+
+v1.2.15 R7 -  6 July 2009
+
+1. Corrected the problem during termination where the filter can wait
+   forever on a stuck thread.   workitem 21578. 
+
+2. workitem 15389. apply a Content-Length header and Connection: close on 
+   W2000 and IIS5/6. 
+
+
+
+v1.2.15 R6 -  5 July 2009
+
+1. workitem 23245 - less logging on false alarms in
+   ReadDirectoryChangesW.  This lessens the problems associated with
+   putting the  logfile in the same directory as the ini file, but this
+   is still not recommended. 
+
+2. corrected a problem with buffer overrun in GenerateReplacementString().
+   Thanks to cfneedham for reporting this.
+
+3. handled case where ctx == null in GetServerVariable().
+   Thanks to cfneedham for reporting this.
+
+
+
+v1.2.15 R5 -  1 December 2008
+
+1. Fixed RewriteHeader to omit the colon.  
+
+
+v1.2.15 R3 -  24 October 2008
+
+1. bug fixes for workitems 19135, 19136, 19137, and 19175.
+   Having to do with Long URLs (beyond 2048 characters) on WinXP. 
+
+
+v1.2.15 - 14 October 2008
+
+1. workitem 17391: introduced a special replacement pattern, '-', which,
+   when used with a RewriteRule directive tells IIRF to not rewrite the
+   URL.  You can use this with the [L] flag to eliminate certain URL
+   patterns from consideration by rules appearing later in the ini file.
+
+2. RewriteHeader, a new directive allowing the setting of arbitrary
+   REQUEST headers according to the incoming URL.
+
+3. new directive: RedirectRule.  
+   This is to replace the use of the RewriteRule with the [R] flag. 
+   The goal is to lessen confusion about the meaning of the [R] flag and
+   the difference between redirect and rewrite. 
+   If you turn off StrictParsing, you can use RewriteRule with a [R]
+   flag, continuing on with the pre-v1.2.15 behavior and 
+   kinda like mod_apache.  
+
+4. new directive: StrictParsing.  Can turn ON or OFF. Default is ON.
+
+5. Updated the testdriver to allow the sampleurls.txt file to have
+   "Expected result".  This allows for nicer reporting of test results.
+   Handy for developing rule sets.
+
+6. Now uses dynamically-allocated buffers for log messages.  Also a
+   special invalid_param_handler routine for the case where the buffer
+   passed to sprintf_s is too small.  (Should rarely happen).  And,
+   finally, insert a call to _CrtSetReportMode() to eliminate the popup
+   of a debug dialog box when a sprintf_s() call reaches a buffer
+   limit. 
+
+7. workitem 17227: bug fix: the back-ref flag character was made
+   changeable in v1.2.14, but was not set, initially.  This fix makes sure
+   it is set explicitly, to '%'.  
+
+8. workitem 17299: Filter Crash when referencing non-existent match at
+   end of replacement string.  IF you have a $5 and there is no fifth 
+   substring, the filter was crashing.  It no longer does.
+
+9. improved log messages while reading the ini file. 
+   Better warnings, clearer messages.
+
+
+
+------------------------------------------------------------------
+
+v1.2.14
+
+1. Fixed a bug where the case-folding flag was a backslash,
+   resulting in bad case folding for %{REQUEST_FILENAME} in a
+   RewriteCond, for example.  The new case-folding flag
+   character is #. 
+
+2. Fixed a bug where a string like %100 (with a subscript out of
+   range) in a replacement string caused the filter to crash. 
+
+
+------------------------------------------------------------------
+
+v1.2.13
+
+1. fixed a minor bug in log message formatting where the code was using
+   sizeof(message[0])/sizeof(message) instead of 
+   sizeof(message)/sizeof(message[0]). 
+   This was not a buffer overflow problem, because the code uses
+   safe string routines. But it meant that log messages were not
+   properly formatted.
+
+2. Added Case Conversion in substitution string. Cool!
+
+3. Compiled with PCRE v7.6, which fixes several security issues
+   with PCRE. 
+
+4. Corrected linker options to prevent conflicting libraries
+   (CMT). 
+ 
+------------------------------------------------------------------
+v1.2.12a
+1. added handling to allow escaping of % character in the
+   replacement string.  This would allow a replacement string
+   to include %26, for example, to pass an ampersand.  %%
+   escapes a %, and $$ escapes a $.   This was work item 9910.
+
+v1.2.12b
+
+2. workitem 9858.  Fixed a memory leak which occurred when a chain of
+   RewriteCond's evaluated to false.  
+   http://www.codeplex.com/IIRF/WorkItem/View.aspx?WorkItemId=9858
+
+v1.2.12c
+
+3. changed LogMsg() values for various messages to allow LogLevel
+   setting of 1 to be used on high-volume websites.
+
+4. memory leak in ReplaceServerVariables.  Previously had never
+   free'd myCopy.  This is now fixed. See work item 9204. 
+   http://www.codeplex.com/IIRF/WorkItem/View.aspx?WorkItemId=9024 
+   and also 10528:
+   http://www.codeplex.com/IIRF/WorkItem/View.aspx?WorkItemId=10528
+
+5. Default compile is now /O2, for faster execution and smaller
+   memory consumption. 
+
+v1.2.12d
+
+6. changed diagnostics in GetServerVariable_AutoFree() to handle
+   case where the server var is not set yet.  This is to comply
+   with URL normalization recommendations for IIS6 and 5.  First
+   we try the IIS6 way, which will give us no joy on IIS5. The 
+   diagnostic (log) message now reflects this. 
+ 
+
+------------------------------------------------------------------
+v1.2.11
+
+1. fixed a bug with handling of the pattern when dealing with
+   $10 or above in the replacement string. (skipping the second
+   digit of the number).
+
+2. Fixed a bug where old values of OriginalUrl and RequestMethod
+   were hanging around in context.  This fix involved re-working
+   logic in onUrlMap (thanks to rdlejo). 
+
+3. included support for a new directive:  RewriteFilterPriority ,
+   which sets the filter priority.  Check the readme for
+   details. This is helpful for sites that have PHP or other
+   ISAPIs that require IIRF to be set to HIGH priority.
+
+4. added support for including server variables in the
+   replacement pattern for a RewriteRule.  eg %{QUERY_STRING} in
+   the replacement pattern embeds the query string into the
+   output (rewritten) URL.
+
+v1.2.11c:
+
+5. added lmiller's fix to support https in redirections. Now we
+   redirect using the same protocol as the original request,
+   rather than redirecting only to http://
+
+   IIRF now logs the priority level as a string in addition to the
+   numerical constant.
+
+v1.2.11d:
+
+6. Corrected the makefile to remove unnecessary dependency on
+   $(PSDK)\lib\AdvAPI32.Lib .  Previously this library was used
+   for RegOpenKeyEx(), but since v1.1, IIRF has used an ini
+   file, not the registry, for settings.
+
+7. The RewriteLog directive now supports logfile (stub) names
+   that include spaces.  Leading and trailing spaces are
+   stripped.  This was issue 8433 on Codeplex.com/IIRF.
+
+
+------------------------------------------------------------------
+v1.2.10
+
+1. It is now possible to chain multiple RewriteCond statements
+   together using logical OR or logical AND operations. 
+
+2. RewriteCond now supports the special patterns: -d, -f, -s and
+   their negations (prepend with !). These test if a directory
+   exists, a file exists, and if a file is of non-zero size,
+   respectively.
+
+3. IsDuplicateRule() incorrectly flagged as duplicates, two
+   RewriteRules that had different RewriteCond's.  This is now
+   corrected, and handles chained RewriteCond's.
+
+4. Combining modifier flags on a RewriteRule wasn't really
+   working, due to errors in parsing logic. This is now
+   corrected.
+
+5. The minimum value for IterationLimit is now 1 (changed from
+   8). 
+
+6. Fixed some log statements (for loglevel >=4) which were
+   overflowing because of insufficient buffer sizes.  
+
+
+------------------------------------------------------------------
+v1.2.9
+
+1. Ha ha ha !  Contrary to the release notes, I didn't actually
+   implement the [U] flag in v1.2.8.  However, it is now
+   implemented in 1.2.9.  The use of the [U] flag not only sets
+   the HTTP_X_REWRITE_URL Server Variable, but also tells IIS to
+   log the original, pre-rewrite URL in the IIS log file.  This
+   is known as "unmangling" the URL.  Essentally the
+   search-engine friendly URLs (pre-rewrite) get logged in the
+   IIS logs.  Please check the README for details on the [U]
+   flag. 
+
+
+------------------------------------------------------------------
+v1.2.8
+
+1. Implemented additional modifier flags: [NF] [F] [L] [U] [I],
+   and also an expansion of the existing [R] flag (added in
+   1.2.4) to include [R=code], to support 404 (Not Found), 403
+   (Forbidden), and additional redirect codes beyond 302.  Also
+   added some tests to exercise and demonstrate these modifier
+   flags.
+
+2. reverted to fopen() rather than fopen_s() for the ini
+   file in the filter, because fopen_s() implies exclusive
+   access to the ini file, and this was failing when the ini
+   file was held open in a text editor.  I had moved to
+   fopen_s() because fopen() is deprecated in vc8, for security
+   reasons.  But shared access (fopen()) is particularly useful
+   when iteratively configuring the ini file: set the ini file,
+   then watch it reload, test the urls, etc. So back to fopen()
+   it is.  This is only for the ini file, not for the logfile. 
+
+   Because I use the old (deprecated) library routine, there is
+   a compiler warning when you build IIRF.
+
+3. Corrected a log buffer formatting error.  When detecting a
+   change in a file, the name of the file was sometimes not
+   correct - due to lack of proper null-termination.  
+
+4. Inserted validation checks and better logging for
+   MaxMatchCount and IterationLimit directives. 
+
+5. Inserted a check of the log file directory specified by the
+   RewriteLog directive.  If the log file directory is the same
+   as the ini file directory, IIRF logs a WARNING message which
+   advises you to not do this.  See the readme for more details
+   on why you don't want to do this.
+
+6. Corrected a bug where there is no RewriteLog directive in
+   the ini file.  The code was testing for a null log file name =="",
+   rather than =='\0'.  This meant the app was trying to open a
+   file with no name, for logging.  IIRF no longer does this. 
+
+------------------------------------------------------------------
+v1.2.6
+
+1. removed the newline from log messages - which was introduced when
+   converting to the ctime_s() routine with the change to ms vc8.
+
+2. swapped from fopen_s() to _fsopen() for the log files.  This
+   allows others to read the logfile while it is being written.  
+   fopen() also does this, but the behavior of fopen_s() is different.
+
+3. AwaitIniChangeAndReinit(): raised the log level to 4, for
+   logging messages when detecting a change in a file. Changes
+   can occur frequently and generally we don't want to hear
+   about them in the logfile, unless we are troubleshooting the
+   file watcher mechanism itself.  For changes in the actual ini
+   file, that log level is still "1", because it is generally an
+   event of interest.
+
+
+------------------------------------------------------------------
+v1.2.5
+
+1. Compiled on MS VC8, the C++ compiler that ships with Visual
+   Studio 2005. Changed makefiles to do this. Also compiled
+   with Visual-C++ 2005 Express, the free version of Visual C++.
+
+2. Replaced all instances of deprecated CRT routines with the
+   _s (secure) versions.  These include _itoa_s, strncpy_s,
+   sprintf_s, fopen_s, strtok_s, and numerous others.
+
+3. Packaged up PCRE-5.0 differently in the zip archive, to make 
+   building easier. 
+
+
+------------------------------------------------------------------
+v1.2.4
+
+1. Implemented the [R] modifier for redirection (HTTP 302).
+   Added a test directory to demonstrate redirection.
+
+2. Fixed a really bad design in the TestDriver that prevented
+   it from ever exiting.  What was I thinking here? 
+
+3. Modified the output messages generated by TestDriver.exe.
+   There is now additional text that indicates REWRITE or
+   REDIRECT as appropriate. 
+
+4. Also modified the LogMsg() routine so that log messages are not
+   duplicated duplicated when run from the TestDriver.exe. 
+
+------------------------------------------------------------------
+v1.2.3
+
+1. Corrected a race condition on exit, having to do with the
+   inifile Watcher thread.  This involved a change to the
+   CreateFile() call which opens the directory for
+   ReadDirectoryChangesW.  The CreateFile() now  passes
+   FILE_FLAG_OVERLAPPED to allow async operations.  When the
+   ISAPI is terminating (DLL_PROCESS_DETACH), the main thread
+   closes the dir handle, which causes    ReadDirectoryChangesW
+   to wake up in the inifile Watcher thread.  The thread then
+   exits properly. 
+
+2. Corrected a couple of string pointer manipulation problems in
+   ReplaceServerVariables().  These bugs were causing garbage to
+   sometimes appear in the output of RewriteCond test
+   strings. This sometimes caused RewriteCond to evaluate
+   incorrectly.  
+
+
+
+------------------------------------------------------------------
+v1.2.2
+
+1. Added more flexibility to the TestDriver, so that you can
+   organize tests into multiple independent directories.
+
+2. Added some tests to demonstrate techniques.  See the tests subdirectory.
+
+3. changed the makefile to compile with /Zi, which includes
+   debug information in the executable image. 
+
+
+------------------------------------------------------------------
+v1.2.1
+
+1. The RewriteCond was obliterating matches for the associated
+   RewriteRule.  This is fixed now. 
+
+2. Updated the readme with additional examples. Fixed a few
+   errors in the readme as well (stale info about reading
+   logging settings from Registry, etc).
+  
+
+
+------------------------------------------------------------------
+v1.2
+
+1. The filter watches for changes in the ini file, and
+   re-initializes when the ini file changes. 
+
+
+
+------------------------------------------------------------------
+v1.1
+
+
+1. The Readme doc stated that the directives in the ini file
+   were case-sensitive.  They are not.  So 
+
+     ReWriteRule 
+
+   is the same as 
+     RewriteRule
+
+   is the same as 
+     REWRITERULE
+
+
+2. A new directive, RewriteCond, is now supported.  See the
+   Readme doc for how to use it.
+
+
+3. Logging settings moved from the registry to the ini file.
+   RewriteLog and RewriteLogLevel are the directives.  (not case
+   sensitive)
+
+
+4. The Logfilename specified in the ini file is used as the
+   rootname, this filter appends the pid and ".log" to the
+   provided name to get the final filename.  This is necessary
+   for multiple worker processes in IIS6.  Example: 
+
+   RewriteLog c:\temp\iirf
+
+   gives a net logfilename of 
+
+       c:\temp\iirf.1672.log 
+
+   if the process ID of the w3wp.exe is 1672.  
+   You will get multiple logfiles if you have multiple worker
+   processes.
+
+
+5. The logging system no longer opens and closes the file for
+   each action.  instead the log is fflushed for every log
+   statement.  This is still a not insignificant performance hit. 
+
+
+
+

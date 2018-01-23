@@ -1,0 +1,52 @@
+# SampleUrls.txt
+# 
+# Expected result may be a URL, or one of the following: 
+#
+#     NO REWRITE 
+#     FORBIDDEN
+#     GONE
+#     REDIRECT <code>  <URL>
+#     NOT FOUND 
+#
+#
+
+
+# Incoming URL                  Expected Result
+#---------------------------------------------------------------------- 
+#
+
+/cim                            REDIRECT 302 http:///about/business/index.html#cim
+/cim/                           REDIRECT 302 http:///about/business/index.html#cim
+/cimm                           NO REWRITE
+
+/pom                            REDIRECT 302 http:///about/business/index.html#pom
+/pom/                           REDIRECT 302 http:///about/business/index.html#pom
+/pom6                           NO REWRITE
+
+/erm                            REDIRECT 302 http:///about/business/index.html#erm
+/erm/                           REDIRECT 302 http:///about/business/index.html#erm
+/erm/a                          NO REWRITE
+
+/tim                            NO REWRITE
+/tim/a                          NO REWRITE
+
+/foo                            NO REWRITE
+/Foo                            NO REWRITE
+
+/Forbidden                      FORBIDDEN
+
+/Gone                           REDIRECT 410 (null)
+
+/ThisUrlIsNotFound              NOT FOUND
+
+/OnePassOnly                    /cim
+
+/caseInSenSiTivE                /caseless
+/caseinsensitive                /caseless
+
+/CaseSensitive                  /notcaseless
+/casesensitive                  NO REWRITE
+
+/nocasechecking                 /caseINSENSITIVE
+
+

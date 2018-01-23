@@ -1,0 +1,24 @@
+# SampleUrls.txt
+# 
+# Expected result may be a URL, or one of the following: 
+#
+#     NO REWRITE 
+#     FORBIDDEN
+#     REDIRECT <code>  <URL>
+#     NOT FOUND 
+#
+#
+
+
+# Incoming URL                             Expected Result
+#---------------------------------------------------------------------- 
+#
+
+/index.jsp                                 /index.aspx
+
+/CurrentPhoto.jsp?dir=foo                  /CurrentPhoto.aspx?dir=foo
+
+/index.php?case=F&select=4                 /index.aspx?case=F&select=4
+
+/List.htm                                  NO REWRITE
+

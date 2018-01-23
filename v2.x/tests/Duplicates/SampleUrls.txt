@@ -1,0 +1,31 @@
+# SampleUrls.txt
+# 
+# Expected result may be a URL, or one of the following: 
+#
+#     NO REWRITE 
+#     FORBIDDEN
+#     REDIRECT <code>  <URL>
+#     NOT FOUND 
+#
+#
+
+
+# Incoming URL                                     Expected Result
+#---------------------------------------------------------------------- 
+#
+
+/index.jsp
+/index.Jsp
+
+/Home.jsp
+/Home.JSP
+
+
+/Catalog.CFM
+
+/Hello.php
+/Hello.PHP
+/hello.php
+
+
+/thisisatest

@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="b77f3dc3-e861-428c-96c1-a6af56d3c062" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <introduction>
+      <!-- <autoOutline /> -->
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Example: Prevent Image Leeching</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for IIRF
+#
+
+RewriteLogLevel 1
+RewriteLog c:\inetpub\iirfLogs\iirf
+RewriteEngine ON
+StatusInquiry ON
+IterationLimit 5
+
+# block any hotlinking, except for google, msn, yahoo crawlers, google image search
+# also allows hotlinking/viewing of logo images
+RewriteCond %{HTTP_REFERER}         !^$
+RewriteCond %{HTTP_REFERER}         !^https?://(?:www\.)yoursite\.com/   [I]
+RewriteCond %{HTTP_REFERER}         !^https?://(?:images\.|www\.)?(cache|google|googlebot|yahoo|msn|ask|picsearch|alexa)\..*   [I]
+RewriteCond %{HTTP_USER_AGENT}      !^.*(google|yahoo|msn|ask|picsearch|alexa|clush|botw.*) [I]
+#apply restrictions above to all images, except logo images
+RewriteRule .*(?!logo).*\.(?:gif|jpg|jpeg|png)$     /images/nogo.jpg   [I,L]
+
+# remove trailing slash if necessary
+RewriteRule ^/images/nogo\.jpg$/     /images/nogo.jpg [I,L]
+</code>
+
+        <para>
+          Explanation: This ini file prevents hot-linking of
+          images. If someone creates a web page with a reference
+          to an image that is stored on your own web site, it's called
+          hot-linking.  The idea is that when the foreign web page gets
+          served, the browser retrieves the image from YOUR web server.
+          This can be a drain on web server resources and bandwidth.
+          This ini file prevents image hot-linking.  Image URLs referenced
+          from local pages will work as normal.
+        </para>
+
+        <para>
+          It is based on a chain of RewriteCond statements, each of
+          which evaluates to TRUE when the given pattern is NOT matched
+          - notice the ! prefix on the pattern in each RewriteCond.
+        </para>
+
+      </content>
+    </section>
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+
+

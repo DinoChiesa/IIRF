@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="8f731705-8474-4598-b0f0-e4d67dba9329" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <!-- <autoOutline /> -->
+      <para>
+        There are two primary types of HTTP Proxy: forward and
+        reverse. IIRF can act as a reverse HTTP proxy. This section
+        describes the two, and how they work.
+      </para>
+    </introduction>
+
+
+    <section address="Section1">
+      <title>Forward and Reverse Proxies</title>
+      <content>
+        <para>
+          In general, a HTTP proxy is an agent or system that stands between the
+          HTTP client, like a web browser, and the HTTP server, such as
+          IIS.
+        </para>
+
+        <alert class="note">
+          <para>
+          <externalLink>
+            <linkText>IETF RFC 2616</linkText>
+            <linkAlternateText>IETF RFC 2616</linkAlternateText>
+            <linkUri>http://tools.ietf.org/html/rfc2616</linkUri>
+          </externalLink>, entitled <legacyBold>Hypertext Transfer Protocol -
+              HTTP/1.1</legacyBold>, defines the
+            term <phrase>proxy</phrase> like this:
+          <quote>
+            An intermediary program which acts as both a server and a client
+            for the purpose of making requests on behalf of other clients.
+            Requests are serviced internally or by passing them on, with
+            possible translation, to other servers. ... A
+            "transparent proxy" is a proxy that does not modify the request or
+            response beyond what is required for proxy authentication and
+            identification. A "non-transparent proxy" is a proxy that modifies
+            the request or response in order to provide some added service to
+            the user agent, such as group annotation services, media type
+            transformation, protocol reduction, or anonymity filtering. ...
+          </quote>
+          </para>
+        </alert>
+
+
+        <para>
+          In the normal course of action, an HTTP proxy receives requests from the
+          client and relays them to the server, and then does the converse with the
+          responses. A proxy can also perform caching, and send cached replies back
+          to clients.
+        </para>
+
+        <para>
+          There are two primary forms of proxy.  A <phrase>forward proxy</phrase> is
+          one that requires the client to be specially configured to use it.  A
+          <phrase>reverse proxy</phrase>, also known as a <phrase>transparent
+          proxy</phrase>, can work without any configuration on the client.  There
+          are advantages to each of these forms.  IIRF can act as a reverse (or
+          <phrase>transparent</phrase>) proxy.  IIRF does not act as a forward
+          proxy.
+        </para>
+
+      </content>
+      <sections>
+        <section>
+          <title>Forward Proxies</title>
+          <content>
+            <para>
+              A typical usage of a forward proxy is to provide Internet access to
+              clients that are on a protected, internal network.  Many corporations
+              require the use of a forward proxy to access the outside internet from
+              the corporate network.
+            </para>
+          </content>
+        </section>
+
+        <section>
+          <title>Reverse Proxies</title>
+          <content>
+            <para>
+              A reverse proxy (or transparent proxy), by contrast, appears to the
+              client just like an ordinary web server. This is why it is sometimes
+              called a "transparent proxy".  No configuration on the client is
+              necessary in order to communicate through the proxy, and in fact, a
+              server acting as transparent proxy <phrase>could</phrase> do so
+              without informing the client that it is doing so, in the same way that
+              a server can rewrite URLs without informing the client. (Although, it
+              is a violation of the HTTP protocol to do so - according to HTTP,
+              applications that act as proxies must embed "via" headers in the
+              responses they return to clients, and in fact, IIRF does this).
+            </para>
+
+            <para>
+              When using a reverse proxy, the client makes ordinary HTTP requests for
+              content in the name-space of the reverse proxy. The reverse proxy then
+              decides how to satisfy those requests - via a cache, or by sending the
+              requests to a remote server. In either case the reverse proxy returns
+              the content as if the proxy was itself the origin of the
+              content.
+            </para>
+
+            <para>
+              The reverse proxy is sometimes called a gateway because the most
+              common use of a reverse proxy is to expose, in a limited way, a server
+              that is behind a firewall to the internet. Reverse proxies can also be
+              used to balance load among several back-end servers, or to provide
+              caching for a slower back-end server. In addition, reverse proxies can
+              be used simply to bring several servers into a single URL space.
+            </para>
+
+            <para>
+              With IIRF, administrators use the <link
+              xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link>
+              directive to specify how to perform reverse proxy actions.
+            </para>
+
+          </content>
+        </section>
+      </sections>
+    </section>
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+

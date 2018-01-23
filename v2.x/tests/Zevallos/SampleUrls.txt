@@ -1,0 +1,22 @@
+# SampleUrls.txt
+# 
+# Expected result may be a URL, or one of the following: 
+#
+#     NO REWRITE 
+#     FORBIDDEN
+#     REDIRECT <code>  <URL>
+#     NOT FOUND 
+#
+#
+
+
+# Incoming URL                  Expected Result
+#---------------------------------------------------------------------- 
+#
+
+/Library/bbrasil.gif            /blocked.png
+/imagens/logo.gif               /blocked.png
+/noticias/2000/abr/7/           /OMRedirect.asp?p=10&d=/noticias/2000/abr/7&WebPublisher=1
+/stj/2000/abr/10/               /OMRedirect.asp?p=10&d=/stj/2000/abr/10&WebPublisher=1
+/stj/2000/abr/28/               /OMRedirect.asp?p=10&d=/stj/2000/abr/28&WebPublisher=1
+/imagens/loteria.gif            /blocked.png

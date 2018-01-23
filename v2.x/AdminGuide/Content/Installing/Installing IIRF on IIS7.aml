@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="153e7d87-ace3-4fd1-bead-86bd248f6087" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <!-- <autoOutline /> -->
+      <para>
+        IIS v7.x is included with Windows Server 2008, Windows Vista,
+        and Windows 7. These are the steps required to install IIRF on
+        those operating systems.
+      </para>
+
+    </introduction>
+
+
+    <section address="IIS7">
+      <title>Installing on IIS7 - Vista, Windows Server 2008, or Windows 7</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+
+        <para>
+          To configure IIRF on IIS7.x, follow these steps:
+        </para>
+
+        <list class="ordered">
+          <listItem>open the IIS Manager.  On Windows Vista or Windows 7, do this
+            through Start...Control Panel...Administrative Tools.
+            <mediaLink>
+              <caption placement="after" lead="Figure 1">Administrative Tools
+                on Windows Vista</caption>
+              <image placement="center" xlink:href="ed1abf04-276e-423d-a594-c2caa5b8e327"/>
+            </mediaLink>
+            <mediaLink>
+              <caption placement="after" lead="Figure 2">Selecting
+                IIS Manager</caption>
+              <image placement="center" xlink:href="cf526a39-a82a-4040-af48-30d4a430df66"/>
+            </mediaLink>
+            This brings up the IIS Manager window.
+            <mediaLink>
+              <caption placement="after" lead="Figure 3">IIS Manager </caption>
+              <image placement="center" xlink:href="838a6000-8b40-4b1f-8488-fb8c0e7db9c9"/>
+            </mediaLink>
+          </listItem>
+
+          <listItem>
+            <para>
+              If you would like to configure IIRF to be a "global filter" (applies to
+              all websites and virtual directories), then, select the machine or server name on the
+              left-hand side tree. This should be the top-most (root) node in the
+              tree.
+              <mediaLink>
+                <caption placement="after" lead="Figure 4">Installing IIRF
+                  for the entire server </caption>
+                <image placement="center" xlink:href="a432121f-b736-47b6-96df-0c05a6dc9b5c"/>
+              </mediaLink>
+            </para>
+            <para>
+              If you would like to configure IIRF for an individual web
+              site, expand the server node, and select the appropriate
+              web site on the left-hand side tree.  tree.
+              <mediaLink>
+                <caption placement="after" lead="Figure 5">Installing IIRF
+                  for a particular web site </caption>
+                <image placement="center" xlink:href="7ee69cb5-7cef-4c65-af55-1c1cf723e21c"/>
+              </mediaLink>
+            </para>
+
+          </listItem>
+
+          <listItem>
+            <para>
+              In either case, in the center-right panel of the MMC
+              window you should now see a set of icons.  One of them is
+              labeled "ISAPI Filters".  Double click it.  Your window
+              should look similar to the following:
+              <mediaLink>
+                <caption placement="after" lead="Figure 6">The ISAPI
+                  Filters applet </caption>
+                <image placement="center" xlink:href="3acef5cf-1877-4c2d-a1d3-73715f4dcbab"/>
+              </mediaLink>
+            </para>
+          </listItem>
+
+
+          <listItem>
+            <para>
+              On the far right hand side in the "Action Pane" for
+              the MMC window, click the top-most item, which reads
+              "Add...".
+            </para>
+          </listItem>
+
+          <listItem>
+            <para>You get a simple dialog with a box for filter name and
+              a box for the path to the Filter DLL.  Type in "IIRF" or
+              "Ionic Rewrite" for the
+              filter <legacyItalic>name</legacyItalic> (the particular
+              name is not important), and the full path for the DLL, eg,
+              c:\windows\system32\inetsrv\IIRF\IIRF.dll .
+            </para>
+            <mediaLink>
+              <caption placement="after" lead="Figure 7">Adding an ISAPI
+                Filter</caption>
+              <image placement="center" xlink:href="131e3e24-0ba9-494e-93d7-810f1bfb98d0"/>
+            </mediaLink>
+
+            <para>
+              Click OK.
+            </para>
+          </listItem>
+
+          <listItem>
+            <para>
+              Copy your ini file into the same directory.
+            </para>
+            <para>
+              The filter is now installed.
+            </para>
+          </listItem>
+
+          <listItem>
+            <para>
+              Be sure to allow the appropriate user or security group
+              read + execute access to the DLL and the ini file. On
+              IIS7, it should be sufficient to grant READ permissions to
+              NetworkService or IIS_WPG.
+            </para>
+
+            <para>
+              To verify that the permissions are set
+              properly <legacyItalic>on each file</legacyItalic>, browse to
+              the file in Windows Explorer.  Right click on the
+              file.  Select Properties...Security tab, then
+              click the button labeled  "Advanced".  You should see
+              something like this:
+            </para>
+
+            <mediaLink>
+              <caption placement="after" lead="Figure 8">Verifying the permissions</caption>
+              <image placement="center" xlink:href="725e5631-5207-4286-b698-c83ae6c13890"/>
+            </mediaLink>
+
+            <para>
+              Click on the Effective Permissions tab, click the Select
+              button, and specify
+              <codeInline>NETWORK SERVICE</codeInline> for the
+              identity.  Click OK and you should see something like
+              this:
+            </para>
+
+            <mediaLink>
+              <caption placement="after" lead="Figure 9">Verifying the permissions</caption>
+              <image placement="center" xlink:href="3399d03b-5a41-46a7-a97b-50b0ee9b03e4"/>
+            </mediaLink>
+
+            <para>
+              Notice that the checkbox next to <codeInline>List folder /
+              read data</codeInline> is checked. This shows that the
+              appropriate permissions are available to the
+              NetworkService identity on the Iirf.ini or Iirf.dll file.  If you
+              don't get this checkbox, then you'll need to go back and
+              edit the permissions so that the identity used by w3wp.exe
+              can read the Iirf.ini or Iirf.dll file.  Repeat these
+              steps for both Iirf.dll and Iirf.ini.
+            </para>
+          </listItem>
+
+          <listItem>
+            <para>
+              If you want to use ProxyPass with POST, also configure the
+              DLL as a ISAPI Extension.  You don't need a separate copy
+              of the DLL.  You just need to configure a Script map for
+              IIRF. Within IIS Manager, on the left hand side, select
+              the website for which you'd like to allow ProxyPass with
+              POST data.  In the middle panel of IIS Manager, click on
+              the <codeInline>Handler Mappings</codeInline> icon.
+            </para>
+
+            <mediaLink>
+              <caption placement="after" lead="Figure 10">Selecting Handler Mappings</caption>
+              <image placement="center" xlink:href="b5d174d9-6217-4dd4-b8b5-7723f51b1af3"/>
+            </mediaLink>
+
+            <para>
+              This should bring up a panel as shown below.
+            </para>
+
+            <mediaLink>
+              <caption placement="after" lead="Figure 11">Handler Mappings</caption>
+              <image placement="center" xlink:href="63e29a6b-9f1e-4491-9cba-2d010a4426c7"/>
+            </mediaLink>
+
+            <para>
+              Click on the <codeInline>Add Script Map...</codeInline>
+              text on the right-hand side. Fill in the resulting dialog
+              like so:
+            </para>
+
+            <mediaLink>
+              <caption placement="after" lead="Figure 12">Setting up
+              IIRF as an ISAPI Extension</caption>
+              <image placement="center" xlink:href="c4ccb4ca-8a0a-4771-bfcc-dd028f5c7a76"/>
+            </mediaLink>
+
+            <para>
+              Click OK, and confirm that you want the IIRF.dll to be
+              allowed to run as an extension.
+            </para>
+
+          </listItem>
+
+          <listItem>
+            On Windows Server 2008, insure that the IIRF DLL is allowed
+            to run.  This is normally done automatically, but you might
+            want to check it, this way:  In the left hand side of IIS Manager,
+            click <legacyBold>Web Service Extensions</legacyBold>.  On
+            the right hand side, right click the IIRF extension, and
+            click <legacyBold>Allow</legacyBold>.
+            <mediaLink>
+              <caption placement="after" lead="Figure 13">Allowing IIRF
+                as an extension</caption>
+              <image placement="center" xlink:href="1af3af59-9b6a-4ba6-aec4-b27147820f71"/>
+            </mediaLink>
+          </listItem>
+
+          <listItem>
+            <para>
+              Note: If your OS is 64-bit, you should use the 64-bit
+              version of IIRF.  It has been available since v2.1.1.24.
+            </para>
+
+            <para>
+              If you ignore this advice and try running the 32-bit
+              version of the IIRF.dll on a 64-bit version of the OS, you
+              must select "Enable 32-Bit Application" in the Advanced
+              Settings on the App Pool, in order to let IIRF run.
+            </para>
+
+            <alert class='info'>
+              Some history: Until IIRF v2.1.1.23, the binary version of
+              IIRF was available only in 32-bit form.In v2.1.1.24 and
+              v2.1.1.25, IIRF shipped an x64 version of the binary,
+              though not the installer. In v2.1.1.26, IIRF shipped a
+              64-bit installer along with the x86 (32-bit) installer.
+            </alert>
+          </listItem>
+
+        </list>
+
+      </content>
+    </section>
+
+    <relatedTopics>
+      <link xlink:href="6b426152-704a-4907-b87e-2e1938a89cad">Installing on IIS6</link>
+      <link xlink:href="6e3750a8-96e1-4f4b-95ad-8c6c98a45d40">Verifying Installation</link>
+    </relatedTopics>
+
+  </developerConceptualDocument>
+</topic>
+
+

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+  <Fragment>
+    <!--
+
+     Normally I don't like to use multiple scripting languages in the same
+     project. But here's an installer that uses both VBScript *and*
+     Javascript.
+
+     The sad fact is that I need *both* Javascript and VBScript custom
+     actions.  I need the VBScript to do specific things with the IIS WMI
+     provider, which frustratingly, are not available from within
+     Javascript.  Setting scriptmaps via the WMI provider requires setting a
+     property to a VBArray, a data structure that is not accessible from
+     within Javascript, as far as I can tell.  I worked on that a looooong
+     time and couldn't figure it out.
+
+     I need the Javascript because it is so much more facile for most tasks.
+
+    -->
+
+    <Binary Id="B.JavaScript" SourceFile="CustomActions.js" />
+    <Binary Id="B.VBScript" SourceFile="Extensions_CA.vbs" />
+
+    <CustomAction Id="CA.EnumerateWebSites"
+                  BinaryKey="B.JavaScript"
+                  JScriptCall="EnumerateWebSites_CA"
+                  Execute="immediate"
+                  Return="check" />
+
+    <CustomAction Id="CA.UpdatePropsWithSelectedWebSite"
+                  BinaryKey="B.JavaScript"
+                  JScriptCall="UpdatePropsWithSelectedWebSite_CA"
+                  Execute="immediate"
+                  Return="check" />
+
+    <CustomAction Id="CA.SetAuthProps"
+                  BinaryKey="B.JavaScript"
+                  JScriptCall="SetAuthProps_CA"
+                  Execute="immediate"
+                  Return="check" />
+
+    <CustomAction Id="CA.SetWebsitePropsForUninstall"
+                  BinaryKey="B.JavaScript"
+                  JScriptCall="SetWebsitePropsForUninstall_CA"
+                  Execute="immediate"
+                  Return="check" />
+
+    <CustomAction Id="CA.ShutdownIisSites"
+                  BinaryKey="B.JavaScript"
+                  JScriptCall="ShutdownIisSites_CA"
+                  Execute="immediate"
+                  Return="check" />
+
+    <CustomAction Id="CA.StartIisSites"
+                  BinaryKey="B.JavaScript"
+                  JScriptCall="StartIisSites_CA"
+                  Execute="immediate"
+                  Return="check" />
+
+    <CustomAction Id="CA.AddExtension"
+                  BinaryKey="B.VBScript"
+                  VBScriptCall="AddExtension_CA"
+                  Execute="immediate"
+                  Return="check" />
+
+    <CustomAction Id="CA.RemoveExtension"
+                  BinaryKey="B.VBScript"
+                  VBScriptCall="RemoveExtension_CA"
+                  Execute="immediate"
+                  Return="check" />
+
+    <!-- CA to launch the help file -->
+    <CustomAction Id         ="CA.LaunchHelp"
+                  Directory  ="INSTALLDIR"
+                  ExeCommand ='[WindowsFolder]hh.exe IirfGuide.chm'
+                  Execute    ="immediate"
+                  Return     ="asyncNoWait" />
+
+
+    <!--
+
+        A custom action to Unset the
+        WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT property.  This CA is
+        called after ExecuteAction, on condition that the help feature
+        has NOT been installed.  By setting this prop to the empty
+        string (""), the checkbox asking "View the help file now" will
+        not be displayed.
+
+        The other way to do it, obviously, is to SET the property only when the
+        help has been installed.  I'm not sure if my PostProcessMsi.js script
+        would work in that case.  It presumes the checkbox will be present in
+        the Control table.  Anyway it works this way, just fine.
+
+      -->
+
+    <CustomAction Id="CA.HidePostInstallCheckboxToLaunchHelp"
+                  Property="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT"
+                  Value=""
+                  Return="check"
+                  />
+
+    <!--
+
+         A simple custom action that Sets the SKIPCONFIGUREIIS
+         property.  This CA is called (and the property is set) if the
+         F.Binary feature is not selected to be installed. For some
+         reason, IIS gets configured even if the user selects no IIS
+         stuff.  This turns it off.
+
+      -->
+
+    <CustomAction Id="CA.SkipConfigureIIs"
+                  Property="SKIPCONFIGUREIIS"
+                  Value="1"
+                  Return="check" />
+
+  </Fragment>
+
+</Wix>
+

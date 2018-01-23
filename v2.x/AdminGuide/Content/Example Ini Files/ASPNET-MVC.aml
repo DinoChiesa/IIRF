@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="1f093ad2-7c4f-42a0-9b72-90afbbe94305" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <introduction>
+      <!-- <autoOutline /> -->
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Example: Clean ASP.NET MVC URLs</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+<code lang="ini">
+# Iirf.ini
+
+## Commenting the following two statements out, turns off all
+## logging in IIRF.
+#RewriteLog  c:\inetpub\iirfLogs\Iirf
+#RewriteLogLevel 3
+
+IterationLimit 1
+RewriteEngine ON
+StatusInquiry ON
+
+# Redirect Home.mvc to /.  This will result in a new request being sent
+# to IIS + IIRF.  The new request will get rewritten to Home.mvc.
+RedirectRule ^/Home.mvc$  /  [I,R=302]
+
+# Rewrite the default pages to /Home.mvc
+RewriteRule ^/(default|index)\.(aspx|htm|html)$ /Home.mvc [I,L]
+RewriteRule ^/$ /Home.mvc [I,L]
+
+
+# Any bare URL will get rewritten to a URL with .mvc appended
+RewriteRule ^/([\w]+)$ /$1.mvc [I,L]
+
+# Any URL with 2 segments will get rewritten to a URL with .mvc embedded.
+RewriteRule ^/(?!Content)([\w]*)/(.*) /$1.mvc/$2 [I,L]
+
+</code>
+
+        <para>
+          Explanation: This file allows clean .aspx URLs when using
+          ASP.NET MVC.  It strips the .mvc from the internal URLs.
+          By omitting the RewriteLog and RewriteLogLevel
+          directives, there will be no logging generated at all.
+        </para>
+
+      </content>
+    </section>
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+
+

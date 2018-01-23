@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="38b088f3-528b-4741-a65e-40a42095762b" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+
+      <!-- <autoOutline /> -->
+      <para>
+        Configuration for installation-wide IIRF settings is provided in
+         the IirfGlobal.ini file. The file consists of multiple lines, with a
+        single <phrase>directive</phrase> on each line.  Each directive
+        affects the behavior of IIRF at runtime.
+      </para>
+
+      <para>
+        At runtime, the IIRF.dll looks for the IirfGlobal.ini file in
+        the same directory in which the IIRF.dll itself resides, when it
+        is loaded by IIS.  If IIRF does not find the IirfGlobal.ini
+        file, it continues loading, and uses defaults for all the
+        settings that could be changed in the global ini file. IIRF
+        will emit a warning in the log file if this happens, but the
+        rewriting will function normally.
+      </para>
+      <para>
+        The name of the file is not case-sensitive.
+      </para>
+    </introduction>
+
+
+    <section address="Section1">
+      <title>Directives for IirfGlobal.ini</title>
+      <content>
+        <list class="bullet">
+          <listItem>
+            <link xlink:href="82d6724e-9b6a-46c6-9f6b-277d89204ddd">EventsForIniOpen</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="e7bb5f0b-ce46-4034-81f0-cbacfd22cd31">MaxFieldLength</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="4d68bf79-e0a0-4649-bcae-248c08c71d56">NotifyLog</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="f8098dc4-45a7-4f9b-aec9-4114a3af4086">RewriteEngine</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="0bbc46c4-837e-4aa7-99f4-0ceaad24bb0d">RewriteFilterPriority</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="073042fc-11c2-4c9a-a28a-49d07447685b">StatusInquiry</link>
+          </listItem>
+        </list>
+      </content>
+    </section>
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+
+

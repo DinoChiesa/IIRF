@@ -1,0 +1,32 @@
+# SampleUrls.txt
+# 
+# Expected result may be a URL, or one of the following: 
+#
+#     NO REWRITE 
+#     FORBIDDEN
+#     REDIRECT <code>  <URL>
+#     NOT FOUND 
+#
+#
+
+# Incoming URL                                Expected Result
+#---------------------------------------------------------------------- 
+#
+
+/news/2006-04/newsitem.html                   NO REWRITE
+/news/                                        NO REWRITE
+/news                                         /index.php?news
+/foo/bar/bah/                                 NO REWRITE
+/foo/bar/bah                                  /index.php?foo/bar/bah
+/news/index.php/newsitem.html                 NO REWRITE
+/news/index.php/newsitem.js                   /index.php?news/index.php/newsitem.js
+/news/index.php/newsitem                      /index.php?news/index.php/newsitem
+/news/index.php-04/newsitem.html              NO REWRITE
+/news/index.php-04/newsitem.js                /index.php?news/index.php-04/newsitem.js
+/news/index.php-04/newsitem                   /index.php?news/index.php-04/newsitem
+/news/foo-index.php/newsitem.html             NO REWRITE
+/news/foo-index.php/newsitem.js               /index.php?news/foo-index.php/newsitem.js
+/news/foo-index.php/newsitem                  /index.php?news/foo-index.php/newsitem
+/index.php?foo                                NO REWRITE
+
+

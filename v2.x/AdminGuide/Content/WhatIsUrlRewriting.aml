@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="d01a9d1d-8937-42e6-af42-68cca55870d7" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       = "http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink = "http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>
+        URL Rewriting is a handy tool for any web server
+        administrator. It allows greater flexibility when managing and
+        operating web servers and web sites.
+      </para>
+      <autoOutline />
+    </introduction>
+
+
+    <section address="WhatIsUrlRewriting">
+      <title>What is URL Rewriting?</title>
+      <content>
+        <para>
+          URL Rewriting is a server-side technique for mapping URL
+          requests to request handlers.
+        </para>
+
+        <para>
+          Typically there is a direct or fixed mapping between
+          request URL and the handler for that request.  All request
+          paths that end in .html will typically be handled by a static
+          file handler. Similarly, requests that end in .php will be
+          handled by the PHP execution engine, which processes the PHP
+          script with the given name. The mapping between URL and
+          handler is typically static, and depends solely on
+          the <quoteInline>extension</quoteInline> of the URL
+          Request. This works, but is limited.
+        </para>
+
+        <para>
+          URL Rewriting allows administrators to more flexibly map between
+          the incoming requests and the actual resource that handles the request
+          on the server.  For example, using URL Rewriting, requests that have a
+          .html extension could be served by ASP.NET, or requests that have no
+          extension could be served by a PHP script.
+        </para>
+
+        <para>
+          Most URL Rewriters match the incoming URL against a set of
+          patterns, and rewrite the URL (or perform other actions)
+          according to which patterns match.  The language used in the
+          most powerful and flexible rewriters to describe the patterns
+          is known
+          as <link xlink:href="e013a406-9f3a-4385-b986-6c4c410dad48">Regular
+          Expressions</link>.  Some rewriters also allow rewriting based
+          on other factors, including the request headers, Server
+          variables, and even the state of the server filesystem.
+        </para>
+
+        <para>
+          Many URL Rewriters can also redirect requests. This has led to
+          confusion in the terms Rewrite and Redirect.  To learn the
+          difference,
+          see <link xlink:href="2e820208-c2eb-4d6d-a134-c63f7d41244f">Redirecting
+          versus Rewriting</link>.  IIRF can perform URL redirects as well
+          as URL rewrites.
+        </para>
+      </content>
+    </section>
+
+    <section address="WhyUrlRewriting">
+      <title>Why Rewrite URLs?</title>
+      <content>
+        <para>There are many of reasons to rewrite URLs:</para>
+
+        <list class="bullet">
+          <listItem>
+            <token>SEO</token>(SEO)<markup>
+              <br/>
+            </markup>
+            SEO is a broad topic, but the main goal is to assist search engines in
+            finding content on a web site. One aspect of that is optimizing the
+            URLs themselves.
+          </listItem>
+          <listItem>
+            <markup><strong>Making user-friendly URLs.</strong>
+              <br/>
+            </markup>
+            Similar in effect to SEO, this allows the use of friendly public URLs
+            where they are observed by
+            users in links and browser bars.  Elements within URLs that are
+            meaningful only to server-side
+            technology, including the extension of the server-side script or web app
+            platform, can be obscured from the public.
+          </listItem>
+
+          <listItem>
+            <markup><strong>Concealing or obscuring information.</strong>
+              <br/>
+            </markup>
+            In some cases the web administrator would like to conceal the
+            server-side technology that is being used.  URL Rewriting allows, for
+            example, a public URL that ends in  .jsp to be handled by a
+            .php script, or vice-versa.
+          </listItem>
+
+          <listItem>
+            <markup><strong>Routing requests.</strong>
+              <br/>
+            </markup>
+            You can force certain requests to use a secure connection
+            (https), or a particular server.
+          </listItem>
+
+          <listItem>
+            <markup><strong>Server-side technology migrations.</strong>
+              <br/>
+            </markup>
+            When migrating
+            from one technology to another in stages, URL rewriting can be used to
+            keep the URL space stable while things change on the server back-end.
+            URL Rewriting can also be used to support migration of "old" or stale
+            URLs to the new URL namespace, when those changes occur.
+          </listItem>
+
+          <listItem>
+            <markup><strong>Injecting custom processing.</strong>
+              <br/>
+            </markup>
+            In some cases, a server administrator may wish to inject
+            new, additional, server-side processing for well-known
+            existing URLs.  One example here is inserting special image
+            handling logic behind a .jpg URL.  You may wish to block
+            access to image URLs from outside referrers, to limit
+            bandwidth leaching.
+          </listItem>
+
+          <listItem>
+            <markup><strong>Filtering URL requests. </strong>
+              <br/>
+            </markup>
+            An administrator may want to restrict access to certain URLs based on
+            the referer, the requesting IP address, and so on.
+          </listItem>
+
+        </list>
+
+        <para>You can imagine lots of other reasons, too. </para>
+
+        <para>IIRF lets you do any of these things.</para>
+      </content>
+    </section>
+
+    <section address="Complementary">
+      <title>Rewrite, Redirect, Proxy... Oh My!</title>
+      <content>
+        <para>
+          Often administrators talk of a "URL Rewriter", and by the
+          name you might think such a tool would perform <phrase>URL
+          rewriting</phrase>. Very true, but often a rewriter does
+          more.
+        </para>
+
+        <para>
+          There are a few  complementary techniques that fit nicely with URL
+          Rewriting, among them: redirecting, proxy, cache,
+          authorization, and so on.  Some URL rewriters perform can be
+          used for one or more of these complementary things, yet they
+          are still primarily described as <phrase>rewriters</phrase>.
+          In some cases, an administrator might use a URL
+          rewriter <legacyItalic>primarily</legacyItalic> for its proxy
+          capability, yet still, the class of the tool used for that
+          purpose is known as a <phrase>URL Rewriter</phrase>. It can be
+          confusing.
+        </para>
+
+        <para>
+          IIRF, for its part, performs URL rewrites and redirects, and
+          can also act as a transparent proxy.
+        </para>
+      </content>
+    </section>
+
+
+    <relatedTopics>
+      <link xlink:href="2a84f55d-b0ae-422a-9071-a31e35b7d3e3">Please Donate</link>
+    </relatedTopics>
+
+  </developerConceptualDocument>
+</topic>
+

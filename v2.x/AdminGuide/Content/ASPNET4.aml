@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="fa9661a2-92b3-4906-9174-83aebcc2f710" revisionNumber="1">
+  <developerConceptualDocument
+      xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+      xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <!-- <autoOutline lead="ASP.NET 4.0 may cause some problems with URL Rewriters." /> -->
+      <para>
+        The presence of ASP.NET 4.0 on the web server may cause some problems with
+        URL Rewriters, including IIRF.  This is because ASP.NET attempts to
+        introduce special handling of "extensionless" URLs - URLs that lack a
+        traditional file extension, such as .html, .css, or .php.  This may cause
+        your "Search Engine Optimized" URLs to no longer work as expected in IIRF.
+        This page describes the situation and what you can do about it.
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>ASP.NET 4.0 Handling of Extensionless URLs</title>
+      <content>
+        <para>
+          This issue applies only to those people who run IIRF and ASP.NET 4.0 on
+          the same server.
+        </para>
+
+        <para>
+          ASP.NET 4.0, by default, performs rewriting on all extensionless URLs.
+          ASP.NET 4.0 injects a string like
+          <literal>/eurl.axd/NNNNNNNNNNNNNN/</literal>, where NNNN is a very long
+          string of hexadecimal digits, to any URL that happens to not have an
+          extension anywhere in it.  ASP.NET 4.0 is registered to handle such URLs,
+          and then can rewrite them.  This may cause "SEO" URLs to no longer work as
+          expected when using non-ASPNET rewriters like IIRF.
+        </para>
+
+        <para>
+          The problem is not in IIRF.  The problem is that ASP.NET 4.0 silently and
+          by default performs URL rewriting on all extensionless URLs, where no
+          previous version of ASP.NET had done this.  For example, if you request
+          <literal>/iirfStatus</literal> on a machine that runs IIRF and a default
+          installation of ASP.NET 4.0, the request will be rewritten on the server
+          side to something like
+          <literal>/iirfStatus/eurl.axd/389171ccade74948989645c899c6100d</literal>.
+          This will result in a 404 error, because there is no resource on the
+          server like that.
+        </para>
+
+        <para>
+          <externalLink>
+            <linkText>The ASPNET release notes</linkText>
+            <linkAlternateText>ASP.NET 4.0 Breaking Changes document</linkAlternateText>
+            <linkUri>http://www.asp.net/learn/whitepapers/aspnet4/breaking-changes#0.1__Toc256770153</linkUri>
+          </externalLink>
+          describe the new behavior of ASP.NET 4.0, regarding extensionless URLs.
+          Apparently the eurl.axd is added into extensionless URLs by
+          ASPNET_Filter.dll early in the HTTP request processing pipeline, as
+          Microsoft's way to hand the URL to ASPNET_isapi.dll, to perform rewriting
+          itself.
+        </para>
+
+        <para>
+          If a URL rewriter like IIRF examines the URL between the time
+          ASPNET_Filter.dll modifies the URL, and the time aspnet_isapi.dll handles
+          it, then the rewriter will see the eurl.axd mangling in the URL, which may
+          be unexpected.  This may cause rewrite rules to break, and it may lead to
+          unexpected 404 errors.
+        </para>
+
+        <para>
+          The ASPNET Release notes describe several ways to avoid the problem:
+        </para>
+        <list class="bullet">
+          <listItem>
+            turn off the extensionless URL handling in ASPNET 4.0 for the entire
+            server via a registry key change.
+          </listItem>
+          <listItem>
+            map the virtual directory to ASP.NET 2.0, rather than ASP.NET 4.0
+          </listItem>
+          <listItem>
+            disable ASP.NET in the virtual directory.
+          </listItem>
+        </list>
+        <para>
+          Any of these will be a reasonable solution for users of IIRF.
+        </para>
+        <para>
+          Another option may be to explicitly ignore URLs that contain eurl.axd
+          inside the IIRF ruleset.  You can do this with the following rule, placed
+          at the top of your IIRF.ini files:
+        </para>
+
+        <code lang="ini">
+          RewriteRule  /eurl\.axd/ - [L]
+        </code>
+
+        <para>
+          The above says to ignore (don't rewrite) any URL containing the
+          <literal>eurl.axd</literal> signature.
+        </para>
+      </content>
+    </section>
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+
+
+

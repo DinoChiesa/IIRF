@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="bc80da98-83e2-4d22-8b71-2fd116e2610a" revisionNumber="1">
+
+  <developerConceptualDocument
+      xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+      xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <para>
+        <codeInline>RewriteBase</codeInline> tells IIRF to strip a URL
+        base from the incoming
+        URL, before applying the test pattern
+        for each
+        <link xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule</link>,
+        <link xlink:href="c699ba60-fe15-4e90-ac4b-74598b5c352e">RedirectRule</link>, and
+        <link xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link>.
+        It is similar in purpose to the <externalLink>
+        <linkText>
+          <codeInline>RewriteBase</codeInline>directive in Apache&apos;s
+        mod_rewrite</linkText>
+        <linkUri>http://httpd.apache.org/docs/2.0/mod/mod_rewrite.html#RewriteBase
+        </linkUri>
+        </externalLink>.
+      </para>
+
+      <autoOutline />
+    </introduction>
+
+    <section address="Usage">
+      <title>Basic Syntax and Usage</title>
+      <content>
+        <para>Syntax:
+        <code lang="ini">
+          RewriteBase [ &lt;vpath&gt; | ON | OFF ]
+        </code>
+        </para>
+
+        <para>
+          This directive is useful in creating modular ini files that can be used
+          without change in any vdir.  <codeInline>RewriteBase</codeInline> tells
+          IIRF to strip the provided URL base from the incoming request, before
+          applying test patterns.  The pattern match is then performed on the
+          modified version of the incoming URL. In the case of a Rewrite, when
+          processing is complete, the prefix - or "base" - is prepended back to the
+          result. The same is true in case of a Redirect, when the target of the
+          redirection begins with a / - in other words, a local redirect.
+        </para>
+
+        <para>
+          You can explicitly set a virtual path as the base using the
+          <codeInline>RewriteBase</codeInline> directive; this path will be stripped
+          and prepended as described above.  But I recommend against doing this. A
+          better idea is to use the special string <literal>ON</literal> to indicate
+          that IIRF should use the virtual path for the current virtual directory as
+          the base.  If you specify <literal>OFF</literal>, then IIRF does not
+          perform the strip-and-prepend operation described above on the url paths
+          of incoming requests.
+        </para>
+
+        <para>
+          The default setting for <codeInline>RewriteBase</codeInline> is OFF.
+        </para>
+
+        <para>
+          Consider the two actions implied by the use of
+          <codeInline>RewriteBase</codeInline>: strip and prepend. The strip action
+          applies to test patterns used by <codeInline>RewriteRule</codeInline>,
+          <codeInline>RedirectRule</codeInline>, and
+          <codeInline>ProxyPass</codeInline>.  The strip action also applies to the
+          Status url path that may be set with the <link
+          xlink:href="06643ce7-6c93-4d2f-ad3b-01e97fade9ef">StatusInquiry</link>
+          directive.  As for the prepend action,
+          <codeInline>RewriteBase</codeInline> prepends the base to the result of
+          any <codeInline>RewriteRule</codeInline>, and the result of any
+          <codeInline>RedirectRule</codeInline> where the original result begins
+          with a slash.  It also applies to proxy requests that use the
+          <codeInline>ProxyPassReverse</codeInline>; the details are described
+          later.
+        </para>
+
+        <para>An example will illustrate. Consider the following ini file:
+        <code lang="ini">
+          RewriteCond %{HTTP_COOKIE}  !ECDB.*$
+          RedirectRule ^/commonroom(\?.*)?$   /login.aspx  [QSA]
+        </code>
+        </para>
+
+        <para>
+          The rule above says to redirect the request to a login page, if the
+          request is <literal>/commonroom</literal> followed by an optional query
+          string, and if the cookie presented by the browser does not include the
+          string <literal>ECDB</literal>. This rule will work fine when used in an
+          ini file, placed in the <legacyItalic>root</legacyItalic> virtual
+          directory.
+        </para>
+
+        <para>
+          Now, suppose the web application, and the ini file it supports, is moved
+          to a non-root virtual directory, configured at the virtual path
+          of <literal>/myapp</literal>.  In this case, the ini file will not
+          function unchanged.  This is because in the non-root vdir, all incoming
+          requests will begin with <literal>/myapp</literal>, which means the
+          incoming URL is more likely to be <literal>/myapp/commonroom</literal> .
+          In this case, the pattern for the <codeInline>RedirectRule</codeInline>
+          as shown above, will never match.
+        </para>
+
+        <para>
+          An operator would need to modify the ini file like so, in order to be
+          used in such a virtual directory:
+          <code lang="ini">
+            RewriteCond %{HTTP_COOKIE}  !ECDB.*$
+            RedirectRule ^/myapp/commonroom(\?.*)?$   /myapp/login.aspx  [QSA]
+          </code>
+        </para>
+
+        <para>
+          Using <codeInline>RewriteBase ON</codeInline> in the original ini file
+          allows the ini file to work correctly regardless of what virtual path
+          the associated IIS application uses. For example:
+          <code lang="ini">
+            RewriteBase ON
+            RewriteCond %{HTTP_COOKIE}  !ECDB.*$
+            RedirectRule ^/commonroom(\?.*)?$   /login.aspx  [QSA]
+          </code>
+        </para>
+
+        <para>
+          If you prefer to use the syntax from Apache&apos;s mod_rewrite, you can
+          explicitly set the "base" virtual path in the
+          <codeInline>RewriteBase</codeInline> directive.  For example:
+          <code lang="ini">
+            RewriteBase /myapp
+            RewriteCond %{HTTP_COOKIE}  !ECDB.*$
+            RedirectRule ^/commonroom(\?.*)?$   /login.aspx  [QSA]
+          </code>
+        </para>
+
+      </content>
+    </section>
+
+    <section address="NotApache">
+      <title>This is not Apache&apos;s RewriteBase</title>
+      <content>
+        <para>
+          As with the <codeInline>RewriteBase</codeInline> supported
+          by the Apache mod_rewrite module, this directive   allows
+          the <legacyBold>explicit</legacyBold> setting of the url base - the
+          portion of the virtual path to strip from incoming requests before
+          applying rules.
+        </para>
+
+        <para>
+          In IIRF, you can also specify the special
+          string <literal>ON</literal>. This can be more convenient
+          for use within IIS, because the virtual
+          path for each web directory is fixed and known, configured in the
+          IIS administrative settings.  Specifying  the
+          url base in the ini file explicitly implies a redundancy, which
+          opens up the potential for errors if the two settings are not
+          consistent. If the base url path is specified one way in the IIS
+          configuration data, and a different way in the IIRF ini, the rules
+          wouldn&apos;t work properly.
+        </para>
+
+        <para>
+          For this reason, operators should take care when specifying the url base
+          explicitly.  It&apos;s generally safer to just use <literal>ON</literal>
+          or <literal>OFF</literal>, and one of those things probably does what you
+          want, in most cases.
+        </para>
+
+        <para>
+          This table summarizes the behavior of <codeInline>RewriteBase</codeInline>
+          when you use the implicit setting - using a literal <literal>ON</literal>
+          rather than explicitly setting a path.  (This table assumes that each path
+          segment used in a URL is backed by a virtual directory or IIS
+          Application).
+        </para>
+
+        <table>
+          <tableHeader>
+            <row>
+              <entry>Original URL</entry>
+              <entry>Application path or Vdir</entry>
+              <entry>base</entry>
+              <entry>URL path (OFF)</entry>
+              <entry>URL path (ON)</entry>
+            </row>
+          </tableHeader>
+
+          <row>
+            <entry>http://example.com/index.html</entry>
+            <entry>(root)</entry>
+            <entry>"" (empty)</entry>
+            <entry>/index.html</entry>
+            <entry>/index.html</entry>
+          </row>
+
+          <row>
+            <entry>http://server/vdir1/index.php</entry>
+            <entry>/vdir1</entry>
+            <entry>/vdir1</entry>
+            <entry>/vdir1/index.php</entry>
+            <entry>/index.php</entry>
+          </row>
+
+          <row>
+            <entry>http://server/vdir2/subdir/hello.php</entry>
+            <entry>/vdir2/subdir</entry>
+            <entry>/vdir2/subdir</entry>
+            <entry>/vdir2/subdir/hello.php</entry>
+            <entry>/hello.php</entry>
+          </row>
+        </table>
+
+        <para>
+          As you can see, using <codeInline>RewriteBase ON</codeInline> in the
+          root vdir results in an "empty" base - nothing is stripped from the
+          incoming URL.  Also, whether you use <codeInline>RewriteBase
+          ON</codeInline> or <codeInline>RewriteBase
+          OFF</codeInline>, in all cases the resulting URL tested by the
+          patterns in your rules will always begin with a leading slash.  Your
+          regex patterns should be constructed accordingly.
+        </para>
+
+        <alert class='note'>
+          From the table, you can easily see why I recommend that you do not
+          set <codeInline>RewriteBase</codeInline> explicitly.  Chances are,
+          it will do exactly what you want, with the <literal>ON</literal> setting.
+        </alert>
+
+        <para>
+          Whether you use the recommended implicit setting, or set the base
+          explicitly, the <codeInline>RewriteBase</codeInline> directive in IIRF
+          gives the facility for enabling configuration files that can be migrated
+          or re-used, just as the <codeInline>RewriteBase</codeInline> directive in
+          Apache.
+        </para>
+      </content>
+    </section>
+
+
+    <section address="StatusUrl">
+      <title>RewriteBase and the Status URL</title>
+      <content>
+        <para>
+          This was noted above but is important enough to repeat in its own section:
+          when the <codeInline>RewriteBase</codeInline> directive is present and
+          specifies either <literal>ON</literal>, or some explicit URL path, this
+          causes the virtual path - either the vdir&apos;s virtual path, or the
+          explicitly provided one - to be prepended to any url path you may specify
+          in the <codeInline>StatusInquiry</codeInline> directive.  (If you use the
+          <codeInline>StatusInquiry</codeInline> directive, you probably
+          shouldn&apos;t be explicitly specifying a url path anyway!)
+        </para>
+      </content>
+    </section>
+
+    <section address="ProxyPass">
+      <title>RewriteBase and ProxyPassReverse</title>
+      <content>
+        <para>
+          The <link
+          xlink:href="e4088625-c729-4a3f-9e1a-19b2edda2e19">ProxyPassReverse</link>
+          directive is used to substitute one URL path for another, in specific
+          headers received in the response from a proxied request, as a result of
+          the <link
+          xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link>
+          directive.
+        </para>
+
+        <para>
+          The right thing happens when you use
+          <codeInline>ProxyPassReverse</codeInline> and
+          <codeInline>RewriteBase</codeInline> in the same ini file.  The
+          <codeInline>RewriteBase</codeInline> directive will cause the base url
+          path to be prepended to a path in a response header that is transformed
+          according to a <codeInline>ProxyPassReverse</codeInline> directive.  The
+          following example will help explain.
+        </para>
+
+
+        <para>
+          Suppose these rules are in place in a virtual directory
+          located at the root virtual path:
+          <code lang="ini">
+
+          RewriteBase OFF
+          # proxy requests for http://server/manage/* to an internal server
+          ProxyPass          ^/manage/(.*)$   http://iuwow12:81/manage
+          ProxyPassReverse   /manage          http://iuwow12:81/manage
+          </code>
+        </para>
+
+
+        <para>
+          What the <codeInline>ProxyPassReverse</codeInline> says is, any
+          <literal>Location</literal> header in a 301 response received from
+          proxied requests, will get transformed - the internal server URL
+          will be replaced with a URL that specifies the IIRF server,
+          preserving the privacy of the proxied server.
+          Because the <codeInline>RewriteBase</codeInline> directive
+          (whether <literal>ON</literal> or <literal>OFF</literal>)
+          has no practical effect when used at the vdir root,
+          there is no further complication.
+        </para>
+
+        <para>
+          Now, suppose similar rules are used in a virtual directory
+          accessible via the virtual path of /vdir1:
+          <code lang="ini">
+
+            RewriteBase OFF
+            # proxy requests for http://server/vdir1/manage/* to an internal server
+            ProxyPass          ^/vdir1/manage/(.*)$   http://iuwow12:81/manage
+            ProxyPassReverse    /vdir1/manage         http://iuwow12:81/manage
+          </code>
+        </para>
+
+        <para>
+          The results are similar to the prior example. Once again,
+          there is no need to consider the "base" url, because
+          <codeInline>RewriteBase</codeInline>
+          is <literal>OFF</literal>.
+          Supposing, though,
+          that you turn on <codeInline>RewriteBase</codeInline>, then you
+          will need to modify the rules accordingly, like this:
+          <code lang="ini">
+
+            RewriteBase ON
+            # proxy requests for http://server/vdir1/manage/* to an internal server
+            ProxyPass          ^/manage/(.*)$   http://iuwow12:81/manage
+            ProxyPassReverse    /manage         http://iuwow12:81/manage
+          </code>
+        </para>
+
+        <para>
+          The url "base" is stripped from the URL path before applying the test
+          pattern in the <codeInline>ProxyPass</codeInline> rule.  Also, the
+          appropriate headers in any proxied responses will be transformed
+          correctly.
+        </para>
+
+      </content>
+    </section>
+
+
+    <relatedTopics>
+      <link xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule </link>
+      <link xlink:href="c699ba60-fe15-4e90-ac4b-74598b5c352e">RedirectRule</link>
+      <link xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link>
+    </relatedTopics>
+
+  </developerConceptualDocument>
+
+</topic>
+
+
+
+
+
+

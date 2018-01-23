@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="9bde2e1d-f26b-480f-8d75-062cd06cf795" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>RewriteLogLevel {0,1,2,3,4,5}</title>
+      <content>
+        <para>
+          This directive sets the level of logging performed by IIRF.  A
+          higher number means more logging:
+        </para>
+        <list class="bullet">
+          <listItem>0 - no logging</listItem>
+          <listItem> 1 - log messages for ini file load and parse
+          events, as well as errors</listItem>
+          <listItem>  2 - Level 1, plus two lines in the log for each
+          successfully handled URL request</listItem>
+          <listItem>  3 - verbose logging for each request.</listItem>
+          <listItem> 4 - also emit trace on server variable replacement
+          and string replacement</listItem>
+          <listItem>  5 - also include messages on other
+            minor events of interest. This is generally not useful
+            for end users.</listItem>
+        </list>
+        <para>
+          The default is zero.  If you set an out-of-range value for the
+          log level, you may not get logging. A non-zero value is useful
+          for auditing and monitoring purposes, as well as for giving you
+          that warm fuzzy feeling, knowing that something good is happening.
+        </para>
+
+        <para>
+          Example:
+          <code lang="ini">
+            RewriteLogLevel 2
+          </code>
+        </para>
+
+        <para>
+          You should set this at most once in the ini file, or any
+          included ini files. If there is more than one occurrence,
+          you&apos;ll get a warning in the log file.
+        </para>
+
+        <alert class="warning">
+          Do not use level 3 or above in production with higher-volume
+          web sites.  In particular, level 5 can generate very large log
+          files very quickly.  This level is useful only for
+          troubleshooting.
+        </alert>
+
+      </content>
+    </section>
+
+
+    <relatedTopics>
+           <link xlink:href="f370a131-d13c-4d01-ab91-2f629641954e"/>
+    </relatedTopics>
+
+  </developerConceptualDocument>
+</topic>

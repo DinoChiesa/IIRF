@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="6d73ed65-1219-4abf-b739-a197b9976ef8" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <!--
+        <summary>
+          <para>Optional summary abstract</para>
+        </summary>
+        -->
+    <introduction>
+      <!-- Uncomment this to generate an outline of the section and sub-section
+           titles.  Specify a numeric value as the inner text to limit it to
+           a specific number of sub-topics when creating the outline.  Specify
+           zero (0) to limit it to top-level sections only.  -->
+      <!-- <autoOutline /> -->
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Example: Virtual Hosts for Users</title>
+      <content>
+
+        <para>
+          If you want to
+          provide <codeInline>http://username.domain.com</codeInline>
+          for the homepage of username, without providing a specific
+          website or webserver for that user. You might describe this
+          as providing "Virtual Hosts" for users.
+        </para>
+
+        <code lang="ini">
+          # IIRF.ini
+          #
+          # demonstrates transforming domain names to query path segments.
+          #
+
+          RewriteEngine ON
+          RewriteLog c:\inetpub\iirfLogs\iirf
+          RewriteLogLevel 1
+          StatusInquiry ON
+          CondSubstringBackrefFlag *
+
+          # +++++++++++++++++++++++++++++++++
+
+          # Transform any domain name that is not www, into a query
+          # path segment.  The reference character for captured
+          # groups in the RewriteCond, is * , according to the
+          # CondSubstringBackrefFlag directive.  (* is also the default).
+
+          RewriteCond %{HTTP_HOST} ^(?!www)([^.]+)\.mydomain\.com [I]
+          RewriteRule ^/(.*)      /userwebs/*1/$1                 [L]
+
+        </code>
+
+        <para>
+          You will need to set up the DNS A records appropriately in
+          order to allow this to work.
+        </para>
+
+
+      </content>
+    </section>
+
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+
+

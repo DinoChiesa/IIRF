@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="49492102-e623-40d7-9dc3-d1411800be80" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <introduction>
+      <!-- <autoOutline /> -->
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Example: Clean URLs</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for IIRF
+#
+
+RewriteLog c:\inetpub\iirfLogs\iirf
+RewriteLogLevel 1
+RewriteEngine ON
+StatusInquiry ON
+IterationLimit 5
+
+# this will allow ugly URLs to not be processed at all
+RewriteRule ^/cakeapp/index.php(.*)$ - [L,I]
+
+# do not rewrite requests for stylesheets or image files
+RewriteRule ^/cakeapp/(css|img)/(.*)$ - [L,I]
+
+# this is the rule that does the work. It rewrites everything
+# else to /cakeapp/index.php?url=originalUrl
+RewriteRule ^/cakeapp/(.*)$ /cakeapp/index.php?url=/$1 [L]
+</code>
+
+        <para>
+          Explanation: The first three RewriteRules all use - as the
+          replacement string.  This is a well-known string in IIRF that
+          means "don't rewrite".  Coupled with the [L] flag, rules with this replacement
+          string can eliminate groups of URLs from further processing in
+          the rule set.   The first RewriteRule eliminates  any URL that
+          refers to index.php.  The next RewriteRule eliminates URLs for
+          stylesheets and image files.  The third and final URL does the
+          work - it transforms a clean url of the
+          form <literal>/cakeapp/foo</literal> to something the PHP
+          engine can understand:  <literal>/cakeapp/index.php?url=foo</literal>.
+        </para>
+
+      </content>
+    </section>
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+
+

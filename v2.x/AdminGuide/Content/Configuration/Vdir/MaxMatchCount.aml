@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="ab01114d-4484-4ffe-813a-bce20b3bf9b9" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>MaxMatchCount {integer}</title>
+      <content>
+        <para>
+          The <codeInline>MaxMatchCount</codeInline> directive specifies
+          the maximum number of matches to collect for each match.  In
+          general, the <token>Regex</token> in an ini file will have a
+          handful of captures, between 1 and 4 is typical.  In more
+          complex scenarios, a regex might have 8 or 12 captures or
+          matches.  The <codeInline>MaxMatchCount</codeInline> allows an
+          admin to specify the upper limit for this number.  The default
+          is 10.  More matches implies a larger memory usage.
+        </para>
+        <para>
+          The range of valid values for <codeInline>MaxMatchCount</codeInline> is 4 to 25.
+          If you specify an <codeInline>MaxMatchCount</codeInline> out of this range, the default
+          value of 10 will be used, and a warning message will be logged in the
+          log file.
+        </para>
+
+        <para>Example:</para>
+
+          <code lang="ini">
+            MaxMatchCount  8
+          </code>
+
+      </content>
+    </section>
+
+
+  </developerConceptualDocument>
+</topic>
+
+
+

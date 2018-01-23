@@ -1,0 +1,27 @@
+# SampleUrls.txt
+# 
+# Expected result may be a URL, or one of the following: 
+#
+#     NO REWRITE 
+#     FORBIDDEN
+#     REDIRECT <code>  <URL>
+#     NOT FOUND 
+#
+#
+
+
+# Incoming URL             Expected Result
+#---------------------------------------------------------------------- 
+#
+
+/wookie                    NO REWRITE
+/Wookie                    REDIRECT 302 http://server.example.org:7070/Wookie
+
+/Willow                    REDIRECT 302 http://server.example.org:7070/Willow
+/washington                NO REWRITE
+
+/Hello.php                 NO REWRITE
+
+/icky.php                  REDIRECT 302 http://server.example.org:6060/icky.php
+/ICKY.php                  REDIRECT 302 http://server.example.org:6060/ICKY.php
+

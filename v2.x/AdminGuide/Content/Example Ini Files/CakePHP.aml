@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="f642f5c1-a0a7-4bdf-b86a-713c0847af72" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <section address="Section1">
+      <title>INI file to handle CakePHP</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+        <para>
+          One of the IIRF users (BSweeney) has come up with a solution
+          that appears to work quite well for CakePHP installations,
+          which he nicely agreed to share.
+        </para>
+
+        <para>
+          Sweeney says: <phrase>These
+          rules are based on creating a virtual directory for your
+          CakePHP site and placing everything in that directory. You
+          would have to modify the rules if your virtual directory
+          pointed at CakePHP&apos;s app/webroot folder ... I think, but
+          haven&apos;t yet tested, that you would just remove the
+          "app/webroot" portion of the URL tests. Also, if your CakePHP
+          install is on the site root, "/path/to/cakesite" would just be
+          /.</phrase>
+        </para>
+
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for CakePHP, from sweeney
+#
+
+RewriteLog c:\logs\iirf
+RewriteLogLevel 1
+IterationLimit 10
+MaxMatchCount 10
+RewriteEngine ON
+StatusInquiry ON
+
+# If the URL references a file or directory in the webroot then do nothing
+RewriteCond %{APPL_PHYSICAL_PATH}$1 -f [OR]
+RewriteCond %{APPL_PHYSICAL_PATH}$1 -d
+RewriteRule ^/path/to/cakesite/(app/webroot.*)$ - [I,L]
+
+# If the URL does not reference a file or directory, and if the URL does not
+# point to the webroot, rewrite the URL to insert the path to the webroot.
+# Note: this rule is not needed if the site/vdir root points to the CakePHP
+# webroot
+RewriteCond %{APPL_PHYSICAL_PATH}$2 !-f
+RewriteCond %{APPL_PHYSICAL_PATH}$2 !-d
+RewriteCond $1 !^/path/to/cakesite/app/webroot.*$
+RewriteRule ^(/path/to/cakesite/(.*))$ /path/to/cakesite/app/webroot/$2 [I]
+
+# If the URL does not reference a file or direcotry# rewrite the URL so
+# CakePHP will parse the controller/action
+RewriteCond %{APPL_PHYSICAL_PATH}$1 !-f
+RewriteCond %{APPL_PHYSICAL_PATH}$1 !-d
+RewriteRule ^/path/to/cakesite/(app/webroot(.*))$ /path/to/cakesite/app/webroot/index.php?url=$2 [I,L,QSA]
+
+</code>
+      </content>
+    </section>
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+
+

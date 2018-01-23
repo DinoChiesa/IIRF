@@ -1,0 +1,1665 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+        <para>
+          With this directive, administrators can specify how to map and
+          transform incoming URL requests.  Before using this directive,
+          be sure to understand
+          with <link xlink:href="2e820208-c2eb-4d6d-a134-c63f7d41244f">the
+            the difference between a Rewrite and a Redirect</link>.
+        </para>
+      <autoOutline />
+    </introduction>
+
+    <section address="Usage">
+      <title>Basic Usage</title>
+      <content>
+        <para>Syntax:
+          <code lang="ini">
+            RewriteRule &lt;url-pattern&gt; &lt;replacement-string&gt;   [&lt;modifiers&gt;]
+          </code>
+        </para>
+
+        <para>
+          There are 2 required arguments for the
+          directive: the url-pattern (a <token>Regex-singular</token>) and a
+          replacement string.
+        </para>
+
+        <para>
+          There is a 3rd "modifiers" argument, which is optional.
+          These three arguments are separated by whitespace.
+        </para>
+
+        <para>
+          This directive may occur more than once in the
+          file, and usually does.
+        </para>
+
+        <para>
+          Here&apos;s how it works: when the server gets an incoming URL request (the
+          URL that the browser sends to the server), the url-pattern is matched against
+          the incoming URL request.  If the pattern matches, then the request is
+          rewritten to the request specified in the replacement string.  (You may
+          want to see
+          <link xlink:href="e013a406-9f3a-4385-b986-6c4c410dad48">examples of
+          how the regex pattern matching works</link>.)
+
+        </para>
+
+        <para>
+          Keep in mind:
+        </para>
+
+        <list class="bullet">
+          <listItem>
+            <para>
+              "the request is rewritten" means only that on the server side, the
+              result of the rewritten URL is served.  The result could be a static
+              page, or an image file, or a dynamic page (like a php page or an aspx
+              page).  Regardless of the result of the URL rewrite, the browser is
+              not notified that a rewrite has occurred.
+            </para>
+
+            <para>
+              In a rewrite, the browser can ask
+              for <literal>http://server/Info/Hammer</literal> and receive the
+              contents of the resource available on the server
+              at <literal>http://server/ProductInfo.aspx?pid=17282</literal>,
+              but remain unaware that
+              the server has done this mapping or substitution.
+            </para>
+
+            <para>
+              This is a matter of confusion among many people, so I will
+              repeat it: the browser cannot detect if the server has
+              rewritten its request. There is no discernable difference
+              to the browser or on the network. If a server URL rewrite
+              occurs, the browser is not informed, and no update of the
+              address in the browser URL address bar occurs.
+            </para>
+            <para>
+              Are we clear on that? You may want to read more
+              about <link xlink:href="2e820208-c2eb-4d6d-a134-c63f7d41244f">the
+              meaning of Rewrite, the meaning of Redirect, and the difference
+              between them.</link>
+            </para>
+
+          </listItem>
+
+          <listItem>
+            <para>
+              You should not attempt to rewrite "out" of an IIS AppPool. If you try
+              this, you may get unexpected 403 "Unauthorized" exceptions. To
+              understand why, you need to understand the process model that is used
+              in IIS6 and later. Each ISAPI Filter is loaded in each w3wp.exe.
+              Rewriting in such a way that changes the appPool means the request
+              would have to migrate from one w3wp.exe to another, and that is not
+              possble in IIS.
+            </para>
+            <para>
+              For more information on this, see
+              <externalLink>
+                <linkText>David Wang&apos;s article</linkText>
+                <linkUri>http://blogs.msdn.com/b/david.wang/archive/2006/06/21/isapi-filter-and-the-iis6-process-model.aspx</linkUri>
+              </externalLink>.  If you need to service a request in a different app
+              pool, you will need to use a redirect or proxy.
+            </para>
+
+
+          </listItem>
+        </list>
+
+
+        <para>Example:
+          <code lang="ini">
+            RewriteRule  ^/cart  /ViewCart.aspx
+          </code>
+        </para>
+
+        <para>
+          The above rule allows the user to enter something like
+          <literal>http://server.com/cart</literal> in the browser address bar, and
+          then on the server side, the resource that is actually run and executed is
+          ViewCart.aspx page.  The browser does not display the ViewCart.aspx URL in
+          the address bar; it remains
+          as <literal>http://server.com/cart</literal>. The result of
+          the <literal>ViewCart.aspx</literal> page execution is displayed in the
+          browser window.
+        </para>
+
+        <para>
+          In the url-pattern you can include "wildcard" type pattern matches
+          according to the regular expression language.  And within the
+          replacement string you can insert references to the matches from the url
+          pattern.
+        </para>
+        <para>
+          For example, the following rule will transform incoming URLs
+          that contain original into URLs that contain modified:
+        </para>
+        <para>Example:
+          <code lang="ini">
+            RewriteRule  ^/original/(.*).html  /modified/$1.aspx
+          </code>
+        </para>
+
+        <para>
+          The wildcard in this case is (.*), which says "match any sequence of
+          characters".   The reference to the thing the wildcard matched is $1.
+        </para>
+
+        <para>
+          With this rule, an incoming URL such as <literal>
+            /original/subdir/page.html</literal> will cause the
+          url <literal> /modified/subdir/page.aspx</literal> to be
+          executed on the server side.
+        </para>
+
+        <alert class="note">Because this is a rewrite, the browser still displays
+          <literal>/original/subdir/page.html</literal> in the address bar.</alert>
+
+        <para>
+          Notice that the replacement string does not begin
+          with <codeInline>http://server...</codeInline> The replacement string
+          should be the URL path and query - the thing that follows *after* the
+          scheme, hostname and port (if any).
+        </para>
+
+        <alert class="important">
+          In a <codeInline>RewriteRule</codeInline>, neither the url-pattern nor the
+          replacement string should include the scheme (http or https) or server
+          name.  You will get a warning if you do that, but you&apos;ll need to
+          check the IIRF status via
+          a <link xlink:href="06643ce7-6c93-4d2f-ad3b-01e97fade9ef">status
+          inquiry</link> or the IIRF log file in order to see the warning.
+        </alert>
+
+        <para>
+          The support for <token>Regex</token> in the url-pattern is
+          from <token>PCRE</token>.  PCRE provides a fully-powered,
+          perl-compatible, regular expression library.  For example,
+          with IIRF, you can use rules to transform URL path elements
+          into query string parameters.
+        </para>
+
+        <para>Example:
+          <code lang="ini">
+            RewriteRule  ^/dinoch/album/([^/]+)/([^/]+).(jpg|JPG|PNG)   /chiesa/pics.aspx?d=$1&amp;p=$2.$3
+          </code>
+        </para>
+
+        <para>
+          The above example says, for a URL request for an image,
+          like <literal>/dinoch/album/foo/bar.jpg</literal>,
+          rewrite the URL to <literal>/chiesa/pics.aspx?d=foo&amp;p=bar.jpg</literal> .
+        </para>
+
+        <alert class="important">Remember, Rewriting URLs is
+          a <legacyBold>SERVER SIDE OPERATION.</legacyBold> The browser
+          is not aware of the rewrite.  If you are thinking, "rewrite
+          means update the address that is shown in the browser address
+          bar" you are mistaken. That is
+          a <legacyBold>Redirect</legacyBold>, not a Rewrite.  and there
+          is a separate
+          directive,<link xlink:href="c699ba60-fe15-4e90-ac4b-74598b5c352e">
+            RedirectRule </link>, for that.
+        </alert>
+
+        <para>Once this URL is rewritten on the server side, the request would then be
+          handled by the ASP.NET engine, in the pics.aspx module, which could
+          inject whatever processing it needed to, before serving the bar.jpg
+          image. For example, thumbnailing the image, auditing the access count,
+          authorizing the request, or what have you.
+        </para>
+        <para>You could also do the converse, such as rewriting an ASPX request,
+          to a URL for a binary image file.  Such as:
+        </para>
+
+        <para>Example:
+          <code lang="ini">
+            RewriteRule  ^/chiesa/pics.aspx?d=([^&amp;]+)&amp;p=(.+).(jpg|JPG|PNG)   /dinoch/album/$1/$2.$3
+          </code>
+        </para>
+
+        <para>
+          With the above rule, an incoming request like
+          <literal>/chiesa/pics.aspx?d=foo&amp;p=Alpha.jpg</literal>
+          would get rewritten to
+          <literal>/dinoch/album/foo/Alpha.jpg</literal> ...which is
+          much cleaner. If you recall that <phrase>the rewritten URL is
+          not visible to the browser</phrase>, you will realize that
+          rewriting to a cleaner URL is the reverse of the usual manner.
+          In this case, the internal URL is cleaner than the one used
+          externally, where normally you want the external URL to be
+          cleaner.  The opportunity in cleaning up URLs used internally
+          is that such a rewritten request could then get served by the
+          ISAPI for jpg files, typically just directly served by IIS.
+          This might be a performance optimization, because with this
+          rewrite rule, ASP.NET would not get involved with serving JPG
+          files (unless the .jpg extension were mapped to the ASP.NET
+          ISAPI). (Keep in mind that this rewrite, which changes the URL
+          path, will work only if the request remains in the same App
+          Pool.)
+        </para>
+
+      </content>
+    </section>
+
+    <section address="ReplacementString">
+      <title>The Replacement String</title>
+      <content>
+
+        <para>The replacement string can contain:
+        </para>
+        <list class="bullet">
+          <listItem> constant text
+          </listItem>
+          <listItem> references to the matched substrings in the input, in the form
+            of $n, where n is a digit. (Eg $1, $2, $3...).  These are
+            called back-references.
+          </listItem>
+          <listItem>
+            references to the matched substrings in the most recently evaluated
+            <codeInline>RewriteCond</codeInline> associated to that RewriteRule.
+            [Don&apos;t worry too much about <codeInline>RewriteCond</codeInline>
+            just yet.  We&apos;ll get to that in a minute. Just be aware that the
+            replacement string can contain references to matched substrings from a
+            RewriteCond.]  These take the form *N, where N is a digit. (Eg
+            <literal>*1</literal>, <literal>*2</literal>, *3...)  You can set the
+            back-reference flag character with the <link
+            xlink:href="e49a6636-15bd-470a-98b3-e50532c684db">FlagCharacters</link>
+            directive. This way you could use, for example <literal>%1</literal>,
+            <literal>%2</literal>, etc, instead of <literal>*1</literal>,
+            <literal>*2</literal>, etc.  The % character is used by default in
+            Apache&apos;s mod_rewrite, but its use causes some problems when the
+            output includes URL-encoded characters.  If you need to emit the flag
+            character, then simply escape it by doubling it. For example, if you use
+            the default back-reference flag character, then ** in the replacement
+            string results in * being emitted to the output string.
+          </listItem>
+
+          <listItem>
+            references to server variables.  Eg, <literal>%{QUERY_STRING}</literal>
+            in the replacement pattern embeds the query string of the incoming
+            request, into the output (rewritten) URL.
+          </listItem>
+
+          <listItem>
+            case folding opcodes : <literal>#L #U #E #l #u </literal> .  These work
+            just as <literal>\L \U \E \l \u </literal> do in PERL: everything
+            between #L and #E says "force lowercase".  Everything between #U and #E
+            says "FORCE UPPERCASE".  ...and the #u and #l are one-character versions of
+            those directives.  The case-folding is typically used with a <link
+            xlink:href="c699ba60-fe15-4e90-ac4b-74598b5c352e"> RedirectRule </link>
+            to converge all URLs to lowercase, for better search engine rankings.
+            If you need to emit the flag character into the output, double it: ## in
+            the replacement string results in # in the output.  You can also set the
+            case-folding flag character to something different with the <link
+            xlink:href="e49a6636-15bd-470a-98b3-e50532c684db">FlagCharacters</link>
+            directive. That way, you could use <literal>~L ~U ~E ~l ~u </literal>
+            instead of <literal>#L #U #E #l #u </literal> .
+          </listItem>
+
+          <listItem>
+            URL-encoding opcodes : <literal>#X #E </literal> .  Tells IIRF to
+            URL-encode everything between the #X and #E.  These opcodes use the same
+            flag character - by default the octothorpe (#) - as the case-folding
+            opcodes. You can set the flag character with the <link
+            xlink:href="e49a6636-15bd-470a-98b3-e50532c684db">FlagCharacters</link>
+            directive.
+          </listItem>
+
+          <listItem>
+            a special value, '-', which tells IIRF to "do nothing".  In other words,
+            not rewrite the URL.  You can use this with the
+            <codeInline>[L]</codeInline> flag to eliminate certain URL patterns from
+            further processing by the ruleset.  This works only when the '-' is the
+            only character in the replacement string.
+          </listItem>
+        </list>
+
+
+        <para>Example: <code lang="ini">
+              RewriteRule ^/([^/]+)/([^/]+)/(\d+)/(\d+)/$   /index.php?option=com_$1&amp;task=$2&amp;id=$3&amp;item=$4
+          </code>
+        </para>
+
+        <para>
+          This rule says, given a URL like <literal>
+          /content/blogcategory/0/33/</literal> ,
+          rewrite it to <literal> /index.php?option=com_content&amp;task=blogcategory&amp;id=0&amp;item=33
+            </literal>
+          This is especially useful for search engine optimization of
+          URLs, for Mambo, or is it Joomla?  (I am no expert on Mambo or
+          Joomla).
+        </para>
+
+        <para>Example: <code lang="ini">
+            RewriteRule ^/sitemap\.xml$   -        [L]
+          </code>
+        </para>
+
+        <para>
+          The above rule says to NOT REWRITE any request for /sitemap.xml at the
+          current server.  The dash character says "no rewrite" and the <codeInline>[L]</codeInline> says
+          "don&apos;t process any more rules".  If you put that rule at the top of your
+          ini file, before any other rules, it will eliminate sitemap.xml from
+          rules processing.
+        </para>
+
+        <para>
+          On the other hand, putting that rule at the bottom of your ini file,
+          doesn&apos;t make much sense.  In that case, all other rules will be
+          evaluated against each incoming URL, and only if none of them match the
+          incoming request, will that rule be applied, and it has no effect on the
+          incoming request. Placing such a rule at the end of the ini
+          file is a No-Op.
+        </para>
+
+        <para>Example: <code lang="ini">
+              RewriteRule ^(/[^.]+)$ /dispatch.fcgi?$1
+          </code>
+        </para>
+
+
+        <para>
+          This works with Ruby-on-Rails.  The pattern will match any URL
+          without a dot, rewriting each to be handled by
+          dispatch.fcgi. Should you not want to run FastCGI, you&apos;ll need
+          to change "dispatch.fcgi" to "dispatch.cgi", and create the
+          appropriate mapping within IIS.
+        </para>
+
+        <para>
+          When mapping to dispatch.fcgi or .cgi, you may want to apply the
+          <codeInline>[L]</codeInline> modifier flag, which you will learn about in the next
+          section.
+        </para>
+        <para>
+          These are just a few examples.  As you can see, in the pattern matching used in
+          <codeInline>RewriteRule</codeInline> (and also used
+          in
+          <link xlink:href="c699ba60-fe15-4e90-ac4b-74598b5c352e">RedirectRule</link>,
+          <link xlink:href="3d1ea0d0-eabd-43b3-a913-de7128a74bb6">RewriteHeader</link>,
+          and <link xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link>),
+          you have a great deal of flexibility.  In fact with IIRF, you have the full
+          power of PCRE regex support, including zero-width lookaheads and look-behinds,
+          negation, match counts, case-insensitivity, conditionals,
+          non-capturing groups, named captures, and
+          so on.  If you don&apos;t know  what these things are,
+          don&apos;t worry, you can still get a great deal of use out of
+          IIRF with a very basic understanding of regular expressions.
+        </para>
+
+        <para>
+          See the provided example Ini files, within the various test
+          directories, for more examples. Also see the documentation
+          specifically focusing
+          on <link xlink:href="e013a406-9f3a-4385-b986-6c4c410dad48">Regular
+            Expressions</link>.
+        </para>
+      </content>
+    </section>
+
+    <section address="EscapingChars">
+      <title>Escaping characters in the Replacement String</title>
+      <content>
+        <para>
+          You can include spaces and ampersands and other special
+          characcters in the replacement string by specifying the
+          URL-escape codes for them. For example, to include a space
+          in a replacement string, you would use %20.  To include an
+          ampersand, you would use %26.
+        </para>
+
+        <para>Example: <code lang="ini">
+              RewriteRule  ^/downloads/myapp.jpg /downloads/myapp%201.2.jpg
+          </code>
+          The above rule would rewrite an incoming request for myapp.jpg
+          to "myapp 1.2.jpg"
+        </para>
+
+      </content>
+    </section>
+
+    <section address="CaseFolding">
+      <title>Case Folding in the Replacement String</title>
+      <content>
+
+        <para>
+          Including case-folding directives  in the replacement string,
+          tells the IIRF engine to change the case of the output URL.  The
+          #L...#E tells IIRF to fold case downward between the #L and the
+          #E.  The #U...#E sequence tells IIRF to fold case upward.
+          The #l and #u directives tell IIRF to fold the case of the next
+          character only, either downward or upward.
+        </para>
+
+        <para>
+          IIRF does not use the backslash, as with Perl, because in Windows, paths use
+          backslashes, and obviously in some cases IIRF is dealing with paths.
+        </para>
+
+        <para>Example: <code lang="ini">
+              RewriteRule ^/lowercase/(.+)\.asp$  /lowercase-output/#L$1#E.asp  [L]
+              RewriteRule ^/uppercase/(.+)\.asp$  /uppercase-output/#U$1#E.asp  [L]
+              RewriteRule ^/OneCharLower/(.+)\.asp$  /OneCharLower-output/#l$1.asp  [L]
+              RewriteRule ^/OneCharUpper/(.+)\.asp$  /OneCharUpper-output/#u$1.asp  [L]
+          </code>
+        </para>
+
+        <para>The rules would have these results:
+        </para>
+        <table>
+          <tableHeader>
+            <row>
+              <entry>incoming URL</entry>
+              <entry>rewritten URL</entry>
+            </row>
+          </tableHeader>
+          <row>
+            <entry>/lowercase/This.Is.A.Test.asp</entry>
+            <entry>/lowercase/this.is.a.test.asp</entry>
+          </row>
+          <row>
+            <entry>/lowercase/HELLO.asp</entry>
+            <entry>/lowercase/hello.asp</entry>
+          </row>
+          <row>
+            <entry>/uppercase/TesTiNgCaseConVerSion.asp</entry>
+            <entry>/uppercase/TESTINGCASECONVERSION.asp</entry>
+          </row>
+          <row>
+            <entry>/uppercase/2704a048-0cd2-4ee3-bff8-d541cb0d16c8.asp</entry>
+            <entry>/uppercase/2704A048-0CD2-4EE3-BFF8-D541CB0D16C8.asp</entry>
+          </row>
+
+        </table>
+
+        <para>And so on.</para>
+        <para>
+          You may be thinking, <phrase>What&apos;s the point in case-folding
+            for rewritten URLs? </phrase> Remember, with a <codeInline>RewriteRule</codeInline>, the
+          rewritten URL is never seen by the browser or user, and case is
+          generally not important in the Windows filesystem or in IIS URLs.
+          In most cases you won&apos;t need to do case-folding for rewritten
+          URLs.  But, this case folding also works in replacements with other
+          directives, including
+          <link xlink:href="c699ba60-fe15-4e90-ac4b-74598b5c352e">RedirectRule</link> and
+          <link xlink:href="3d1ea0d0-eabd-43b3-a913-de7128a74bb6">RewriteHeader</link>,
+          and it works when specifying key values for
+          <link xlink:href="6d072500-64b1-4efc-970a-64e94faf1bbd">RewriteMap</link>.
+          Those are the places where you might use case-folding more
+          often. Because the lookups in a <codeInline>RewriteMap</codeInline> are case sensitive, you
+          will often want to fold the lookup keys. See <link
+          xlink:href="6d072500-64b1-4efc-970a-64e94faf1bbd">RewriteMap</link>
+          for more information.
+        </para>
+
+
+        <para>
+          One of the potential pitfalls of case-folding is an endless rewrite
+          loop.  The output of the rule may match the input of the same rule.
+          To prevent that, you can of course use the <codeInline>[L]</codeInline> flag. Consider the
+          rules above: the pattern is (.+), which matches "any string of one
+          or more characters".  Without the <codeInline>[L]</codeInline> modifier flag, those rules
+          would loop endlessly.  Sometimes though, you don&apos;t want to use
+          the <codeInline>[L]</codeInline> flag.  In that case, design your pattern to match only when
+          the case needs to be folded. For example, suppose you want to fold
+          downward (to all lowercase characters).  Then you would use a
+          pattern like this:
+        </para>
+
+        <para>Example: <code lang="ini">
+              RewriteRule ^/lowercase/(.*[A-Z].*)\.asp$  /lowercase-output/#L$1#E.asp
+          </code>
+        </para>
+
+        <para>
+          The pattern <codeInline>(.*[A-Z].*)</codeInline>, in English,
+          means "zero or more characters, followed by at least one
+          uppercase character, followed by zero or more characters."
+          The pattern matches only when at least one of the characters
+          is uppercase, which is what we wanted.  With this pattern
+          there&apos;s no need for the <codeInline>[L]</codeInline> flag
+          to prevent the endless loop.
+        </para>
+
+        <alert class="note">
+          Nesting the case-folding directives is not supported. It
+          doesn&apos;t make sense to specify a replacement string like
+          <codeInline>"arf#L$1#U$2#E$3#E"</codeInline>. It won&apos;t break
+          the filter, but it won't do what you want.
+        </alert>
+
+      </content>
+    </section>
+
+    <section address="UrlEncoding">
+      <title>URL Encoding in the Replacement String</title>
+      <content>
+        <para>
+          Using the #X and #E opcodes in the replacement string, you can
+          instruct IIRF to perform URL-encoding of the portion of the
+          string between those opcodes.  Here&apos;s an example
+          replacement string that uses this feature:
+          <codeInline>#X$2#E</codeInline>. This tells IIRF to URL-encode
+          the value of the 2nd capture, obtained when applying the regex
+          pattern to the incoming URL..
+        </para>
+
+        <para>
+          The most basic example of when you might like to do this:
+          converting a set of query parameters into a single query
+          parameter, to allow your server-side application to handle all
+          of the original arguments separately.
+        </para>
+
+        <para>Example: <code lang="ini">
+          RewriteRule ^/(.+)\?(.+)$   /handler.aspx?url=$1&amp;origParams=#X$2#E
+          </code>
+        </para>
+
+        <para>
+          You can combine URL Encoding in the replacement string with other
+          transformations, like case folding or map lookups (see <link
+          xlink:href="6d072500-64b1-4efc-970a-64e94faf1bbd">RewriteMap</link>).
+          Case folding is performed before URL encoding.
+        </para>
+      </content>
+    </section>
+
+
+    <section address="Modifiers">
+      <title>Modifiers</title>
+      <content>
+        <para>
+          There are optional modifier flags that can tweak or change the operation
+          of the <codeInline>RewriteRule</codeInline> directive.
+          The modifers supported in this release of IIRF include:
+        </para>
+
+        <list>
+          <listItem> F = Forbidden (HTTP status code 403)</listItem>
+          <listItem> G = Gone (HTTP status code 410)</listItem>
+          <listItem> I = Do case-insensitive matching</listItem>
+          <listItem> L = Last test if match</listItem>
+          <listItem> NC = Do case-insensitive matching (same as I)</listItem>
+          <listItem> NF = Not found (HTTP status code 404)</listItem>
+          <listItem> NI = No iteration. Process the next rule in the file.</listItem>
+          <listItem> P = Proxy, rather than Rewrite</listItem>
+          <listItem> QSA = Query String Append</listItem>
+          <listItem> R = Redirect, rather than Rewrite</listItem>
+          <listItem> U = Store original url in server variable HTTP_X_REWRITE_URL</listItem>
+        </list>
+
+        <para>
+          A more detailed explanation of these flags is provided below.
+        </para>
+
+        <para>
+          To use a modifier flag, specify the flag characters within square
+          brackets, and append it to the end of the line in the ini file that contains the
+          <codeInline>RewriteFule</codeInline>.  If you need to combine flags
+          together - for example to combine a Last test with a case-insensitive
+          match - separate the flags with a comma within a single set of square
+          brackets.  Example: <codeInline>[I,L]</codeInline>. Don&apos;t include spaces between the comma
+          and the flags.
+        </para>
+
+        <para>It makes sense to combine the case-insensitive <codeInline>[I]</codeInline> flag, or the
+          keep-original-url <codeInline>[U]</codeInline> flag with some other flags, but most combinations
+          of flags do not make sense.  Often they are mutually exclusive.
+          Example: <codeInline>[NF,L]</codeInline> - implies a "not found" response and also says "don&apos;t
+          look for more matches."  But a "not found" or a Forbidden, both imply
+          that IIRF will stop doing pattern matches immediately.
+        </para>
+        <para>
+          So, at this time, such combinations of flags are not supported.  If you
+          do use invalid combinations of modifiers, you will get a grumpy warning message in the log
+          file, and the rule will not be processed - it will be
+          ignored.
+        </para>
+        <para>
+          Also, if you use an unsupported flag character (example: <codeInline>[Q]</codeInline>), IIRF will
+          emit a warning message, and will ignore the rule.  So do check your logs for warnings
+          to verify that you&apos;ve fashioned your rules and modifiers properly.
+          There will be a big WARNING on the line for each warning. You
+          can also use a
+          <link xlink:href="06643ce7-6c93-4d2f-ad3b-01e97fade9ef">StatusInquiry</link>
+          inquiry to quickly check if there have been any warnings while parsing the ini
+          file.
+        </para>
+
+        <para>
+          Here&apos;s some further discussion on each flag.
+        </para>
+
+        <table>
+          <tableHeader>
+            <row>
+              <entry>modifer flag</entry>
+              <entry>meaning</entry>
+            </row>
+          </tableHeader>
+          <row>
+            <entry>[F]</entry>
+            <entry>
+              <para>
+                (mnemonic: Forbidden) Similar to the NF and G flags, this one sets
+                a "403 Forbidden" return code.  Like the
+                <codeInline>[NF]</codeInline> and <codeInline>[G]</codeInline>
+                flags, the <codeInline>[F]</codeInline> flag can be utilized with
+                a RewriteCond for flexibility - you could return a 403 only for
+                requests coming from a certain REMOTE_ADDR, or you could deny
+                requests that do not have HTTPS enabled.  And so on.
+              </para>
+              <para>
+                When using the F flag, the rewrite pattern can be anything, it
+                does not matter.
+              </para>
+              <para>
+                You cannot use F with NF or G.  That wouldn&apos;t make any
+                sense. If you try to do this, you&apos;ll get a warning in the
+                IIRF log file.
+              </para>
+            </entry>
+          </row>
+
+          <row>
+            <entry>[G]</entry>
+            <entry>
+              <para>
+                (mnemonic: Gone) Similar to the NF and F flags, this one sets a
+                "410 Gone" return code.  Like those flags, the
+                <codeInline>[G]</codeInline> flag can be utilized with a
+                RewriteCond for flexibility - you could return a 410 only for
+                requests coming from a certain <literal>REMOTE_ADDR</literal>, or
+                you could deny requests that do not have HTTPS enabled.  And so
+                on.
+              </para>
+
+              <para>
+                When using the G flag, the rewrite pattern can be anything, it
+                does not matter.
+              </para>
+
+              <para>
+                You cannot use F with NF or G.  That wouldn&apos;t make any
+                sense. If you try to do this, you&apos;ll get a warning in the
+                IIRF log file.
+              </para>
+            </entry>
+          </row>
+
+          <row>
+            <entry>[I]</entry>
+            <entry>
+              <para>
+                (mnemonic: Insensitive) Do a case-insensitive match on the
+                pattern.  For example, when using this modifier flag, a pattern like
+                ^/(.*).php$ will match a url like Home.PHP.
+              </para>
+
+              <para>
+                PCRE, the regular expression engine used by IIRF, supports a
+                syntax within the regular expression itself, for turning on
+                case-insensitive matching within the pattern itself.  Place a
+                <literal>(?i)</literal> anywhere in the pattern, and all matching
+                after that point in the pattern is done without regard for case.
+                Turn off this behavior with <literal>(?-i)</literal>. In this way,
+                some portions of the pattern can be matched in a case insensitive
+                manner, and others will not.  In the specific case, use
+                <literal>(?i)</literal> at the beginning of the pattern and the
+                entire pattern is matched in a case insensitive manner.  Consult
+                <externalLink>
+                  <linkText>the PCRE documentation</linkText>
+                  <linkUri>http://www.pcre.org/pcre.txt</linkUri>
+                </externalLink> for complete details.
+                (search for INTERNAL OPTION
+                SETTING).
+              </para>
+
+              <para>
+                Because of the support of <literal>(?i)</literal> in PCRE, the
+                <codeInline>[I]</codeInline> flag is redundant and not really
+                unnecessary, but it is included in IIRF because it may be familiar
+                for some who are accustomed to Isapi_Rewrite, and it may be more
+                readable as well.
+              </para>
+
+              <para>
+                For more examples of case-insensitive matching, consult the
+                tests\CaseInsensitive directory in the source
+                distribution of IIRF.
+              </para>
+
+              <alert class="note">
+                For those who use case-insensitive pattern matching as well as  <link
+                xlink:href="6d072500-64b1-4efc-970a-64e94faf1bbd">RewriteMap</link> lookups,
+                keep in mind that the case insensitivity enabled with
+                this modifier applies to the regular expression matching
+                on the incoming URL.  The case-insensitivty does not
+                apply to lookups in the map.  For more information on
+                this, see the documentation on
+                <codeInline>RewriteMap</codeInline>.
+              </alert>
+
+            </entry>
+          </row>
+
+          <row>
+            <entry>[L]</entry>
+            <entry>
+              (mnemonic: Last) Tells IIRF to process no more patterns if the current
+              one matches.  The default behavior is to recurse, until no match
+              is found, or until the iteration limit is reached.
+            </entry>
+          </row>
+
+          <row>
+            <entry>[NC]</entry>
+            <entry>
+              <para>
+                (mnemonic: Not Case sensitive).  The meaning of this
+                modifier is the same as [I].  It tells IIRF to perform
+                case-insensitive matching when applying the regular
+                expression.
+              </para>
+
+              <alert class="note">
+                For those who use case-insensitive pattern matching as well as  <link
+                xlink:href="6d072500-64b1-4efc-970a-64e94faf1bbd">RewriteMap</link> lookups,
+                keep in mind that the case insensitivity enabled with
+                this modifier applies to the regular expression matching
+                on the incoming URL.  The case-insensitivty does not
+                apply to lookups in the map.  For more information on
+                this, see the documentation on
+                <codeInline>RewriteMap</codeInline>.
+              </alert>
+            </entry>
+          </row>
+
+          <row>
+            <entry>[NF]</entry>
+            <entry>When a rule with this modifer (mnemonic: Not Found) matches a
+              request, the return code given is "404 Not Found", regardless of the
+              value of the replacement string.  This is useful to "turn off"
+              certain URLs on the server selectively, without actually removing
+              the web content.  Combined with
+              a <codeInline>RewriteCond</codeInline>, the 404 can be used to
+              filter results for a given requester, when a given url pattern
+              matches. You could use this to filter out requests that include what
+              appear to be SQL Injection attacks.  You can imagine other uses as
+              well. When using the <codeInline>[NF]</codeInline> modifier, the
+              replacement string is ignored.
+            </entry>
+          </row>
+
+          <row>
+            <entry>[NI]</entry>
+            <entry>
+              <para>
+                This modifier tells the rewrite engine to NOT iterate, even if the rule
+                applies.  You may want to do this, as a way to control the logic flow
+                for the rules.  It allows an INI file to specify several rules in a
+                set. For example, a single request might cause a header to be set, and
+                the request to be proxied. It does not make sense to use this modifier
+                on a rule with any of these other modifiers: L, G, NF, F.
+              </para>
+
+              <para>Example: <code lang="ini">
+                    RewriteHeader X-Remote-User:  ^$  %{REMOTE_USER}  [NI]
+                    ProxyPass  ^/app/([^/).aspx  http://innerserver/app/$1.aspx   [L]
+                </code>
+              </para>
+
+              <para>
+                Using the above pair of rules, if the first rule applies, then the
+                header is set, and rule processing continues to the next rule in the
+                ini file, the <codeInline>ProxyPass</codeInline> rule.  If the first
+                rule does not apply, then the <codeInline>[NI]</codeInline> flag has
+                no effect: processing continues with the
+                <codeInline>ProxyPass</codeInline> rule.
+              </para>
+
+              <alert class="note">
+                This is something like the converse of the
+                <codeInline>[C]</codeInline> flag in Apache&apos;s mod_rewrite.
+              </alert>
+
+            </entry>
+          </row>
+
+
+          <row>
+            <entry>[P]</entry>
+            <entry>
+              <para>
+                (mnemonic: proxy) Tells IIRF to perform a Proxy to the URL
+                specified in the replacement string, rather
+                than a Rewrite.
+              </para>
+
+              <para>
+                Normally, administrators will use
+                the <link xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link>
+                directive to specify a rule that should result in a
+                Proxy action. A proxy is different enough from a rewrite
+                that different directives are warranted, and ini files
+                written that way will probably be more maintainable.
+              </para>
+
+              <para>
+                But, Apache&apos;s mod_rewrite supports <literal>[P]</literal> as
+                an option on the <codeInline>RewriteRule</codeInline> directive,
+                and for compatibility purposes, IIRF also supports that form.  It
+                can be confusing and harder to maintain, so I recommend using
+                <codeInline>ProxyPass</codeInline> for proxy actions, rather than
+                the <codeInline>[P]</codeInline> flag on
+                <codeInline>RewriteRule</codeInline>.
+              </para>
+
+              <para>Example: <code lang="ini">
+                    RewriteRule ^/product/([0-9]*)/?  http://server2/product.php?product_id=$1  [QSA,P]
+                </code>
+              </para>
+
+              <para>
+                The above rule performs a proxy when the pattern
+                matches.
+              </para>
+
+            </entry>
+          </row>
+
+
+          <row>
+            <entry>[QSA]</entry>
+            <entry>
+              <para>
+                This modifier (mnemonic: Query String Append) tells IIRF to append
+                the original query string to the result of the replacement.  This
+                works just like the QSA modifier in mod_apache.  It appends the
+                original GET query string (everything after the ?) from the
+                original request to the GET query string that results from the
+                rewrite.
+              </para>
+
+              <para>For example, consider the following rule: <code lang="ini">
+                    RewriteRule ^/product/([0-9]*)/?     /product.php?product_id=$1    [QSA]
+                </code>
+              </para>
+
+              <para>
+                This simply makes the product_id number look like a directory to
+                the user. Now say that I have two different views of the page,
+                short and long, and suppose that the preferred view can be
+                explicitly specified with a query string parameter called "view".
+                Using the above rule, a request like :
+                <computerOutputInline>
+                    http://mysite.com/product/1351283/?view=short
+                </computerOutputInline>
+                ...results in a rewritten URL like this:
+                <computerOutputInline>
+                    http://example.com/product.php?product_id=1351283&amp;view=short
+                </computerOutputInline>
+              </para>
+
+            </entry>
+          </row>
+
+
+          <row>
+            <entry>[R], [R=3xx]</entry>
+            <entry>
+              <para>
+                This modifier (mnemonic: Redirect) tells IIRF to perform a
+                Redirect, rather than a Rewrite.
+              </para>
+
+              <para>
+                Normally, administrators will use the <link
+                xlink:href="c699ba60-fe15-4e90-ac4b-74598b5c352e">RedirectRule</link>
+                directive to specify a rule that should result in a Redirect. A
+                Redirect is different enough from a Rewrite that separate
+                directives are warranted. But, Apache&apos;s mod_rewrite supports
+                <literal>[R]</literal> as an option on the
+                <codeInline>RewriteRule</codeInline> directive, and for
+                compatibility purposes, IIRF also supports that form.  It can be
+                confusing and harder to maintain, so I recommend using
+                <codeInline>RedirectRule</codeInline> for redirects, rather than
+                the <literal>[R]</literal> flag on
+                <codeInline>RewriteRule</codeInline>.
+              </para>
+
+              <alert class='important'>
+                Make sure you understand
+                <link xlink:href="2e820208-c2eb-4d6d-a134-c63f7d41244f">
+                  the difference between a Rewrite and a Redirect</link>.
+              </alert>
+
+              <para>For example, consider the following rules: <code lang="ini">
+                    RewriteRule ^/product.php\?id=([0-9]+)$  /product/$1                 [R]
+                    RewriteRule ^/product/([0-9]*)/?         /product.php?product_id=$1  [QSA]
+                </code>
+              </para>
+
+              <para>
+                In this example, the first rule tells IIRF to <phrase>redirect</phrase>
+                requests that use the "ugly" form of the URL to the
+                search-engine-optimized form of the URL; this updates the URL in the
+                browser address bar. The second rule tells IIRF
+                to <phrase>rewrite</phrase> the SEO request to the internal URL format.
+                Often a Redirect and a Rewrite are used in pairs like this.
+              </para>
+            </entry>
+          </row>
+
+
+          <row>
+            <entry>[U]</entry>
+            <entry>
+              <para>
+                This flag (mnemonic: unmangle) tells the filter to store the
+                original, unmodified URL in the server variable
+                called <literal>HTTP_X_REWRITE_URL</literal>.  The filter does
+                this by inserting a request header with the
+                name <literal>X-Rewrite-Url:</literal> and the value of the
+                original URL.  If
+                the <link xlink:href='4d68bf79-e0a0-4649-bcae-248c08c71d56'>NotifyLog</link>
+                directive is used in the global IIRF ini file, then rules that use
+                this modifier will also cause IIS to log the original, pre-rewrite
+                URL in the IIS log file.
+              </para>
+
+              <para>
+                This modifer is useful if you want to use the
+                original, <phrase>friendly</phrase> URLs in an analytics
+                engine, or if you have another need to retain the
+                original un-rewritten URL in your web application.
+              </para>
+
+              <para>
+                Unmangling will occur when any rule that is satisfied for a given
+                incoming request, has been modified with the
+                <codeInline>[U]</codeInline> flag.  Remember, IIRF recurses on
+                URLs.  It may rewrite an incoming URL, then rewrite the result of
+                the rewrite.  It continues until the iteration limit is reached,
+                or until no more rules are satisfied.  If any of the rules applied
+                to a given request include <codeInline>[U]</codeInline>, then
+                unmangling - setting the request header - occurs.
+              </para>
+
+              <para>
+                For example, suppose this is included in your Iirf.ini file:
+                <code lang="ini">
+                  RewriteRule ^/article/([0-9]+$         /article.aspx?id=$1     [L,U]
+                </code>
+              </para>
+
+              <para>
+                If you submit a URL request for <literal>/article/1</literal>, then it
+                gets rewritten to <literal>/article.aspx?id=1</literal>
+                . Within the article.aspx page, the server
+                variable <literal>HTTP_X_REWRITE_URL</literal> will be
+                set to the value <literal>/article/1</literal> .
+              </para>
+
+            </entry>
+          </row>
+
+        </table>
+
+      </content>
+    </section>
+
+
+    <section address="Backrefs">
+      <title>Back References</title>
+      <content>
+
+        <para>
+          Back References like <literal>$n</literal> and <literal>*n</literal>
+          can be included in the replacement string. </para>
+
+        <para>
+          Back references in the replacement string of the form
+          <literal>$n</literal> refer to the matched substrings (also known as
+          "captured groups") when applying the url-pattern of the
+          <codeInline>RewriteRule</codeInline> or
+          <codeInline>RedirectRule</codeInline> to the URL.  This usage is
+          consistent with most regular-expression utilities.
+        </para>
+
+        <para>  For example, consider the
+          regex <literal>^/([^/]+/)*([^/]+)\?(.*)$</literal>.
+          It begins with a caret - the more formal name is 'circumflex'.  Starting
+          a pattern with a circumflex has a special meaning in regex language: it
+          means the pattern match must occur starting at the beginning of the
+          line.  If you don&apos;t include the caret, the pattern can be applied
+          at any place in the URL string, which may or may not be what you
+          want. In most cases you want the caret.  Next it has a capturing group,
+          denoted by the parens: <literal>([^/]+/)</literal>.  The capturing group
+          matches any sequence of one or more characters from the range defined
+          within square brackets: <literal>[^/]</literal>, followed by a slash.
+          The range is "any character except slash", because when the caret or
+          circumflex is the first character within square brackets, it negates the
+          <legacyItalic>range</legacyItalic> specified within the brackets. And
+          that first capturing group - defined by parens - is followed by a
+          <literal>*</literal>, which means "zero or more of these".  This
+          capturing group will match one or more path segments in a URL path.
+        </para>
+
+        <para>
+          Next comes <literal>([^/]+)</literal>, which will match and capture a
+          sequence of one or more characters that are not slash.  This might be a
+          script name, or a page name. Following that is <literal>\?</literal>,
+          which denotes a literal question mark.  Then, another capturing group:
+          <literal>(.*)</literal>, which captures anything that follows the
+          optional question mark - in other words, it captures the query string.
+          Finally, the <literal>$</literal> denotes the end-of-line.
+        </para>
+
+          <para>Applying this regex to various URLs, we obtain these back-references :
+        </para>
+
+        <table>
+          <tableHeader>
+            <row>
+              <entry>URL</entry>
+              <entry>back-refs</entry>
+            </row>
+          </tableHeader>
+          <row>
+            <entry>/a/b.aspx?arg1=value</entry>
+            <entry>
+              <list>
+                <listItem>$0 : /a/b.aspx?arg1=value</listItem>
+                <listItem>$1 : a/</listItem>
+                <listItem>$2 : b.aspx</listItem>
+                <listItem>$3 : arg1=value</listItem>
+              </list>
+            </entry>
+          </row>
+
+          <row>
+            <entry>/page?p1=foo</entry>
+            <entry>
+              <list>
+                <listItem>$0 : /page?p1=foo</listItem>
+                <listItem>$1 : <newTerm>(nothing)</newTerm></listItem>
+                <listItem>$2 : page</listItem>
+                <listItem>$3 : p1=foo</listItem>
+
+              </list>
+            </entry>
+          </row>
+
+          <row>
+            <entry>/page?</entry>
+            <entry>
+
+              <list>
+                <listItem>$0 : /page?</listItem>
+                <listItem>$1 : <newTerm>(nothing)</newTerm></listItem>
+                <listItem>$2 : page</listItem>
+                <listItem>$3 : <newTerm>(nothing)</newTerm></listItem>
+              </list>
+
+            </entry>
+          </row>
+
+              <row>
+                <entry>/a/b/c</entry>
+                <entry>NONE (no match)</entry>
+              </row>
+
+          <row>
+            <entry>/a/b/c.aspx?arg1=value</entry>
+            <entry>
+              <list>
+                <listItem>$0 : /a/b/c/d.aspx?arg1=value</listItem>
+                <listItem>$1 : c/</listItem>
+                <listItem>$2 : d.aspx</listItem>
+                <listItem>$3 : arg1=value</listItem>
+              </list>
+            </entry>
+          </row>
+
+        </table>
+
+        <para>
+          The first thing to note is the <literal>$0</literal> back-reference
+          matches the entire matched string.  Also notice that some
+          back-references are empty.  For example, in the case of
+          <literal>/page?</literal>, the <literal>$1</literal> back-reference is
+          empty, because there are no path segments.  Finally, the final example
+          URL shows that in cases of repeated captures (eg,
+          (<phrase>pattern</phrase>)*), only the last captured group is available
+          in the back-reference.  So in URLs with multiple path segments, this
+          regex allows you to capture and retrieve only the <phrase>last</phrase>
+          path segment.  Of course, if you want to capture multiple path segments,
+          you can do it using a different regular expression.
+        </para>
+
+        <para>
+          Beyond references to groups captured by the regex, IIRF also supports,
+          within the replacement pattern of the
+          <codeInline>RewriteRule</codeInline> or
+          <codeInline>RedirectRule</codeInline>, back-references to matched
+          substrings in the previously evaluated RewriteCond pattern, using the
+          form <literal>*N</literal>, where N=1,2,3,.....  This works very
+          similarly to <literal>$1</literal> and so on, except they are references
+          to the matches from the <codeInline>RewriteCond</codeInline> pattern,
+          not from the pattern in the RewriteRule or
+          <codeInline>RedirectRule</codeInline>.  Keep in mind these
+          back-references are available if and only if there is a RewriteCond
+          attached to the rule.  If there is no
+          <codeInline>RewriteCond</codeInline>, then <literal>*1</literal> (etc)
+          evaluate to empty strings.
+        </para>
+
+
+        <para>Be aware of the order of evaluation.
+          The order is:
+          <list class="ordered">
+            <listItem>The <phrase>url pattern</phrase>
+              in the <codeInline>RewriteRule</codeInline>.
+            </listItem>
+            <listItem>The chain of attached <codeInline>RewriteCond</codeInline>
+              directives, if any.
+            </listItem>
+            <listItem>The replacement string in the rule.
+            </listItem>
+          </list>
+        </para>
+
+        <mediaLink>
+          <caption placement="after" lead="Figure 1">Order of Evaluation</caption>
+          <image placement="center" xlink:href="52008f57-c654-4f68-8993-30fd3da8204a"/>
+        </mediaLink>
+
+
+        <para>
+          In cases where there is a chain
+          of <codeInline>RewriteCond</codeInline> directives attached to
+          a rule, the "previously evaluated RewriteCond pattern" - in
+          other words the referent of *1, *2, etc - is not always the
+          nearest <codeInline>RewriteCond</codeInline> in the file,
+          because depending on the logical operators used, the
+          nearest <codeInline>RewriteCond</codeInline> may not have been
+          the most recently evaluated.  In fact, depending on the
+          conditions, some RewriteCond&apos;s in a chain will not be
+          evaluated at all.
+        </para>
+
+        <para>
+          Here&apos;s an explanation for why this is so.  For each <codeInline>RewriteCond</codeInline>,
+          IIRF does this:
+        </para>
+
+        <list class="ordered">
+          <listItem>generate a value for the &lt;test-string&gt;, replacing any Server
+            Variables, and back-references to do so.</listItem>
+          <listItem> apply the regular expression &lt;pattern&gt; to see if it matches.
+            If the regex matches, then the back-references of the form (*1,
+            *2) become available for the next <codeInline>RewriteCond</codeInline>, or for the
+            <codeInline>RewriteRule</codeInline>.
+          </listItem>
+        </list>
+
+
+        <para>
+          Now, suppose you have this rule with these conditions: <code lang="ini">
+              RewriteCond &lt;test-string-A&gt;  &lt;pattern-A&gt;  [OR]
+              RewriteCond &lt;test-string-B&gt;  &lt;pattern-B&gt;
+              RewriteCond &lt;test-string-C&gt;  &lt;pattern-C&gt;
+              RewriteRule ^/blah$   *1
+          </code>
+        </para>
+
+        <para>
+          In English, this translates to: if (A OR (B AND C)), then apply
+          the <codeInline>RewriteRule</codeInline>.
+        </para>
+
+        <para>
+          Supposing that <codeInline>RewriteCond</codeInline> A evaluates to TRUE,
+          then <codeInline>RewriteCond</codeInline> B and
+          <codeInline>RewriteCond</codeInline> C will never be evaluated.  Therefore
+          any back-references in the <codeInline>RewriteRule</codeInline>
+          replacement string (like *1 above) will refer to matched substrings (if
+          any) in <codeInline>RewriteCond</codeInline> A.
+        </para>
+
+        <para>
+          Now suppose that <codeInline>RewriteCond</codeInline> A evaluates to
+          FALSE, and both B and C are true. In this case, any back-references of
+          the form *1, *2... in &lt;test-string-B&gt; will refer to
+          <codeInline>RewriteCond</codeInline> A - but they will be invalid
+          references as <codeInline>RewriteCond</codeInline> A evaluated to false.
+          On the other hand, back-references of that form in &lt;test-string-C&gt;
+          will refer to matched substrings from
+          <codeInline>RewriteCond</codeInline> B, and these will be active and
+          valid.  Finally, back-refs like *n in the
+          <codeInline>RewriteRule</codeInline> or
+          <codeInline>RedirectRule</codeInline> will refer to matched substrings
+          from <codeInline>RewriteCond</codeInline> C.
+        </para>
+
+        <para>
+          In this example, there is no possibility that references like *n in the
+          <codeInline>RewriteRule</codeInline> or
+          <codeInline>RedirectRule</codeInline> replacement string will ever refer
+          to matched substrings from <codeInline>RewriteCond</codeInline> B,
+          because the order of logical evaluation implies that
+          <codeInline>RewriteCond</codeInline> B will never be the most recently
+          evaluated condition after the overall condition set evaluates to
+          TRUE. Get it?
+        </para>
+
+      </content>
+    </section>
+
+
+    <section address="ServerVars">
+      <title>Server Variable References</title>
+      <content>
+        <para>
+          You can include references to IIS server variables in the replacement
+          string, using the syntax <codeInline>%{VARIABLE_NAME}</codeInline>,
+          where VARIABLE_NAME is replaced with the name of an actual server
+          variable.  For example, on a typical incoming request,
+          <codeInline>%{REQUEST_METHOD}</codeInline> will evaluate to the string
+          "GET", and <codeInline>%{SERVER_PORT}</codeInline> will evaluate to
+          the string "80".
+        </para>
+
+        <table>
+          <title>These are the supported Server Variables:</title>
+          <tableHeader>
+            <row>
+              <entry>variable name</entry>
+              <entry> </entry>
+              <entry> </entry>
+            </row>
+          </tableHeader>
+          <row>
+            <entry> APPL_MD_PATH</entry>
+            <entry> HTTPS</entry>
+            <entry> REQUEST_URI (**)</entry>
+          </row>
+          <row>
+            <entry> APPL_PHYSICAL_PATH</entry>
+            <entry> HTTPS_KEYSIZE</entry>
+            <entry> SCRIPT_NAME</entry>
+          </row>
+          <row>
+            <entry> AUTH_PASSWORD</entry>
+            <entry> HTTPS_SECRETKEYSIZE</entry>
+            <entry> SERVER_NAME</entry>
+          </row>
+          <row>
+            <entry> AUTH_TYPE</entry>
+            <entry> HTTPS_SERVER_ISSUER</entry>
+            <entry> SERVER_PORT</entry>
+          </row>
+          <row>
+            <entry> AUTH_USER</entry>
+            <entry> HTTPS_SERVER_SUBJECT</entry>
+            <entry> SERVER_PORT_SECURE</entry>
+          </row>
+          <row>
+            <entry> CERT_COOKIE</entry>
+            <entry> INSTANCE_ID</entry>
+            <entry> SERVER_PROTOCOL</entry>
+          </row>
+          <row>
+            <entry> CERT_FLAGS</entry>
+            <entry> INSTANCE_META_PATH</entry>
+            <entry> SERVER_SOFTWARE</entry>
+          </row>
+          <row>
+            <entry> CERT_ISSUER</entry>
+            <entry> LOCAL_ADDR</entry>
+            <entry> URL</entry>
+          </row>
+          <row>
+            <entry> CERT_KEYSIZE</entry>
+            <entry> LOGON_USER</entry>
+            <entry> HTTP_ACCEPT</entry>
+          </row>
+          <row>
+            <entry> CERT_SECRETKEYSIZE</entry>
+            <entry> PATH_INFO</entry>
+            <entry> HTTP_ACCEPT_LANGUAGE</entry>
+          </row>
+          <row>
+            <entry> CERT_SERIALNUMBER</entry>
+            <entry> PATH_TRANSLATED</entry>
+            <entry> HTTP_CONNECTION</entry>
+          </row>
+          <row>
+            <entry> CERT_SERVER_ISSUER</entry>
+            <entry> QUERY_STRING</entry>
+            <entry> HTTP_HOST</entry>
+          </row>
+          <row>
+            <entry> CERT_SERVER_SUBJECT</entry>
+            <entry> REMOTE_ADDR</entry>
+            <entry> HTTP_REFERER</entry>
+          </row>
+          <row>
+            <entry> CERT_SUBJECT</entry>
+            <entry> REMOTE_HOST</entry>
+            <entry> HTTP_USER_AGENT</entry>
+          </row>
+          <row>
+            <entry> CONTENT_LENGTH</entry>
+            <entry> REMOTE_USER</entry>
+            <entry> HTTP_ACCEPT_ENCODING</entry>
+          </row>
+          <row>
+            <entry> CONTENT_TYPE</entry>
+            <entry> REQUEST_FILENAME (**)</entry>
+          </row>
+
+          <row>
+            <entry> GATEWAY_INTERFACE</entry>
+            <entry> REQUEST_METHOD</entry>
+          </row>
+
+        </table>
+
+        <para>
+          For an explanation of the values of these server variables, see
+          <externalLink>
+            <linkText>the IIS documentation</linkText>
+            <linkUri>http://msdn.microsoft.com/en-us/library/ms524602.aspx</linkUri>
+            </externalLink>.  Those variables marked with (**) in the table are
+            synthetic variables available only within IIRF. The rest of them are
+            server variables available within any IIS application, including
+            PHP, ASPX, and so on.
+        </para>
+        <para>
+            For regular server variables, the value you retrieve in IIRF via
+            <codeInline>%{VARIABLE_NAME}</codeInline> will be the same
+            as the value you retrieve in the server application, using whatever syntax
+            is appropriate.  For example, in ASP.NET, you can use
+          <externalLink>
+            <linkText>the HttpRequest.ServerVariables</linkText>
+            <linkUri>http://msdn.microsoft.com/en-us/library/system.web.httprequest.servervariables.aspx</linkUri>
+            </externalLink> collection to retrieve server variables.
+        </para>
+
+        <para>
+          The special values <literal>REQUEST_FILENAME</literal> and
+          <literal>REQUEST_URI</literal> are not formal server variables, but
+          can be referenced within IIRF.ini, such as in a replacement string or in a
+          <codeInline>RewriteCond</codeInline> using the server variable syntax
+          (eg <codeInline>%{REQUEST_FILENAME}</codeInline> ).
+        </para>
+
+        <para>
+          <literal>REQUEST_FILENAME</literal> will evaluate to the physical path
+          for the requested URL, which may or may not correspond to an existing
+          file. <literal>REQUEST_URI</literal> evaluates to the original URI,
+          including uri path and query string, but not including the scheme,
+          host or port.
+        </para>
+
+        <alert class='note'>
+          <literal>REQUEST_URI</literal> is similar to
+          the <codeInline>%{HTTP_X_REWRITE_URL}</codeInline> server variable that
+          is created when the <codeInline>[U]</codeInline> modifier is used on
+          a <codeInline>RewriteRule</codeInline>.  They would both contain the
+          same value, but because the former is a <phrase>synthetic</phrase>
+          server variable, it is  available only within IIRF;  the latter is
+          available in downstream applications as well, but only if
+          the <codeInline>[U]</codeInline> modifier has been used on one of the
+          rules that IIRF applies for a given request.
+        </alert>
+
+        <para>
+          These <legacyItalic>pseudo-variables</legacyItalic> are available only
+          within IIRF. If you need to access the value of these pseudo-variables
+          in your server application, you can set a request header via <link
+          xlink:href="3d1ea0d0-eabd-43b3-a913-de7128a74bb6">RewriteHeader</link>,
+          like this: <code lang="ini">
+            ## Set the header if it is not set
+            RewriteHeader X-request-filename: ^$ %{REQUEST_FILENAME}
+          </code>
+          Then, in the server application, retrieve the value by accessing the server variable
+          <literal>HTTP_X_REQUEST_FILENAME</literal>, using whatever syntax is appropriate.
+        </para>
+
+        <para>
+          In addition to the variables listed in the table above, you can
+          reference pseudo-variables for the time and date, expressed in
+          <legacyItalic>local time</legacyItalic>. These are as follows:
+        </para>
+
+        <table>
+          <title>Time Variables</title>
+          <tableHeader>
+            <row>
+              <entry>variable name</entry>
+              <entry>meaning </entry>
+            </row>
+          </tableHeader>
+          <row>
+            <entry>TIME_YEAR</entry>
+            <entry>Four-digit number for the current year.</entry>
+          </row>
+          <row>
+            <entry>TIME_MON</entry>
+            <entry>Two-digit number, with leading zero if necessary, for
+            the current month. January is 01. (01-12)</entry>
+          </row>
+          <row>
+            <entry>TIME_DAY</entry>
+            <entry>Two-digit number, with leading zero if necessary, for
+            the current day of the month. (01-31)</entry>
+          </row>
+          <row>
+            <entry>TIME_HOUR</entry>
+            <entry>Two-digit number, with leading zero if necessary, for
+            the current hour of the day, expressed in 24-hour format. (00-23)</entry>
+          </row>
+          <row>
+            <entry>TIME_MIN</entry>
+            <entry>Two-digit number, with leading zero if necessary, for
+            the current minute of the hour. (00-59)</entry>
+          </row>
+          <row>
+            <entry>TIME_SEC</entry>
+            <entry>Two-digit number, with leading zero if necessary, for
+            the current second of the minute. (00-59)</entry>
+          </row>
+          <row>
+            <entry>TIME_WDAY</entry>
+            <entry>One-digit number for the day of the week. Sunday is 0. (0-6)</entry>
+          </row>
+          <row>
+            <entry>TIME_WEEK</entry>
+            <entry>Two-digit number, with a leading zero if necessary, for
+            the week of the year. (00-53)</entry>
+          </row>
+          <row>
+            <entry>TIME_YDAY</entry>
+            <entry>Three-digit number, with leading zeros, for
+            expressing the day of the year. (000-366)</entry>
+          </row>
+        </table>
+
+        <para>
+          You can also use these time values in a <link
+          xlink:href="39dbb30e-2afd-4cb1-aaff-45497fe2cbe6">RewriteCond</link>
+          to deliver different results based on the time of day, or the date. On
+          the 30th of every month, for example, you could rewrite a request to a
+          different URL.
+        </para>
+
+        <para>
+          You can also retrieve custom Request headers with server variable
+          syntax, according to the model used by IIS.  To convert from a name of
+          a request header to the server variable that can retrieve its
+          variable, apply a prefix of <codeInline>HTTP_</codeInline>, and
+          replace each dash with an underscore. In other words, if you want to
+          retrieve the value of the <literal>X-Remote-User</literal> request
+          header, then use <codeInline>%{HTTP_X_REMOTE_USER}</codeInline>. If
+          you want to retrieve the value of the <literal>Cookie</literal>
+          request header, use <codeInline>%{HTTP_COOKIE}</codeInline>.
+        </para>
+
+        <para>
+          This also applies to the header set due to the
+          <codeInline>[U]</codeInline> flag. You can retrieve the original,
+          un-rewritten URL at any point within request processing, by
+          referencing <codeInline>%{HTTP_X_REWRITE_URL}</codeInline> . In
+          this way, a rule can consider both the current value of the
+          request URL, which has possibly been rewritten, and the original
+          value of the request URL.
+        </para>
+
+        <para>
+          If you reference a server variable that is empty, or does not
+          exist, then the result will be the empty string.  In other
+          words <codeInline>%{DOES_NOT_EXIST}</codeInline> evaluates to
+          nothing when there is no server variable by that name. You can
+          test for matches against the regex
+          <codeInline>^$</codeInline>.
+        </para>
+
+        <alert class='note'>
+          This is a change for IIRF v2.1.2.0 from previous versions. In
+          previous versions, the value returned for a non-existent server
+          variable was the name of the variable. Using the example given
+          above, the replacement string
+          <codeInline>%{DOES_NOT_EXIST}</codeInline> had evaluated to
+          <literal>DOES_NOT_EXIST</literal>.
+        </alert>
+
+        <para>
+          The ability to include server variables in <link
+          xlink:href="39dbb30e-2afd-4cb1-aaff-45497fe2cbe6">RewriteCond</link>
+          statements presents some interesting opportunities. For example,
+          in a <token>REST</token> application, you could use IIRF to
+          rewrite requests to different target URLs based on the value of
+          the HTTP_ACCEPT variable.  One backend URL might deliver XML and
+          another JSON, based on that Accept value. You could evaluate the
+          referring page, and allow or deny the request based on the
+          referrer. You could test the user agent, and deliver different
+          URLs based on which browser was making the request. And so on.
+        </para>
+
+        <para>
+          For Example: <code lang="ini">
+              RewriteCond %{REMOTE_ADDR}   ^(?!127.0.0.1)([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})(.*)$
+              RewriteRule  ^/(?!redirected.htm)(.*)$      /redirected.htm
+          </code>
+
+          The above condition evaluates to true when the server-variable
+          "REMOTE_ADDR" evaluates to an ip address which is NOT
+          127.0.0.1. The <literal>?!</literal> is a zero-width negative lookahead, and the
+          <literal>(.*)</literal> at the end of the regex is to catch any rubbish that
+          sometimes appears in that variable.  The rule following the
+          condition says, for any URL which is not "redirected.htm", map
+          it to "redirected.htm".  This prevents endless re-writing. (You
+          could also prevent endless rewriting with an <codeInline>[L]</codeInline> modifier flag).
+          You might use this pair of condition and rule to rewrite any
+          externally originated requests to the IIS server.
+          Local requests would still be honored.
+        </para>
+
+
+        <para>
+          Example: <code lang="ini">
+              RewriteCond %{QUERY_STRING} ^$
+              RewriteRule ^/(.*)$ /index.php?path=$1 [L]
+
+              RewriteRule ^/(.*)\?(.*)$ /index.php?path=$1&amp;$2 [L]
+          </code>
+          This pair of rules works together.  The first rule has a condition that
+          evaluates to true, only when the  query string is empty.  That means,
+          there&apos;s no <literal>?</literal> in the URL.  In that case, the first rule is evaluated.
+          The second rule is evaluated when the querystring is NOT empty.  In this
+          case the rule takes the first capture, which is really the
+          full query path of the URL (Same as PATH_INFO), and inserts that as a
+          named param "path".  Then it appends the original query
+          string.
+        </para>
+
+
+        <para>
+          Even though the output of the first rule seems to match the
+          input for the second rule, because the first rule uses
+          the <codeInline>[L]</codeInline> modifier, the output of the
+          first rule can never be used as input to the second
+          rule. Also, because the second rule
+          uses <codeInline>[L]</codeInline>, the output of the 2nd rule
+          can never be used as input to rules following it in the ini
+          file.
+        </para>
+
+        <para>For example, the rules above would map URLs this way:
+        </para>
+
+        <table>
+          <tableHeader>
+            <row>
+              <entry>incoming request</entry>
+              <entry>rewritten URL</entry>
+            </row>
+          </tableHeader>
+          <row>
+            <entry>/what/ever</entry>
+            <entry>/index.php?path=/what/ever</entry>
+          </row>
+          <row>
+            <entry>/what/ever?query=something </entry>
+            <entry>/index.php?path=/what/ever&amp;query=something</entry>
+          </row>
+        </table>
+
+        <para>Example: <code lang="ini">
+              RewriteRule ^/([^\?]+)\? /index.php?q=$1   [QSA,L]
+          </code>
+          This rule uses the <codeInline>QSA</codeInline> modifier to do the same thing, more simply.
+        </para>
+
+
+        <para>Example: <code lang="ini">
+              RewriteCond %{HTTP_REFERER} !^https?://(?:www\.)mysite\.net/   [I]
+              RewriteRule \.(?:gif|jpg|jpeg|png)$ /blocked.png   [I,L]
+          </code>
+
+          This rewrite rule will block direct image linking, with a list of
+          sites allowed to link.  The rule pattern says "match anything that
+          ends in a .gif, jpg, jpeg or png."  If this match happens, the URL
+          gets rewritten to blocked.png.  But, this rewriteRule is in effect
+          only if the <codeInline>RewriteCond</codeInline> applies.  The
+          condition should read, "when HTTP_REFERER is NOT the given
+          pattern" - notice the ! (negation) prefix on the pattern in the
+          <codeInline>RewriteCond</codeInline>.  So, when the condition is
+          true, then the request for an image is blocked.
+        </para>
+      </content>
+    </section>
+
+    <relatedTopics>
+      <!-- RewriteCond -->
+      <link xlink:href="39dbb30e-2afd-4cb1-aaff-45497fe2cbe6"/>
+      <!-- RedirectRule -->
+      <link xlink:href="c699ba60-fe15-4e90-ac4b-74598b5c352e"/>
+    </relatedTopics>
+
+  </developerConceptualDocument>
+</topic>
+

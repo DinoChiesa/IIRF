@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="d42e49bc-38d4-4407-9512-1a5539f221c1" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <introduction>
+      <!-- <autoOutline /> -->
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Example: Block Requests by User Agent</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for blocking requests from Java bots.
+#
+
+RewriteLogLevel 1
+RewriteLog c:\inetpub\iirfLogs\iirf
+RewriteEngine ON
+StatusInquiry ON
+IterationLimit 5
+
+RewriteCond %{HTTP_USER_AGENT} Java [OR]
+RewriteCond %{HTTP_USER_AGENT} ^$
+RewriteRule ^/(.*)$ /$1 [F]
+</code>
+
+        <para>
+          Explanation: Some administrators may feel plagued by
+          Java-based web bots. This ini file has just a single rule, and
+          it returns "403 Forbidden" for any URL, if the HTTP_USER_AGENT
+          is detected as having Java in its name, or if it is blank.  Of
+          course, this blocks <legacyItalic>any</legacyItalic> request
+          that contains the word "Java" in its user agent string. This
+          may block legitimate requests as well as bot requests.
+        </para>
+
+      </content>
+    </section>
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+
+

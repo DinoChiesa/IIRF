@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="5b3e2db6-952e-4a4c-aefc-211ab192d86e" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <introduction>
+      <!-- <autoOutline /> -->
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Example: Redirect based on a map</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+
+        <para>
+          You can define a mapping in a text file, to use within IIRF.
+          This example shows how you might do that.
+        </para>
+
+        <para>
+          Suppose this is the contents of the plants mapping file:
+        </para>
+
+              <code lang="ini">
+                # This is the map file
+                # It is stored in c:\inetpub\maps\plants.txt
+
+                oak        http://this.is.an.oak/tree     # optional comment
+                azalea     http://arbor.com/azalea.php
+                bluegrass  http://lawns.org/bluegrass.about.html
+                bamboo     http://bamboo.org/
+              </code>
+
+        <para>
+          Use this ini to load the map and then apply it in a RedirectRule.
+        </para>
+
+
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for IIRF
+#
+
+RewriteLogLevel 1
+RewriteLog c:\inetpub\iirfLogs\iirf
+RewriteEngine ON
+StatusInquiry ON
+
+# load in the plants map
+RewriteMap  plantmap   txt:c:\inetpub\maps\plants.txt
+
+# redirect any requests for plant info as appropriate
+RedirectRule ^/plant/(.*) ${plantmap:$1|http://myserver.org/Unknown.php}   [R=301]
+
+# all other requests get a 404 page
+RewriteRule ^.*$      Custom404Page.htm           [L]
+
+</code>
+
+        <para>
+          Explanation: each URL request that arrives and matches the
+          given pattern, will be redirected, according to the pairs
+          defined in the map.
+        </para>
+
+        <para>
+          Any URL requests that match, but for which no plant exists in
+          the map file, will be redirected to the default location,
+          which
+          is  <codeInline>http://myserver.org/Unknown.php</codeInline>.
+        </para>
+
+      </content>
+    </section>
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>

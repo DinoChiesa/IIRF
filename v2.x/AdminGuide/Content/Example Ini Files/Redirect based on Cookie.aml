@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="0ce888a6-060b-4860-8b19-aaa03b35a0eb" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <introduction>
+      <!-- <autoOutline /> -->
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Example: Redirect based on the presence of a Cookie</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for IIRF
+#
+
+RewriteLog c:\inetpub\iirfLogs\iirf
+RewriteLogLevel 1
+RewriteEngine ON
+StatusInquiry ON
+IterationLimit 5
+
+# check for existence of the cookie, before allowing download
+RewriteCond %{HTTP_COOKIE} (?!LicenseAcceptance=.+)   [I]
+RedirectRule ^/download/.*  /license.php?doc=$0       [I,L]
+
+</code>
+
+        <para>
+          Explanation: This file has just one rule, that redirects
+          all requests for downloadable documents to a license page, if
+          the cookie indicating that the license has been accepted, is
+          not present. The ?! in
+          the <codeInline>RewriteCond</codeInline> is
+          a <legacyItalic>negative lookahead</legacyItalic>, so
+          the <codeInline>RewriteCond</codeInline> reads "when there is
+          no Cookie present that is labeled LicenseAcceptance=&lt;something&gt;".
+        </para>
+
+        <para>
+          The $0 expands to the entire matched URL.
+        </para>
+
+        <para>
+          You could also use a Rewrite rather than a Redirect when the
+          cookie is not detected.  In that case,  after the
+          license is accepted, the license page should
+          just transfer to the original page.
+        </para>
+
+        <para>
+          In either case when the new request arrives for a download, the cookie
+          will be present and the rule above will not fire. In that case
+          the download URL path can be directly accessed.
+        </para>
+
+      </content>
+    </section>
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+
+

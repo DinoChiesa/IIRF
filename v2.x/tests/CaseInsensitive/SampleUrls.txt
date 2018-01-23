@@ -1,0 +1,36 @@
+# SampleUrls.txt
+# 
+# Expected result may be a URL, or one of the following: 
+#
+#     NO REWRITE 
+#     FORBIDDEN
+#     REDIRECT <code>  <URL>
+#     NOT FOUND 
+#
+#
+
+
+# Incoming URL                                     Expected Result
+#---------------------------------------------------------------------- 
+#
+
+/index.jsp                                         /index.aspx
+/index.Jsp                                         REDIRECT 302 /PleaseUseAllLowerCase.aspx?originalRequest=index.Jsp
+
+/Home.jsp                                          /Home.aspx
+/Home.JSP                                          REDIRECT 302 /PleaseUseAllLowerCase.aspx?originalRequest=Home.JSP
+
+
+/Catalog.CFM                                       /main.cfm?Catalog
+
+/Hello.php                                         /Bonjour.php
+/Hello.PHP                                         /Bonjour.php
+/hello.php                                         NO REWRITE
+
+
+/thisisatest                                       NO REWRITE
+
+/foros                                             /foros.php
+/Foros                                             /foros.php
+/FOROS                                             /foros.php
+

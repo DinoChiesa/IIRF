@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="77dd5ab8-9638-45e9-a920-6182fca3f767" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <introduction>
+      <!-- <autoOutline /> -->
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Example: Rewrite based on a map</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+
+        <para>
+          You can define a mapping in a text file, to use within IIRF,
+          and drive rewrites.
+          This example shows how you might do that.
+        </para>
+
+        <para>
+          Suppose you have a set of products, each with a product
+          ID. For this example, we&apos;ll suppose you&apos;re using
+          ASP.NET, but that isn&apos;t really critical.
+          Your ASPX pages handle product inquiries based on the product
+          ID, which is a 5-digit number uniquely identifying the
+          product. But you&apos;d like to expose friendly product names
+          to the external users.  You can do this with a Rewrite Map.
+        </para>
+
+        <para>
+          Specify the mapping of product names to product ID in a text file:
+        </para>
+
+        <code lang="ini">
+          # Product map file
+          # It is stored in c:\inetpub\maps\products.txt
+
+          Claw-Hammer             17282
+          Shelf-Bracket           87112
+          Adjustable-Wrench       35367
+          Toggle-Bolt             63544
+          Flat-Washer             23346
+          Hose-Clamp              52326
+          Hacksaw                 31155
+          Electrical-Switch-2way  73625
+          Power-Sander            45711
+        </code>
+
+        <para>
+          Then, use this ini to load the map and then apply it in a RewriteRule:
+        </para>
+
+        <code lang="ini">
+          # Iirf.ini
+          #
+
+          RewriteLogLevel 1
+          RewriteLog c:\inetpub\iirfLogs\iirf
+          RewriteEngine ON
+          StatusInquiry ON
+
+          # load in the products map
+          RewriteMap  productmap   txt:c:\inetpub\maps\products.txt
+
+          # rewrite any requests for product info as appropriate
+          RewriteRule ^/(.*)/Info   /ProductInfo.aspx?pid=${productmap:$1|11111}  [L]
+        </code>
+
+        <para>
+          Explanation: each URL request that arrives and matches the
+          given pattern, will be rewritten, according to the pairs
+          defined in the map. The user&apos;s URL address bar will
+          remain unchanged, but the request will get the information
+          that is available at the unfriendly URL.
+        </para>
+
+        <para>
+          For maps that contain a long list, you will want to automate
+          the generation of the map file. For example, use a database query to
+          generate the map file that relates the product names to product IDs.
+        </para>
+
+      </content>
+    </section>
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+

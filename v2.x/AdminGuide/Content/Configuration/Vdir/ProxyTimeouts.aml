@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="95f7b027-2642-4937-8778-e7a4643a524d" revisionNumber="1">
+
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+        <para>
+          <codeInline>ProxyTimeouts</codeInline> sets the timeout values
+          IIRF uses when sending proxied requests.
+        </para>
+
+      <autoOutline />
+    </introduction>
+
+    <section address="Usage">
+      <title>Basic Syntax and Usage</title>
+      <content>
+        <para>Syntax:
+          <code lang="ini">
+            ProxyTimeouts &lt;resolve-timeout&gt; &lt;connect-timeout&gt; &lt;send-timeout&gt; &lt;receive-timeout&gt;
+          </code>
+        </para>
+
+        <para>
+          Each value is an integer, in seconds, describing the time to
+          wait for a response in various phases of the HTTP
+          communications protocol.  These timeouts apply only for
+          proxied requests. This table summarizes the use of each timeout value:
+        </para>
+        <table>
+          <tableHeader>
+            <row>
+              <entry>timeout</entry>
+              <entry>stage</entry>
+            </row>
+          </tableHeader>
+          <row>
+            <entry>resolve</entry>
+            <entry>DNS name resolution. When proxying to
+            www.example.com, IIRF first needs to resolve that DNS name
+            to an IP address.  This involves communicating with a name
+            server.</entry>
+          </row>
+          <row>
+            <entry>connect</entry>
+            <entry>Initial connection to the target HTTP
+            server. </entry>
+          </row>
+          <row>
+            <entry>send</entry>
+            <entry>Confirmation that the the proxy&apos;d
+              HTTP server actually received
+              data sent in an HTTP request. </entry>
+          </row>
+          <row>
+            <entry>receive</entry>
+            <entry>the data response received from the proxy&apos;d
+              HTTP server. </entry>
+          </row>
+        </table>
+
+
+        <para>
+          In each case, when the response is not received within the
+          timeout window, IIRF considers the call <phrase>failed.</phrase>
+          Specify zero (0) for any
+          value to use
+          an <legacyItalic>infinite</legacyItalic> timeout. The maximum
+          value for each timeout is 600 (10 minutes), and the default
+          value is 30 seconds.
+        </para>
+
+        <para>
+          If you don&apos;t use a <codeInline>ProxyTimeouts</codeInline>
+          directive in your ini file, then the default timeouts apply.
+          If you&apos;re not sure if you need one of these directives,
+          don&apos;t use it.
+        </para>
+
+        <para>
+          If you want to set only some of these timeouts, specify -
+          (dash) for the values to leave unchanged.
+        </para>
+
+        <para>
+          You should have at most one of these directives in each ini
+          file.
+        </para>
+
+        <para>
+          Example: <code lang="ini">
+            # Use an infinite timeout for name resolution, 90 seconds for
+            # receive, and leave the others unchanged from the default.
+            ProxyTimeouts 0 - - 90
+          </code>
+        </para>
+
+      </content>
+    </section>
+
+    <relatedTopics>
+      <!-- ProxyPass -->
+      <link xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42"/>
+    </relatedTopics>
+
+  </developerConceptualDocument>
+</topic>
+
+
+
+
+

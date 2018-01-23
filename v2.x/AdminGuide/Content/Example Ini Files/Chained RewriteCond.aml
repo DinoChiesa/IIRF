@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="25f051da-9e8a-482b-8f36-318d2bd61ef5" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <!--
+        <summary>
+          <para>Optional summary abstract</para>
+        </summary>
+        -->
+    <introduction>
+      <!-- Uncomment this to generate an outline of the section and sub-section
+           titles.  Specify a numeric value as the inner text to limit it to
+           a specific number of sub-topics when creating the outline.  Specify
+           zero (0) to limit it to top-level sections only.  -->
+      <!-- <autoOutline /> -->
+      <para></para>
+    </introduction>
+    <!-- Add one or more top-level section elements.  These are collapsible.
+         If using <autoOutline />, add an address attribute to identify it
+         and specify a title so that it can be jumped to with a hyperlink. -->
+    <section address="Section1">
+      <title>Example: Chaining RewriteCond directives</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+<code lang="ini">
+# Iirf.ini
+#
+# shows how to chain RewriteCond statements
+#
+
+RewriteEngine ON
+RewriteLog c:\inetpub\iirfLogs\iirf
+RewriteLogLevel 1
+StatusInquiry ON
+
+# +++++++++++++++++++++++++++++++++
+
+RewriteCond %{HTTP_URL}             (/|\.htm|\.php|\.html|[a-z0-9]{6,8})$   [I]
+RewriteCond %{REQUEST_FILENAME}     !-f
+RewriteCond %{REQUEST_FILENAME}     !-d
+RewriteRule ^.*$                    /winisp/info.aspx                      [U,I,L]
+</code>
+
+
+        <para>
+          Explanation: The first RewriteRule is very simple - it matches all
+          URLs are rewrites them to a particular
+          URL, <literal>/winisp/info.aspx</literal>.  But the RewriteRule
+          includes 3 RewriteCond directives, which, according to IIRF operation,
+          are joined by logical ANDs.
+        </para>
+
+        <para>
+          The first RewriteCond checks the server variable by the name HTTP_URL.
+          This is the actual URL submitted by the client. The first condition
+          evaluates to true if the URL is a slash (nothing - an empty URL), or if
+          if it ends in .htm or .php, or if it ends in a sequence of 6 to 8
+          lowercase alpha or numeric characters.
+        </para>
+
+        <para>
+          The second and third RewriteCond directives evaluate to true if the
+          REQUEST_FILENAME is not a file and not a directory, respectively. If all
+          of those things are true, then the first rule will be applied.
+        </para>
+
+      </content>
+    </section>
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+

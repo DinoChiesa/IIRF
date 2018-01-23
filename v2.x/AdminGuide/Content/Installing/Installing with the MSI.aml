@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="d39d25f5-db8b-4ae0-9258-562d6bf4a591" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>
+      </para>
+    </introduction>
+
+    <section>
+      <title>Walkthrough of the MSI Installation</title>
+      <content>
+        <para>
+          The IIRF MSI works on computers running Windows Vista, Windows
+          Server 2003, Windows Server
+          2008, and service packs of same.
+        </para>
+
+        <para>
+          The MSI will guide you through installing IIRF on your platform.
+          Run the IIRF MSI file, and you will see this pop-up screen.
+        </para>
+
+        <mediaLink>
+          <caption placement="after" lead="Figure 1">The
+            IIRF installer</caption>
+          <image placement="center" xlink:href="e688d743-1522-42fb-be39-86baa41cbbfd"/>
+        </mediaLink>
+
+        <para>
+          Click next, then accept the IIRF license.  Click Next again,
+          and you will be asked to select which pieces of IIRF to
+          install:
+        </para>
+
+        <mediaLink>
+          <caption placement="after" lead="Figure 2">Selecting which
+            parts of IIRF to install</caption>
+          <image placement="center" xlink:href="d6ad6116-c33d-49e9-aafa-b8116a32aead"/>
+        </mediaLink>
+
+        <para>
+          Click Next, then select how you want the filter to be
+          installed - either server wide, or for a particular Website.
+          (If you have multiple websites, and do not want IIRF to be
+          installed server-wide, you will have to configure IIRF
+          manually.)
+        </para>
+
+        <mediaLink>
+          <caption placement="after" lead="Figure 3">Selecting the website
+            for IIRF</caption>
+          <image placement="center" xlink:href="55023eb9-bf8f-44f8-81f1-8e964980bb64"/>
+        </mediaLink>
+        <para>
+          In the next screen of the installer wizard, you can confirm your choices:
+        </para>
+
+        <mediaLink>
+          <caption placement="after" lead="Figure 4">Confirming your choices</caption>
+          <image placement="center" xlink:href="55725039-06be-4231-908a-61dec302c909"/>
+        </mediaLink>
+
+        <para>
+          Click OK to complete the installation.
+        </para>
+
+      </content>
+    </section>
+    <relatedTopics />
+
+  </developerConceptualDocument>
+</topic>
+
+
+
+
+
+
+

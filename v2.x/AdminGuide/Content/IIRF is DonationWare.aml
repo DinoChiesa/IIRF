@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="2a84f55d-b0ae-422a-9071-a31e35b7d3e3" revisionNumber="1">
+  <developerConceptualDocument 
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para></para>
+    </introduction>
+
+
+    <section address="Section3">
+      <title>IIRF is DonationWare!</title>
+      <content>
+        <para>
+          If you use IIRF, I'd encourage you to donate.  IIRF is completely free
+          but if you like it and would like to show your appreciation, I am
+          accepting donations on behalf of my favorite charity. To donate please
+          visit
+          <externalLink>
+            <linkText>the donation page</linkText>
+            <linkUri>http://cheeso.members.winisp.net/IirfDonate.aspx</linkUri>
+          </externalLink>. It's easy to donate via Paypal or any credit card, and
+          takes just a moment.  Your consideration is appreciated. Any amount will help.
+        </para>
+      </content>
+
+    </section>
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>

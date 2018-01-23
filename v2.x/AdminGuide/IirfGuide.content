@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Topics>
+  <Topic id="939138c5-f121-44ad-bb6d-139637a22328" visible="True" title="Introduction">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="Welcome" />
+      <HelpKeyword index="K" term="Introduction" />
+    </HelpKeywords>
+  </Topic>
+  <Topic id="d01a9d1d-8937-42e6-af42-68cca55870d7" visible="True" title="What Is Url Rewriting?">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="Rewriting" />
+      <HelpKeyword index="K" term="Rewrite" />
+    </HelpKeywords>
+  </Topic>
+  <Topic id="2a84f55d-b0ae-422a-9071-a31e35b7d3e3" visible="True" title="IIRF is DonationWare">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="donate" />
+    </HelpKeywords>
+  </Topic>
+  <Topic id="c76efb95-05ba-4383-8022-7eff3e1174d0" visible="True" title="Installing IIRF">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="IIS" />
+      <HelpKeyword index="K" term="install" />
+      <HelpKeyword index="K" term="installation" />
+    </HelpKeywords>
+    <Topic id="d39d25f5-db8b-4ae0-9258-562d6bf4a591" visible="True" title="Installing with the MSI" />
+    <Topic id="6b426152-704a-4907-b87e-2e1938a89cad" visible="True" title="Manually Installing IIRF on IIS6" />
+    <Topic id="153e7d87-ace3-4fd1-bead-86bd248f6087" visible="True" title="Manually Installing IIRF on IIS7" />
+    <Topic id="0b1d8121-b143-4aa4-8a76-d789b3b02a74" visible="True" title="Running IIRF on Multiple Web Sites" />
+    <Topic id="20da503b-d058-474c-9c67-cafbf519dccc" visible="True" title="Installation Location and the IIS Metabase" />
+    <Topic id="6e3750a8-96e1-4f4b-95ad-8c6c98a45d40" visible="True" title="Verifying and Troubleshooting Installation">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="troubleshooting" />
+    </HelpKeywords>
+    </Topic>
+  </Topic>
+  <Topic id="8f5e8495-babc-4dfb-9da9-4e9101e8d029" visible="True" title="Configuring IIRF">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="configure" />
+      <HelpKeyword index="K" term="configuration" />
+      <HelpKeyword index="K" term="logfile" />
+      <HelpKeyword index="K" term="directive" />
+    </HelpKeywords>
+    <Topic id="38b088f3-528b-4741-a65e-40a42095762b" visible="True" title="Global Ini file">
+      <Topic id="82d6724e-9b6a-46c6-9f6b-277d89204ddd" visible="True" title="EventsForIniOpen"/>
+      <Topic id="e7bb5f0b-ce46-4034-81f0-cbacfd22cd31" visible="True" title="MaxFieldLength" />
+      <Topic id="4d68bf79-e0a0-4649-bcae-248c08c71d56" visible="True" title="NotifyLog" />
+      <Topic id="f8098dc4-45a7-4f9b-aec9-4114a3af4086" visible="True" title="RewriteEngine" />
+      <Topic id="0bbc46c4-837e-4aa7-99f4-0ceaad24bb0d" visible="True" title="RewriteFilterPriority" />
+      <Topic id="073042fc-11c2-4c9a-a28a-49d07447685b" visible="True" title="StatusInquiry" />
+    </Topic>
+    <Topic id="01dedcdc-e657-4519-8bdb-848a1eef1e0e" visible="True" title="Vdir-specific Ini files">
+      <Topic id="4c7e4d84-6177-4cde-8bbb-3ffe37bcb84c" visible="True" title="CondSubstringBackrefFlag" />
+      <Topic id="e49a6636-15bd-470a-98b3-e50532c684db" visible="True" title="FlagCharacters" />
+
+      <Topic id="cd8bda6c-6db8-417c-a2e9-d7030014ed02" visible="True" title="IncludeIni" />
+      <Topic id="2c021ae7-77a1-46d5-83d8-2aac5bad5adb" visible="True" title="IterationLimit" />
+      <Topic id="ab01114d-4484-4ffe-813a-bce20b3bf9b9" visible="True" title="MaxMatchCount" />
+      <Topic id="d9d3d4d7-7b3a-4418-b290-c297b041ff42" visible="True" title="ProxyPass" />
+      <Topic id="e4088625-c729-4a3f-9e1a-19b2edda2e19" visible="True" title="ProxyPassReverse" />
+      <Topic id="a1885ba5-508f-4df1-abf9-0bab147eaec5" visible="True" title="ProxyPreserveHost" />
+      <Topic id="95f7b027-2642-4937-8778-e7a4643a524d" visible="True" title="ProxyTimeouts" />
+      <Topic id="c699ba60-fe15-4e90-ac4b-74598b5c352e" visible="True" title="RedirectRule" />
+      <Topic id="bc80da98-83e2-4d22-8b71-2fd116e2610a" visible="True" title="RewriteBase" />
+      <Topic id="39dbb30e-2afd-4cb1-aaff-45497fe2cbe6" visible="True" title="RewriteCond" />
+      <Topic id="e4d59f04-fd89-447a-ba23-60bb8b4c9a68" visible="True" title="RewriteEngine" />
+      <Topic id="3d1ea0d0-eabd-43b3-a913-de7128a74bb6" visible="True" title="RewriteHeader" />
+      <Topic id="f370a131-d13c-4d01-ab91-2f629641954e" visible="True" title="RewriteLog" />
+      <Topic id="9bde2e1d-f26b-480f-8d75-062cd06cf795" visible="True" title="RewriteLogLevel" />
+      <Topic id="6d072500-64b1-4efc-970a-64e94faf1bbd" visible="True" title="RewriteMap" />
+      <Topic id="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5" visible="True" title="RewriteRule" />
+      <Topic id="06643ce7-6c93-4d2f-ad3b-01e97fade9ef" visible="True" title="StatusInquiry" />
+      <Topic id="d0aa762b-9c46-4d02-94d0-1b8ad820596b" visible="True" title="UrlDecoding" />
+    </Topic>
+    <Topic id="075e17aa-4312-4b8e-b3d5-a86e2f18b537" visible="True" title="IIRF Logging" />
+  </Topic>
+  <Topic id="e013a406-9f3a-4385-b986-6c4c410dad48" visible="True" title="Regular Expressions">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="regex" />
+    </HelpKeywords>
+  </Topic>
+  <Topic id="2e820208-c2eb-4d6d-a134-c63f7d41244f" visible="True" title="Redirect vs. Rewrite">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="Redirect" />
+      <HelpKeyword index="K" term="Rewrite" />
+    </HelpKeywords>
+  </Topic>
+  <Topic id="fa9661a2-92b3-4906-9174-83aebcc2f710" visible="True" title="ASP.NET v4.0 and IIRF">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="ASP.NET" />
+    </HelpKeywords>
+  </Topic>
+  <Topic id="8f731705-8474-4598-b0f0-e4d67dba9329" visible="True" title="HTTP Proxies">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="Proxy" />
+    </HelpKeywords>
+  </Topic>
+  <Topic id="1ccbf1ec-0984-49d9-9ab0-63eab3ff9c63" visible="True" title="Example INI Files">
+    <Topic id="1f093ad2-7c4f-42a0-9b72-90afbbe94305" visible="True" title="ASP.NET MVC" />
+    <Topic id="d42e49bc-38d4-4407-9512-1a5539f221c1" visible="True" title="Block by User Agent" />
+    <Topic id="563a06a2-bd46-45e8-9d5a-1184eade19df" visible="True" title="Block or Allow by IP Address" />
+    <Topic id="f642f5c1-a0a7-4bdf-b86a-713c0847af72" visible="True" title="CakePHP" />
+    <Topic id="25f051da-9e8a-482b-8f36-318d2bd61ef5" visible="True" title="Chained RewriteCond" />
+    <Topic id="49492102-e623-40d7-9dc3-d1411800be80" visible="True" title="Clean URLs" />
+    <Topic id="7beacc75-db83-49f0-8197-ddc4802fd0e2" visible="True" title="Clean URLs 2" />
+    <Topic id="f7710c81-9a58-4e17-aec7-16253834b555" visible="True" title="Consolidate Access" />
+    <Topic id="b7a83a1c-5ae4-476b-83ef-34d2dab3c788" visible="True" title="Domain Name Migration" />
+    <Topic id="433ee271-392b-4f14-9558-3c40265552d2" visible="True" title="Internationalized URLs" />
+    <Topic id="c9b0524f-2f70-4f48-9a38-13f6c0f45086" visible="True" title="Make Mambo the default page" />
+    <Topic id="b77f3dc3-e861-428c-96c1-a6af56d3c062" visible="True" title="Prevent Image Leeching" />
+    <Topic id="c01af086-562e-41bb-a60e-f33ca073499a" visible="True" title="Proxy a website" />
+    <Topic id="85e56ec7-6769-4a34-bb91-e843e02fba37" visible="True" title="Redirect to WWW host" />
+    <Topic id="0ce888a6-060b-4860-8b19-aaa03b35a0eb" visible="True" title="Redirect based on Cookie" />
+    <Topic id="5b3e2db6-952e-4a4c-aefc-211ab192d86e" visible="True" title="Redirect based on Map" />
+    <Topic id="5a3d3e7f-5f40-484d-a4af-2f395f94b6f2" visible="True" title="Redirect to Secure site" />
+    <Topic id="77dd5ab8-9638-45e9-a920-6182fca3f767" visible="True" title="Rewrite based on Map" />
+    <Topic id="63be1460-dbd0-4ad4-ad39-4b68352fe9a6" visible="True" title="Route by Hostname" />
+    <Topic id="1f3f41aa-75d4-4873-9c9a-5b41c2f97a01" visible="True" title="Transform Domain name to Query String Param" />
+    <Topic id="6d73ed65-1219-4abf-b739-a197b9976ef8" visible="True" title="Virtual Hosts for Users"/>
+  </Topic>
+  <Topic id="b1d7d213-2f3e-4244-9bf7-69d72a3abf80" visible="True" title="Upgrading">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="Upgrading" />
+    </HelpKeywords>
+  </Topic>
+  <Topic id="a8988008-feb2-4a91-9abc-03043ba308fe" visible="True" title="IIRF v. mod_rewrite">
+    <HelpKeywords>
+      <HelpKeyword index="A" term="Apache" />
+    </HelpKeywords>
+  </Topic>
+  <Topic id="6484f8dd-f1e4-4b74-917c-56d63e76d415" visible="True" title="Other Tools" />
+  <Topic id="9a6b3c03-fd72-4769-bd09-b5464d11e4bd" visible="True" title="Support" />
+  <Topic id="d121091b-c042-414e-a93d-b4740064c0f4" visible="True" title="Glossary">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="Glossary" />
+    </HelpKeywords>
+  </Topic>
+  <Topic id="4e9fd731-fc2f-4bdf-9ca2-3a8755411b2f" visible="True" title="Feedback" />
+</Topics>

@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="b1d7d213-2f3e-4244-9bf7-69d72a3abf80" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <!--
+        <summary>
+          <para>Optional summary abstract</para>
+        </summary>
+        -->
+    <introduction>
+      <!-- Uncomment this to generate an outline of the section and sub-section
+           titles.  Specify a numeric value as the inner text to limit it to
+           a specific number of sub-topics when creating the outline.  Specify
+           zero (0) to limit it to top-level sections only.  -->
+      <autoOutline />
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Version History for IIRF</title>
+      <content>
+        <para>
+          IIRF has been available publicly since 2006.  It&apos;s been
+          maintained regularly, getting new features and better
+          reliability and maintainability.  Since 2006, there&apos;s been one
+          change in the major version for IIRF, from v1.x to v2.x.  The
+          major version change accompanied a significant change in the
+          way IIRF detected changes in ini files, and also a significant
+          change in the way ini files applied to various sites or vdirs
+          within IIS.  This section of the documentation describes the
+          issues associated with upgrading from IIRF v1.2.x to IIRF
+          v2.x.
+        </para>
+      </content>
+    </section>
+
+    <section address="Section2">
+      <title>Upgrading from v1.2 to v2.x</title>
+      <content>
+        <para>
+          If you are using IIRF v1.2, stop. Upgrade now to IIRF
+          v2.x. I don&apos;t maintain IIRF v1.2 any longer, and I
+          don&apos;t answer support questions on the forum regarding
+          IIRF v1.2.  IIRF v2.x is more reliable, more flexible, faster,
+          and more secure. It&apos;s also "supported" on the forums (but
+          see the page
+          on <link xlink:href="9a6b3c03-fd72-4769-bd09-b5464d11e4bd">the
+            IIRF support policy</link> for what that means).
+        </para>
+      </content>
+
+      <sections>
+        <section address="Section2-subsection1">
+          <title>Issues with Upgrading from v1.2 to v2.x</title>
+          <content>
+            <para>
+              Much of IIRF is the same, when moving from  v1.2 to v2.x.  The
+              product is still an ISAPI filter. The source code is mostly
+              the same.  It&apos;s still written in C.  It still uses PCRE for the
+              regex engine.  It uses ini files for its configuration.
+
+              It&apos;s mostly the same product.
+            </para>
+            <para>
+              Still, a number of things change in IIRF, when moving from  v1.2 to v2.x:
+            </para>
+
+            <list class="bullet">
+              <listItem>
+                The DLL name has changed. In IIRF v1.2.x, the DLL name
+                is IsapiRewrite4.dll.  In IIRF v2.x, the DLL name is IIIRF.dll .
+              </listItem>
+
+              <listItem>
+                The name of the ini files changes.  If you have v1.2.x, use
+                an ini file named IsapiRewrite4.ini.  If you have v2.0, use
+                an ini file named iirf.ini.
+              </listItem>
+
+              <listItem>
+                Only v2.0 uses the global ini file, named IirfGlobal.ini.
+              </listItem>
+
+              <listItem>
+                The location of the ini files changes.  In IIRF v1.2.x, the
+                single ini file must be in the same directory where the
+                IIRF.dll is found.  In IIRF v2.x, the IirfGlobal.ini file
+                must be there, in the same directory as the DLL, but the
+                vdir-specific ini files, named IIRF.ini, reside in each of
+                the filesystem directories behind the IIS virtual
+                directories.
+              </listItem>
+
+              <listItem>
+                There are a number of new directives supported in the ini
+                files for IIRF v2.x.  For
+                example, <link xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link>.
+                This directive was introduced in IIRF v2.0.  With it, IIRF
+                can act as a transparent (reverse) proxy for selected URLs.
+              </listItem>
+
+              <listItem>
+                IIRF v2.x uses a more recent version of the PCRE library.
+                This brings some performance improvements, but more
+                importantly, some security fixes.
+              </listItem>
+
+              <listItem>
+                IIRF v2.x uses the Windows Event Log for some serious
+                messages.  IIRF v1.2.x did not ever emit messages into the
+                event log.
+              </listItem>
+
+            </list>
+
+            <para>
+              IIRF does not supply an "upgrade wizard" or tool for
+              upgrading. You&apos;ll have to manage that yourself. The above
+              list should give you the things you need to be aware of.
+            </para>
+
+          </content>
+        </section>
+      </sections>
+    </section>
+
+    <section address="Section3">
+      <title>Upgrading from v2.0 to v2.1</title>
+      <content>
+        <para>
+          IIRF v2.1 uses the same engine design as IIRF v2.0.  The only
+          difference is a set of new features added to v2.1, and a set
+          of bugfixes. Though IIRF v2.1 is classified as "beta",
+          it&apos;s safe to run IIRF v2.1, and it likely is more correct
+          and preferable in most cases.
+        </para>
+
+        <para>
+          The main areas of bug fixes in v2.1, as compared to v2.0, are
+          in the area of proxy capability.  Though http proxy was
+          described as a feature of IIRF v2.0, given the quantity of bugs
+          that have been reported in v2.0 and fixed in v2.1, it&apos;s clear
+          that proxy should only be considered a reliable feature
+          starting in v2.1.
+        </para>
+
+        <para>
+          Also, v2.0 was the first time there was an MSI installer for
+          IIRF. In retrospect, the install experience was not reliable
+          enough to be considered "production ready."  For IIRF v2.1,
+          the installer has been significantly improved and hardened.
+        </para>
+
+        <para>
+          Beyond fixes of existing features, IIRF v2.1 also has
+          additional features beyond IIRF v2.0, most notably the
+          RewriteMap directive.
+        </para>
+
+      </content>
+
+      <sections>
+        <section address="Section2-subsection1">
+          <title>Should you upgrade from v2.0 to v2.1?</title>
+          <content>
+            <para>
+              Here&apos;s the summary of my recommendations:
+            </para>
+
+            <list class="bullet">
+              <listItem>If you&apos;re using IIRF v2.0 happily, there&apos;s no
+                need to upgrade.</listItem>
+              <listItem>If you use IIRF v2.0 with the proxy
+                capability, then I&apos;d advise that you upgrade as soon as
+                practical.
+              </listItem>
+              <listItem>
+                If you think you might use the
+                <link xlink:href="6d072500-64b1-4efc-970a-64e94faf1bbd">RewriteMap</link>
+                feature, then obviously you should upgrade.
+              </listItem>
+            </list>
+          </content>
+        </section>
+      </sections>
+    </section>
+
+    <section address="Section4">
+      <title>Moving from one build of IIRF to another</title>
+      <content>
+        <para>
+          From time to time, I will release bugfixes for IIRF.
+          When doing that, I change the minor version number but not the
+          major version number. If you&apos;re interested in that
+          bugfix, you will want to upgrade to that incremental release,
+          a more current minor release.
+        </para>
+
+        <para>
+          To do so, you have two options:
+        </para>
+
+        <list class="bullet">
+          <listItem>
+            If you used the MSI file to install IIRF
+            originally, then uninstall IIRF, using the Add/Remove
+            programs capability in Windows and then install the
+            newer MSI.
+          </listItem>
+          <listItem>
+            If you use manually installed IIRF, then you only need to
+            stop IIS, copy over the new DLL, then restart IIS.  You can
+            do this from the command-line with
+            <codeInline>net stop w3svc</codeInline>
+            and <codeInline>net start w3svc</codeInline>, or you can do it from
+            within IIS Manager.
+          </listItem>
+        </list>
+
+        <para>
+          You can use the latter approach with an MSI-install of
+          IIRF, but there are consequences if you later try to
+          uninstall IIRF.  If you copy over a new IIRF.dll, onto an
+          installation that you laid down with the MSI file, then
+          later, if you try to uninstall IIRF, the newer IIRF.dll
+          file will not be removed.  You can safely remove the DLL
+          manually, in that case.
+        </para>
+
+      </content>
+    </section>
+
+    <relatedTopics>
+      <link xlink:href="9a6b3c03-fd72-4769-bd09-b5464d11e4bd">IIRF Support Policy</link>
+      <link xlink:href="2a84f55d-b0ae-422a-9071-a31e35b7d3e3">Please Donate</link>
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>
+
+
+
+
+
+
+
+
+

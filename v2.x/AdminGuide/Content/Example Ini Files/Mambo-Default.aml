@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="c9b0524f-2f70-4f48-9a38-13f6c0f45086" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <introduction>
+      <!-- <autoOutline /> -->
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Example: Make Mambo the default page</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for making Mambo the default page
+#
+
+# IterationLimit
+#
+# Specifies the limit of mapping iterations for a single URL request. The default is 8.
+IterationLimit 10
+
+# MaxMatchCount
+#
+# Specifies the maximum number of sub-expression matches to capture for a single pattern.
+# The default is 10.
+MaxMatchCount 10
+
+RewriteEngine ON
+StatusInquiry ON
+RewriteLog c:\logs\iirf
+RewriteLogLevel 3
+
+# When someone surfs to the default page, they get mambo.
+# The url address bar in the browser is NOT updated.
+RewriteRule ^/$         /mambo/index.php
+
+# Rewrite content links for SEO
+RewriteRule ^/content/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/  /mambo/index.php?option=com_content&amp;task=$1&amp;id=$2&amp;Itemid=$3&amp;limit=$4&amp;limitstart=$5
+
+RewriteRule ^/content/([^/]+)/([^/]+)/([^/]+)/ /mambo/index.php?option=com_content&amp;task=$1&amp;id=$2&amp;Itemid=$3
+
+# Rewrite component links for SEO
+RewriteRule ^/component/option,([^/]+)/([^/]+),([^/]+)/([^/]+),([^/]+)/([^/]+),([^/]+) /mambo/index.php?option=$1&amp;$2=$3&amp;$4=$5&amp;$6=$7
+
+RewriteRule ^/component/option,([^/]+)/([^/]+),([^/]+)/ /mambo/index.php?option=$1&amp;$2=$3
+</code>
+
+
+      </content>
+    </section>
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+
+

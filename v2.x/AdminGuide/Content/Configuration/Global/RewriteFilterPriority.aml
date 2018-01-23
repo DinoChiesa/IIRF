@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="0bbc46c4-837e-4aa7-99f4-0ceaad24bb0d" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>RewriteFilterPriority {HIGH|MEDIUM|LOW|DEFAULT}</title>
+      <content>
+        <para>
+          This directive allows you to set the filter priority of IIRF.
+        </para>
+        <para>
+          ISAPI has a concept of filter priority.  Higher priority
+          filters are notified of incoming filterable URL
+          requests <phrase>earlier</phrase> than filters of lower
+          priority.   For compatibility
+          with some other filters, you may have to modify the filter
+          priority of IIRF.  In most cases, this is not necessary.
+        </para>
+
+        <para>The default priority is MEDIUM (or DEFAULT).
+        </para>
+
+        <para>
+          Example: <code lang="ini">
+            RewriteFilterPriority HIGH
+          </code>
+        </para>
+
+        <para>
+          If an invalid value is specified for <codeInline>RewriteFilterPriority</codeInline>, the
+          value used by IIRF will remain unchanged.  The default priority
+          for IIRF is DEFAULT, which works out to "MEDIUM."
+        </para>
+
+        <para>
+          If you don't include a <codeInline>RewriteFilterPriority</codeInline> directive, IIRF
+          will use the default, which is SF_NOTIFY_ORDER_DEFAULT.
+        </para>
+
+        <alert class="note">
+          This directive is used within the IirfGlobal.ini file.
+          Changes in the IirfGlobal.ini are effective only when the IIS
+          server or IIRF is restarted.  This is because the
+          filter priority is set once, when the ISAPI DLL is loaded by
+          the server.  If you change the filter priority, be
+          sure to restart the IIS Server or ISAPI filter to make that
+          change effective.
+        </alert>
+      </content>
+    </section>
+
+  </developerConceptualDocument>
+
+</topic>
+
+
+

@@ -1,0 +1,652 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="d121091b-c042-414e-a93d-b4740064c0f4" revisionNumber="1">
+  <developerGlossaryDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <glossary>
+
+      <glossaryEntry>
+        <terms>
+          <term termId="IIRF.dll">IIRF.dll</term>
+        </terms>
+        <definition>
+          <para>This is the core of IIRF, the DLL that implements the
+          rewriting filter in IIRF v2.x. The DLL must be installed as an
+          ISAPI Filter, in order to allow rewriting.  The DLL must be
+          installed as an ISAPI Extension, when using IIRF for proxy
+          purposes.
+          </para>
+          <para>
+            The installer for IIRF will do this automatically.
+          </para>
+        </definition>
+        <relatedEntry termId="IIRF.ini" />
+        <relatedEntry termId="ISAPI" />
+      </glossaryEntry>
+
+      <glossaryEntry>
+        <terms>
+          <term>Lexicographic sorting</term>
+        </terms>
+        <definition>
+          <para>
+            IIRF supports lexicographic string comparison in the
+            <link xlink:href="39dbb30e-2afd-4cb1-aaff-45497fe2cbe6">RewriteCond</link>
+            directive. That&apos;s a fancy way of saying that you can
+            compare the value of a string (like a segment in the URL, or
+            a server variable) to another string, and find out if it
+            would fall before or after it, if they were sorted
+            alphabetically.  You can use this for data-dependent
+            routing, for example.
+          </para>
+        </definition>
+      </glossaryEntry>
+
+      <glossaryEntry>
+        <terms>
+          <term termId="IIS">IIS</term>
+        </terms>
+        <definition>
+          <para>
+            IIS is Microsoft&apos;s Internet Information Services, part
+            of Windows since the days of Windows NT4, circa 1996.  IIS
+            has been updated with Windows itself, using a distinct
+            version number for each version of Windows. On Windows NT4,
+            there was IIS4.  On Windows 2000, IIS5.  On Windows XP,
+            IIS5.1.  On Windows 2003, IIS6.  On Vista and Windows Server
+            2008, IIS7.  On Windows 7 and Windows Server 2008 R2,
+            IIS7.5.  It&apos;s not possible to install a different
+            version of IIS on any version of Windows.
+          </para>
+          <para>
+            IIRF is packaged as an add-on to IIS. Technically it is both
+            an ISAPI Filter as well as an ISAPI Extension.
+          </para>
+          <para>
+            IIRF runs only on IIS6 or later.  Don&apos;t try installing
+            it on IIS5.1 or earlier, in other words on Windows XP, or
+            any prior version of Windows.  It won&apos;t work.
+          </para>
+        </definition>
+        <relatedEntry termId="ISAPI" />
+      </glossaryEntry>
+
+      <glossaryEntry>
+        <terms>
+          <term termId="ISAPI">ISAPI</term>
+        </terms>
+        <definition>
+          <para>
+          ISAPI is the name for an Application Programming
+          Interface, published by Microsoft, for producing add-ons to
+          IIS.  Within ISAPI, there are two types of add-ons: ISAPI
+          Filters, and ISAPI Extensions.  IIRF is both an ISAPI Filter
+          and an ISAPI Extension.
+          </para>
+        </definition>
+        <relatedEntry termId="IIS" />
+      </glossaryEntry>
+
+      <glossaryEntry>
+        <terms>
+          <term termId="IIRF.ini">IIRF.ini</term>
+        </terms>
+        <definition>
+          <para>This is the text file, provided by the administrator,
+            that tells IIRF how it should operate for each website or
+            web application within IIS. For more information, see
+            <link xlink:href="8f5e8495-babc-4dfb-9da9-4e9101e8d029">the
+            documentation on configuration</link>.
+          </para>
+
+        </definition>
+        <relatedEntry termId="IIRF.dll" />
+      </glossaryEntry>
+
+      <glossaryEntry>
+        <terms>
+          <term termId="IirfGlobal.ini">IirfGlobal.ini</term>
+        </terms>
+        <definition>
+          <para>This is the text file, provided by the administrator,
+            that tells IIRF how it should operate across all websites
+            and IIS applications. For more information, see
+            <link xlink:href="8f5e8495-babc-4dfb-9da9-4e9101e8d029">the
+            documentation on configuration</link>.
+          </para>
+
+        </definition>
+        <relatedEntry termId="IIRF.ini" />
+      </glossaryEntry>
+
+      <glossaryEntry>
+        <terms>
+          <term termId="RewriteBase">RewriteBase</term>
+        </terms>
+        <definition>
+          <para>
+            This directive, supported on mod_proxy for Apache, was
+            first supported in IIRF in v2.1.1.4.
+            <link xlink:href="bc80da98-83e2-4d22-8b71-2fd116e2610a">Learn more</link>.
+          </para>
+        </definition>
+      </glossaryEntry>
+
+      <glossaryEntry>
+        <terms>
+          <term termId="Apache">Apache</term>
+        </terms>
+        <definition>
+          <para>
+            The Apache Software Foundation "owns" the Apache HTTP
+            Server, as well as various add-on modules for that server,
+            including mod_rewrite. IIRF
+            is <link xlink:href='a8988008-feb2-4a91-9abc-03043ba308fe'>patterned
+            after Apache&apos;s mod_rewrite.</link>
+          </para>
+          <para>
+            IIRF is not part of the portfolio of products
+            managed by the Apache Software Foundation. Apache has
+            nothing to do with IIRF, and IIRF has
+            nothing to do with Apache.
+          </para>
+        </definition>
+      </glossaryEntry>
+
+      <glossaryEntry>
+        <terms>
+          <term termId="Proxy">Proxy</term>
+        </terms>
+        <definition>
+          <para>
+            A server that acts as an intermediary between a client and
+            target server in a communications exchange. IIRF can act as
+            a <phrase>reverse proxy</phrase>, also known as a
+            <phrase>transparent proxy</phrase> in the HTTP protocol.
+          </para>
+        </definition>
+      </glossaryEntry>
+
+      <glossaryEntry>
+        <terms>
+          <term termId="AppPool">AppPool</term>
+        </terms>
+        <definition>
+          <para>
+            In IIS, an "Application pool" is an abstraction used in
+            administration.  In practical terms, a pool is realized as a
+            set of one or more processes that share identity and other
+            configuration settings.  Applications are then mapped to
+            distinct pools. For the official word on App Pools, see
+            <externalLink>
+              <linkText>the
+                Microsoft documentation on the topic</linkText>
+              <linkUri>http://msdn.microsoft.com/en-us/library/ms524990(VS.90).aspx</linkUri>
+              </externalLink>.  In IIS it is not possible to rewrite a
+              request so that it migrates out of its original
+              application pool. To understand why, see
+              <externalLink>
+                <linkText>David Wang&apos;s article</linkText>
+                <linkUri>http://blogs.msdn.com/b/david.wang/archive/2006/06/21/isapi-filter-and-the-iis6-process-model.aspx</linkUri>
+              </externalLink>.
+          </para>
+        </definition>
+      </glossaryEntry>
+
+      <glossaryEntry>
+        <terms>
+          <term>TestDriver.exe</term>
+        </terms>
+        <definition>
+          <para>A command-line tool included with IIRF that allows
+          testing and evaluation of the rules in an ini file. Use it!
+          <link xlink:href="6484f8dd-f1e4-4b74-917c-56d63e76d415">Learn
+          more</link>.
+          </para>
+        </definition>
+      </glossaryEntry>
+
+
+      <glossaryEntry>
+        <terms>
+          <term>Cheeso</term>
+        </terms>
+        <definition>
+          <para>The guy who wrote IIRF, as well as all this
+          documentation. Isn&apos;t he awesome?
+          </para>
+        </definition>
+        <relatedEntry termId="Yes" />
+      </glossaryEntry>
+
+
+      <glossaryEntry>
+        <terms>
+          <term termId="Yes">Yes</term>
+        </terms>
+        <definition>
+          <para>Yes, Cheeso <phrase>really is</phrase> awesome for
+          having written IIRF.  And then to give it away for free?
+          And answer everyone&apos;s questions?  What a guy. </para>
+        </definition>
+        <relatedEntry termId="Gee" />
+      </glossaryEntry>
+
+
+      <glossaryEntry>
+        <terms>
+          <term>TestParse.exe</term>
+        </terms>
+        <definition>
+          <para>
+            A command-line tool included with IIRF that does test
+            evaluation of an ini file. Use this to evaluate an ini file
+            to see if it is properly formed.
+          </para>
+          <para>
+            If you don&apos;t clearly understand the distinction between
+            IIS web sites, IIS Applications and IIS virtual directories,
+            don&apos;t worry. The way IIS has done things is confusing.
+            Consult Microsoft&apos;s explanation in
+            <token>UnderstandingIIS1</token>.
+          </para>
+        </definition>
+      </glossaryEntry>
+
+
+      <glossaryEntry>
+        <terms>
+          <term>Regular Expression</term>
+        </terms>
+        <definition>
+          <para>
+            A formal language for describing text patterns in strings.
+            Also, one conforming instance of that formal pattern
+            language.  Huh?  Think of it this way: "English" can refer
+            to a general thing: a natural language, with all of its
+            building blocks and syntax rules, and the subject of high
+            school text books.  "English" can also refer to a specific
+            expression in that language.  "How are you?" is English.
+            The term "Regular Expression" is also used in both those
+            senses: as the general language, and as a specific instance
+            of that language.
+          </para>
+          <para>
+            If you need more information, see <link
+            xlink:href="e013a406-9f3a-4385-b986-6c4c410dad48">Regular
+            Expressions</link>.
+          </para>
+        </definition>
+      </glossaryEntry>
+
+
+      <glossaryEntry>
+        <terms>
+          <term termId="Replacement">Replacement</term>
+        </terms>
+        <definition>
+          <para>The replacement string in a <link
+          xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule</link>
+          or <link
+          xlink:href="3d1ea0d0-eabd-43b3-a913-de7128a74bb6">RewriteHeader</link>
+          describes what a matching request should be replaced with. It
+          is <legacyBold>not</legacyBold> a regular expression, though
+          it can contain references to the groups captured by the
+          regular expression.
+          </para>
+        </definition>
+      </glossaryEntry>
+
+
+      <glossaryEntry>
+        <terms>
+          <term termId="Kindness">Kindness</term>
+        </terms>
+        <definition>
+          <para>
+            Jean-Jacques Rousseau, an 18th-century French philosopher, once
+            asked, "What wisdom can you find that is greater
+            than <legacyBold>kindness</legacyBold>?"
+          </para>
+        </definition>
+      </glossaryEntry>
+
+      <glossaryEntry>
+        <terms>
+          <term termId="Gee">Gee</term>
+        </terms>
+        <definition>
+          <para>
+            As in &quot;Gee whiz, it&apos;s pretty nice that someone built this
+            filter for me.  Maybe I will
+          <externalLink>
+            <linkText>donate</linkText>
+            <linkUri>http://cheeso.members.winisp.net/IirfDonate.aspx</linkUri>
+          </externalLink>...&quot;
+          </para>
+        </definition>
+      </glossaryEntry>
+
+
+      <glossaryEntry>
+        <terms>
+          <term termId='Donationware'>Donationware</term>
+        </terms>
+        <definition>
+          <para>
+            IIRF is <newTerm>donationware</newTerm>.  That means it&apos;s
+            free, but you are encouraged to
+          <externalLink>
+            <linkText>donate money</linkText>
+            <linkUri>http://cheeso.members.winisp.net/IirfDonate.aspx</linkUri>
+          </externalLink>,  which I will
+            forward to a charity.  Thanks.
+          </para>
+        </definition>
+        <relatedEntry termId="Kindness" />
+      </glossaryEntry>
+
+      <glossaryEntry>
+        <terms>
+          <term termId='ASP.NET'>ASP.NET</term>
+        </terms>
+        <definition>
+          <para>
+            ASP.NET is a server-side scripting environment produced by Microsoft for
+            IIS.  In ASP.NET v4.0, special handling was introduced for extensionless
+            URLs.  This may introduce problems for URL rewriters like IIRF. For more
+            information, see <link
+            xlink:href="fa9661a2-92b3-4906-9174-83aebcc2f710">the documentation
+            page</link>.
+          </para>
+        </definition>
+      </glossaryEntry>
+
+
+      <glossaryEntry>
+        <terms>
+          <term>Virtual Directory</term>
+        </terms>
+        <definition>
+          <para>
+            IIRF can use independent configuration for each IIS Application or IIS
+            Website.  The IIRF configuration for a virtual directory (vdir) is
+            obtained from the IIRF.ini file residing in the physical directory
+            corresponding to the containing application or website.
+          </para>
+        </definition>
+        <relatedEntry termId="IIRF.ini" />
+      </glossaryEntry>
+
+
+      <glossaryEntry>
+        <terms>
+          <term>Timeouts</term>
+        </terms>
+        <definition>
+          <para>
+            You can specify the timeouts IIRF uses for proxied requests.  See the
+            documentation for the <link
+            xlink:href="95f7b027-2642-4937-8778-e7a4643a524d">ProxyTimeouts </link>
+            directive.
+          </para>
+        </definition>
+      </glossaryEntry>
+
+
+      <glossaryEntry>
+        <terms>
+          <term>Proxy, HTTP</term>
+        </terms>
+        <definition>
+          <para>An <link xlink:href="8f731705-8474-4598-b0f0-e4d67dba9329">HTTP
+            Proxy</link> can act as a go-between in an http
+            communication exchange, receiving a request from a
+            requestor, and "proxying it" or forwarding it to an eventual
+            destination. IIRF can act as a transparent proxy for HTTP.
+            For more information,
+            see <link xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">the
+            documentation for the ProxyPass directive
+            </link>.
+          </para>
+        </definition>
+      </glossaryEntry>
+
+      <glossaryEntry>
+        <terms>
+          <term>Pattern</term>
+        </terms>
+        <definition>
+          <para>
+            Various directives used in IIRF, including
+            <link xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule</link>,
+            <link xlink:href="c699ba60-fe15-4e90-ac4b-74598b5c352e">RedirectRule</link>,
+            <link xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link>,
+            <link xlink:href="3d1ea0d0-eabd-43b3-a913-de7128a74bb6">RewriteHeader</link>,
+            and
+            <link xlink:href="39dbb30e-2afd-4cb1-aaff-45497fe2cbe6">RewriteCond</link>,
+            match strings against <phrase>patterns</phrase>.  These patterns are expressed in
+            the <link xlink:href="e013a406-9f3a-4385-b986-6c4c410dad48">Regular
+              Expression language</link>, which is a baroque formal
+            language that can be used to describe text patterns.
+          </para>
+        </definition>
+        <relatedEntry termId="Replacement" />
+      </glossaryEntry>
+
+
+      <glossaryEntry>
+        <terms>
+          <term>Free</term>
+        </terms>
+        <definition>
+          <para>
+            How much this filter costs.
+          </para>
+        </definition>
+        <relatedEntry termId="Donationware" />
+      </glossaryEntry>
+
+
+      <glossaryEntry>
+        <terms>
+          <term>Directives</term>
+        </terms>
+        <definition>
+          <para>
+            The lines used in the ini file, that tell the filter how to
+            operate.  Directives can be used to set the log level and
+            location, the rewrite rules, the redirect rules, and so on.
+            In IIRF v2.0, there are two sets of directives: one set
+            <link xlink:href="38b088f3-528b-4741-a65e-40a42095762b">
+            used in the global ini
+            file</link>, and a second set of
+            <link xlink:href="01dedcdc-e657-4519-8bdb-848a1eef1e0e">
+              directives used in site-specific
+              ini files</link>.
+          </para>
+        </definition>
+      </glossaryEntry>
+
+
+      <glossaryEntry>
+        <terms>
+          <term termId="QueryString">Query String</term>
+        </terms>
+        <definition>
+          <para>The string of parameters following the question mark in
+            a URL request.</para>
+        </definition>
+        <relatedEntry termId="URL" />
+      </glossaryEntry>
+
+
+      <glossaryEntry>
+        <terms>
+          <term termId="UrlPath">URL Path</term>
+        </terms>
+        <definition>
+          <para>The portion of the URL request after the server and
+            port, and before the query string (before any question
+            mark).  If the request
+            is <literal>http://mydomain.com/a/b.aspx?p1=c</literal>,
+            then the URL path is <literal>/a/b.aspx</literal>.  In IIS,
+            this path can be retrieved with
+            the <codeInline>PATH_INFO</codeInline> server variable.
+          </para>
+        </definition>
+        <relatedEntry termId="Scheme" />
+        <relatedEntry termId="URL" />
+      </glossaryEntry>
+
+      <glossaryEntry>
+        <terms>
+          <term>URL Encoding</term>
+        </terms>
+        <definition>
+          <para>In IIRF it is possible to
+            <externalLink>
+              <linkText>URL encode</linkText>
+              <linkUri>http://en.wikipedia.org/wiki/Percent-encoding</linkUri>
+              </externalLink> all or part of the
+          result of a URL rewrite operation.  See the <link
+          xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule
+          page</link> for details.
+          </para>
+        </definition>
+      </glossaryEntry>
+
+
+
+
+      <glossaryEntry>
+        <terms>
+          <term termId="HTTP">HTTP</term>
+        </terms>
+        <definition>
+          <para>
+            HTTP is the Hypertext Transfer Protocol. It is a standard
+            that defines how web applications intercommunicate,
+            specifically how the request and response messages get
+            formatted, how headers are used, what a Proxy must do, and
+            so on.  It is formally specified in
+            <externalLink>
+              <linkText>IETF RFC 2616</linkText>
+              <linkUri>http://www.w3.org/Protocols/rfc2616/rfc2616.html</linkUri>
+            </externalLink>.
+          </para>
+        </definition>
+        <relatedEntry termId="URL" />
+      </glossaryEntry>
+
+      <glossaryEntry>
+        <terms>
+          <term termId="HTTP_X_REWRITE_URL">HTTP_X_REWRITE_URL</term>
+        </terms>
+        <definition>
+          <para>The name of the server variable that is set when the [U]
+            modifer flag is used.  See
+            the <link xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule
+            page</link> for details.
+          </para>
+        </definition>
+        <relatedEntry termId="URL" />
+      </glossaryEntry>
+
+
+      <glossaryEntry>
+        <terms>
+          <term termId="Scheme">Scheme</term>
+        </terms>
+        <definition>
+          <para>The first portion of an HTTP URL, prior to the first colon.
+            In HTTP, the scheme is either <literal>http</literal>
+            or <literal>https</literal>.
+          </para>
+        </definition>
+        <relatedEntry termId="URL" />
+      </glossaryEntry>
+
+
+      <glossaryEntry>
+        <terms>
+          <term termId="ServerName">Server Name</term>
+        </terms>
+        <definition>
+          <para>The second portion of an HTTP URL, following the first colon.
+            In this
+            URL: <literal>http://mydomain.com/a/b.aspx?p1=c</literal>,
+            the server name is <literal>mydomain.com</literal>.
+          </para>
+        </definition>
+        <relatedEntry termId="URL" />
+        <relatedEntry termId="Port" />
+      </glossaryEntry>
+
+
+      <glossaryEntry>
+        <terms>
+          <term termId="URL">URL</term>
+        </terms>
+        <definition>
+          <para>
+            Uniform Resource Locator. URLs have a variety of uses, but
+            in particular they are used in HTTP to identify
+            web-accessible resources or documents. The legal form of URLs
+            that are accepted by HTTP applications is specified in
+            <externalLink>
+              <linkText>IETF RFC 2396</linkText>
+              <linkUri>https://datatracker.ietf.org/doc/rfc2396/</linkUri>
+              </externalLink> .
+          </para>
+          <para>
+            The short story is this: In HTTP, URLs take the form
+          <code lang="ini">
+            <phrase>scheme</phrase>://<phrase>servername</phrase>[:<phrase>port</phrase>]/<phrase>urlpath</phrase>[?<phrase>querystring</phrase>] </code>
+            The port is optional, as is the query string.
+          </para>
+          <para>
+            IIRF can rewrite URLs or Headers, or perform redirections or
+            proxy actions, based on pattern matching on
+            <legacyItalic>any</legacyItalic> of the components of a URL, as
+            well as pattern matching on incoming request headers.
+          </para>
+        </definition>
+        <relatedEntry termId="QueryString" />
+      </glossaryEntry>
+
+      <glossaryEntry>
+        <terms>
+          <term termId="Unicode">Unicode</term>
+        </terms>
+        <definition>
+          <para>IIRF does not handle Unicode URLs.
+          </para>
+        </definition>
+      </glossaryEntry>
+
+
+      <glossaryEntry>
+        <terms>
+          <term termId="Port">Port</term>
+        </terms>
+        <definition>
+          <para>An optional part of an HTTP URL, it follows the server
+            name, separated from it by a colon. In the URL
+            <literal>http://mydomain.com:8080/a/b.aspx?p1=c</literal>, the port is
+            8080.  The port number is stored in the server
+            variable <literal>SERVER_PORT</literal> when the scheme
+            is <literal>http</literal>, and it is stored
+            in <literal>SERVER_PORT_SECURE</literal> when the scheme
+            is <literal>https</literal>.
+          </para>
+        </definition>
+        <relatedEntry termId="Scheme" />
+        <relatedEntry termId="URL" />
+      </glossaryEntry>
+
+
+    </glossary>
+  </developerGlossaryDocument>
+</topic>
+

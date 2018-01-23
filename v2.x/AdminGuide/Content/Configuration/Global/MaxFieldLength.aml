@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="e7bb5f0b-ce46-4034-81f0-cbacfd22cd31" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>MaxFieldLength &lt;integer&gt;</title>
+      <content>
+
+        <para>
+          This setting adjusts the maximum length of the memory buffer
+          to use, in bytes, for Server variables and headers during IIRF
+          rules processing. This directive was introduced in IIRF in v2.1.2.1.
+        </para>
+
+        <para>
+          For example, when evaluating a
+          <codeInline>RewriteCond</codeInline> on a given request
+          header, IIRF allocates space for the contents of the header.
+          Also, IIRF allocates space for headers when performing proxy
+          transactions. This directive allows the administrator to set
+          the maximum buffer size that will be allocated for handling
+          headers in this way.
+        </para>
+
+        <para>
+          In general you won't need to bother with this setting.  By
+          default, IIRF uses 16384 as the limit, which is appropriate
+          for most scenarios. The maximum value you can use is 65536;
+          the minimum is 1024. You may wish to adjust this setting
+          downward in order to limit memory usage or reduce memory usage
+          in the face of malformed requests that carry very large
+          request headers. You may wish to adjust upward if your
+          application scenario requires large headers. This is sometimes
+          the case with proxy transactions to websites that use headers to
+          hold authentication information.
+        </para>
+
+        <para>
+          IIS normally sets a limit of 16384 bytes; according to
+            <externalLink>
+              <linkText>KB Article 820129</linkText>
+              <linkUri>http://support.microsoft.com/kb/820129</linkUri>
+            </externalLink>, the limit is
+          adjustable by setting fields in the Windows registry.
+          This setting allows you to specify a similar limit in IIRF.
+        </para>
+
+        <alert class="note">
+          This directive should be used at most once, and only within
+          the IirfGlobal.ini file. Changes in the IirfGlobal.ini are
+          effective only when the IIS server or IIRF is restarted.
+        </alert>
+
+      </content>
+    </section>
+
+    <relatedTopics/>
+  </developerConceptualDocument>
+</topic>
+

@@ -1,0 +1,14 @@
+# SampleUrls.txt
+# 
+
+
+# Incoming URL                         Expected Result
+#--------------------------------------------------------------------- 
+#
+
+/module.php                            /myIsapi.dll?form=module.php&origpath=
+/foo/module.php                        /myIsapi.dll?form=module.php&origpath=foo/
+/home/foo/module.php                   /myIsapi.dll?form=module.php&origpath=home/foo/
+/home/foo/index.php                    /myIsapi.dll?form=index.php&origpath=home/foo/
+/home2/foo/main.php                    /myIsapi.dll?form=main.php&origpath=home2/foo/
+

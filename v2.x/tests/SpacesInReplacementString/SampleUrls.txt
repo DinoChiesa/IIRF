@@ -1,0 +1,10 @@
+# SampleUrls.txt
+# 
+
+# Incoming URL                                 Expected Result
+#-------------------------------------------------------------------- 
+#
+
+/peprjr/uploads/docs/imports/view?docid=12345  /includes/Retrieve%%20and%%20Display.aspx?docid=12345
+/purchase?product=87654                        /actions/Try%%20%%26%%20Buy.aspx?productid=87654
+

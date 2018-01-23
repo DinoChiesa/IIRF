@@ -1,0 +1,24 @@
+# SampleUrls.txt
+# 
+# Expected result may be a URL, or one of the following: 
+#
+#     NO REWRITE 
+#     FORBIDDEN
+#     REDIRECT <code>  <URL>
+#     NOT FOUND 
+#
+#
+
+
+# Incoming URL                  Expected Result
+#--------------------------------------------------------------------- 
+#
+
+/module.php                     NO REWRITE
+/foo/something.aspx             NO REWRITE
+/foo/something.                 NO REWRITE
+/foo/something                  REDIRECT 301 /foo/something/
+/home/foo/admin                 REDIRECT 301 /home/foo/admin/
+/home/foo/index                 REDIRECT 301 /home/foo/index/
+/home/foo/index.htm             NO REWRITE
+

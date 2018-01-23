@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="01dedcdc-e657-4519-8bdb-848a1eef1e0e" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+
+      <!-- <autoOutline /> -->
+
+      <para>The IIRF vdir-specific .ini files use the name IIRF.ini; one
+        file can be placed in the physical directory corresponding to
+        each IIS virtual directory (vdir) or application.  Like the IIRF global
+        configuration file, the IIRF.ini files consist of multiple lines, with a
+        single <phrase>directive</phrase> on each line.  Each directive
+        affects the behavior of IIRF at runtime.  The directives in an
+        IIRF.ini file affect only a single IIS vdir or application.
+      </para>
+
+      <para>
+        The directives supported in the vdir-specific ini files are listed here.
+      </para>
+
+      <alert class="note">
+        The set of directives supported in the vdir-specific ini files
+        is is different than the set of directives supported in the
+        global IIRF ini file.
+      </alert>
+
+    </introduction>
+
+
+    <section address="Section1">
+      <title>Directives for the Vdir-specific ini file</title>
+      <content>
+        <list class="bullet">
+          <listItem>
+            <link xlink:href="4c7e4d84-6177-4cde-8bbb-3ffe37bcb84c">CondSubstringBackrefFlag</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="e49a6636-15bd-470a-98b3-e50532c684db">FlagCharacters</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="cd8bda6c-6db8-417c-a2e9-d7030014ed02">IncludeIni</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="2c021ae7-77a1-46d5-83d8-2aac5bad5adb">IterationLimit</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="ab01114d-4484-4ffe-813a-bce20b3bf9b9">MaxMatchCount</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="e4088625-c729-4a3f-9e1a-19b2edda2e19">ProxyPassReverse</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="a1885ba5-508f-4df1-abf9-0bab147eaec5">ProxyPreserveHost</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="95f7b027-2642-4937-8778-e7a4643a524d">ProxyTimeouts</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="c699ba60-fe15-4e90-ac4b-74598b5c352e">RedirectRule</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="bc80da98-83e2-4d22-8b71-2fd116e2610a">RewriteBase</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="39dbb30e-2afd-4cb1-aaff-45497fe2cbe6">RewriteCond</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="e4d59f04-fd89-447a-ba23-60bb8b4c9a68">RewriteEngine</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="3d1ea0d0-eabd-43b3-a913-de7128a74bb6">RewriteHeader</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="f370a131-d13c-4d01-ab91-2f629641954e">RewriteLog</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="9bde2e1d-f26b-480f-8d75-062cd06cf795">RewriteLogLevel</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="6d072500-64b1-4efc-970a-64e94faf1bbd">RewriteMap</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="06643ce7-6c93-4d2f-ad3b-01e97fade9ef">StatusInquiry</link>
+          </listItem>
+          <listItem>
+            <link xlink:href="d0aa762b-9c46-4d02-94d0-1b8ad820596b">UrlDecoding</link>
+          </listItem>
+        </list>
+      </content>
+    </section>
+
+
+
+
+    <relatedTopics>
+      <!-- One or more of the following:
+           - A local link
+           - An external link
+           - A code entity reference
+
+           <link xlink:href="Other Topic's ID"/>
+           <link xlink:href="Other Topic's ID">Link inner text</link>
+
+           <externalLink>
+             <linkText>Link text</linkText>
+             <linkAlternateText>Optional alternate link text</linkAlternateText>
+             <linkUri>URI</linkUri>
+           </externalLink>
+
+           <codeEntityReference>API member ID</codeEntityReference>
+
+           Examples:
+
+           <link xlink:href="00e97994-e9e6-46e0-b420-5be86b2f8270" />
+           <link xlink:href="00e97994-e9e6-46e0-b420-5be86b2f8278">Some other topic</link>
+
+           <externalLink>
+             <linkText>SHFB on CodePlex</linkText>
+             <linkAlternateText>Go to CodePlex</linkAlternateText>
+             <linkUri>http://shfb.codeplex.com</linkUri>
+           </externalLink>
+
+           <codeEntityReference>T:TestDoc.TestClass</codeEntityReference>
+           <codeEntityReference>P:TestDoc.TestClass.SomeProperty</codeEntityReference>
+           <codeEntityReference>M:TestDoc.TestClass.#ctor</codeEntityReference>
+           <codeEntityReference>M:TestDoc.TestClass.#ctor(System.String,System.Int32)</codeEntityReference>
+           <codeEntityReference>M:TestDoc.TestClass.ToString</codeEntityReference>
+           <codeEntityReference>M:TestDoc.TestClass.FirstMethod</codeEntityReference>
+           <codeEntityReference>M:TestDoc.TestClass.SecondMethod(System.Int32,System.String)</codeEntityReference>
+           -->
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>
+

@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="20da503b-d058-474c-9c67-cafbf519dccc" revisionNumber="1">
+  <developerConceptualDocument 
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <introduction>
+      <!-- <autoOutline /> -->
+      <para>Choose any installation location you like.</para>
+    </introduction>
+
+    <section address="Section1">
+      <title>IIRF Installation Location and the IIS Metabase</title>
+      <content>
+        <para>
+          Previous versions of IIRF restricted the installation
+          location. 
+          You can install the IIRF v2.0 DLL into any directory you choose.
+        </para>
+        <para>
+          In IIRF v1.2, there was a pitfall when installing IIRF into
+          the inetsrv directory (commonly c:\windows\system32\inetsrv\).
+          Doing so would lock the IIS Metabase, and prevent it from
+          being backed up.  This pitfall is not applicable to IIRF v2.0.
+          IIRF v2.0 does not exhibit the problem related to IIRF
+          installation location, that was present in IIRF v1.2.
+        </para>
+      </content>
+    </section>
+    <relatedTopics/>
+  </developerConceptualDocument>
+</topic>

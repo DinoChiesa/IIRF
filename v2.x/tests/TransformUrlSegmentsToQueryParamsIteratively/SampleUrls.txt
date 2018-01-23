@@ -1,0 +1,12 @@
+# SampleUrls.txt
+# 
+
+
+# Incoming URL                                     Expected Result
+#---------------------------------------------------------------------- 
+#
+
+/one/two                     /index.cfm?v=one&v=two
+/one/two/three/four/five     /index.cfm?v=one&v=two&v=three&v=four&v=five
+/one                         /index.cfm?v=one
+

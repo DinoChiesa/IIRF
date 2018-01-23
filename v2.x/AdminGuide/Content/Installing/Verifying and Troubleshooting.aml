@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="6e3750a8-96e1-4f4b-95ad-8c6c98a45d40" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <!--
+        <summary>
+          <para>Optional summary abstract</para>
+        </summary>
+        -->
+    <introduction>
+      <!-- <autoOutline /> -->
+      <para>After installing IIRF, you will want to do a quick
+        verification that the filter is loaded into IIS and working
+        properly.</para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Verifying IIRF Installation</title>
+      <content>
+        <para>
+          On IIS6 (Windows Server 2003), the easiest way to verify the
+          status of the filter is to view the ISAPI filters tab again.
+          After you make a request, if IIRF has been loaded properly by
+          IIS, the status should show a green arrow facing upward.
+          <mediaLink>
+            <caption placement="after" lead="Figure 1">Verifying IIRF
+              Status on IIS6</caption>
+            <image placement="center"
+                   xlink:href="eb7f0d57-471e-4872-ab7e-46cb7bf71563"/>
+          </mediaLink>
+        </para>
+
+        <para>
+          There&apos;s a different dialog for ISAPI Filters in IIS
+          Manager on IIS7. To reach it, select the website you&apos;d
+          like to manage:
+          <mediaLink>
+            <caption placement="after" lead="Figure 2">Select the Website
+              in IIS Manager for IIS7</caption>
+            <image placement="center"
+                   xlink:href="7855ef52-7ae2-45e3-ac8f-be65a1393aac"/>
+          </mediaLink>
+        </para>
+
+        <para>
+          Then, click on the <phrase>ISAPI Filters</phrase> icon in the
+          middle panel of IIS Manager:
+          <mediaLink>
+            <caption placement="after" lead="Figure 3">Select ISAPI Filters
+              in the middle panel</caption>
+            <image placement="center"
+                   xlink:href="5fce57e0-9ed8-4848-b195-2c3b29880dd2"/>
+          </mediaLink>
+        </para>
+
+        <para>
+          You should see something like the panel below.
+          <mediaLink>
+            <caption placement="after" lead="Figure 4">ISAPI Filter Status
+            </caption>
+            <image placement="center"
+                   xlink:href="cb88e5e7-e951-4e3f-9df0-745584f58cc3"/>
+          </mediaLink>
+          The happy green arrows are not available on IIS7; on IIS7, this dialog
+          can only be used to check what you&apos;ve configured. In other words,
+          seeing the configuration information in IIS Manager this way, does not
+          indicate that the filter is <phrase>correctly</phrase> configured. It
+          does not mean that the filter has been loaded, or is receiving HTTP
+          requests.
+        </para>
+
+        <para>
+          If you include a <link
+          xlink:href="06643ce7-6c93-4d2f-ad3b-01e97fade9ef">StatusInquiry</link>
+          directive in your vdir-specific ini file, then you can query
+          the status of IIRF by requesting the status inquiry URL,
+          usually <codeInline>/iirfstatus</codeInline>.
+          <legacyBold>Attention: in typical configurations, this works
+          only when the request is made from localhost!  Check the
+          documentation on the StatusInquiry directive for more
+          information. </legacyBold> If you have configured everything
+          properly, when you request the status inquiry url, you will
+          get a pleasant status response from IIRF like this:
+          <mediaLink>
+            <caption placement="after" lead="Figure 5">IIRF Status Response</caption>
+            <image placement="center"
+                   xlink:href="42fa3e23-4b26-441c-ab57-c30711516ed8"/>
+          </mediaLink>
+        </para>
+
+        <para>
+          If you do not see something like this, check the  <link
+          xlink:href="06643ce7-6c93-4d2f-ad3b-01e97fade9ef">StatusInquiry</link>
+          directive in the IIRF ini file.
+        </para>
+
+        <para>
+          If you have a problem in your ini file, it will be noted
+          here.  Look in particular at the lines for Warnings and
+          errors.  You can also verify other vital signs for IIRF here:
+          the time you last updated the INI file, whether the rewrite
+          engine is enabled, how many requests have been processed,
+          whether you have logging turned on or not, and so on.
+        </para>
+
+        <para>NB: The request count is kept in a 32-bit integer field.
+          It will "roll over" for very high request counts.
+        </para>
+
+      </content>
+    </section>
+
+
+    <section address="Section2">
+      <title>Troubleshooting IIRF Installation and Operation</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+        <para>If IIRF is not working properly, you will need to
+          troubleshoot the installation.</para>
+      </content>
+
+      <sections>
+        <section address="Section2-sub1">
+          <title>Does IIRF Load Successfully?</title>
+          <content>
+            <para>
+              The easiest way to see if IIRF loads is to request the <literal>/iirfStatus</literal>
+              url on a server that has no IIRF.ini file. With no IIRF.ini file,
+              if IIRF loads successfully, IIRF will enable the <literal>/iirfStatus</literal> URL
+              by default, and will issue a status report when receiving that
+              URL. If IIRF does not load successfully, you may see an error
+              page. When IIS is running on Windows 7, the page looks like this:
+            </para>
+
+          <mediaLink>
+            <caption placement="after" lead="Figure 6">IIS Error page when IIRF cannot be loaded</caption>
+            <image placement="center"
+                   xlink:href="a7801d65-6840-4915-a096-dc24c1fa1ae7"/>
+          </mediaLink>
+
+            <para>
+              If IIRF does not load at all, the most common cause of problems is
+              a lack of permissions on the IIRF DLL or the directory that
+              contains it.  Before going any further, verify the permissions on
+              the IIRF dll and the directory that contains it.  On Windows
+              Server 2003, verify that the IIS_WPG group has Read and Execute
+              permissions on the IIRF dll and on the directory that contains the
+              DLL.  On Windows XP, verify that
+              IUSR_<newTerm>machineName</newTerm> has permissions.  On Vista and
+              Windows Server 2008, verify that IUSR has permissions.
+            </para>
+            <para>
+              The previous image indicates that LoadLibraryEx could not load
+              IIRF.dll.  The error code shown is 0x80070005, which translates to
+              "Access Denied".  Adding the appropriate read and execute rights
+              to the IIRF.dll will eliminate the problem.
+            </para>
+
+          </content>
+        </section>
+
+        <section address="Section2-sub2">
+          <title>Check the Windows Event Log?</title>
+          <content>
+            <para>
+              Look in the Windows Event Log for error event entries from either
+              W3SVC or W3SVC-WP regarding a failure to load the filter DLL. To do
+              this, start the <phrase>Windows Eevnt Viewer</phrase> and on the
+              left-hand side, navigate to Application events. On Vista or Windows
+              Server 2008, this is what it looks like:
+              <mediaLink>
+                <caption placement="after" lead="Figure 7">Navigate to Application Events
+                </caption>
+                <image placement="center"
+                       xlink:href="1db6634c-8b0b-4895-bb40-0eda00bd62d1"/>
+              </mediaLink>
+            </para>
+
+            <para>
+              In the center panel, look for events from W3SVC-WP.  The interesting
+              parts are shown here:
+              <mediaLink>
+                <caption placement="after" lead="Figure 8">An interesting W3SVC-WP
+                event.
+                </caption>
+                <image placement="center"
+                       xlink:href="b0350deb-f31e-42f4-8864-0ae68ac9cf7b"/>
+              </mediaLink>
+            </para>
+
+            <para>
+              If this situation occurs, the message you will look for on IIS6 is
+              something like, <codeInline>The Module DLL
+                C:\Windows\System32\inetsrv\iirf\Iirf.dll failed to load.  The data
+                is the error.</codeInline>  On IIS7, you will get something
+              like <codeInline>Could not load all ISAPI filters for site 'DEFAULT
+                WEB SITE'.  Therefore site startup aborted.</codeInline>  The
+              "data" of the error is the most important piece of information when
+              diagnosing the failure to load/run an ISAPI Filter.
+            </para>
+
+
+
+            <para>
+              On IIS7&apos;s event viewer, you need to select the details tab in
+              the center panel, in order to see the error data.
+              <mediaLink>
+                <caption placement="after" lead="Figure 9">Error details on IIS7
+                </caption>
+                <image placement="center"
+                       xlink:href="cbd729f9-132a-46ec-b77c-f17b7ccbff6d"/>
+              </mediaLink>
+            </para>
+
+
+            <para> Here are some data codes and explanations for them:</para>
+
+            <list class="bullet">
+              <listItem> <legacyBold>Data 02 00 00 00</legacyBold>
+                <markup>
+                  <br/>
+                </markup>
+                meaning: <quoteInline>The system cannot find the file specified.</quoteInline>
+                <markup>
+                  <br/>
+                </markup>
+                The mnemonic is <literal>ERROR_FILE_NOT_FOUND</literal>. Verify
+                that the location you specified for the DLL is correct.  Sometimes
+                a single character is wrong, or the drive volume letter is wrong,
+                and so on.  Double check it.  Triple check.
+              </listItem>
+              <listItem> <legacyBold>Data 05 00 00 00</legacyBold>
+                <markup>
+                  <br/>
+                </markup>
+                meaning: <quoteInline>Access is denied.</quoteInline>
+                <markup>
+                  <br/>
+                </markup>
+                This is a permissions error.  The mnemonic
+                is <literal>ERROR_ACCESS_DENIED</literal>. On Windows Server 2003,
+                verify that the IIS_WPG group has Read and Execute permissions on
+                the IIRF dll and on the directory that contains the DLL.  On
+                Windows XP, verify that IUSR_<newTerm>machineName</newTerm> has
+                permissions.  On Vista and Windows Server 2008, verify that IUSR
+                has permissions.
+              </listItem>
+              <listItem> <para><legacyBold>Data 7E 00 00 00</legacyBold>
+                <markup>
+                  <br/>
+                </markup>
+                meaning: <quoteInline>The specified module could not be found.</quoteInline>
+                <markup>
+                  <br/>
+                </markup>
+                The associated Event ID for this is 2214 and 2268.  The mnemonic
+                for the error code is <literal>ERROR_MOD_NOT_FOUND</literal>.
+                This can occur if libraries that IIRF.dll depends on, are not
+                present on the machine. In v2.1, IIRF statically links the
+                Visual-C++ 2008 (VC90) Runtime Libraries; dependencies on these
+                should normally not be a problem. There may be exceptional
+                conditions, however, when required dependencies are not present,
+                in which case you will get this error.
+                </para>
+
+                <para>
+                  To check dependencies, you can use a free third-party tool called
+                <externalLink>
+                  <linkText>Dependency Walker</linkText>
+                  <linkAlternateText>Dependency Walker</linkAlternateText>
+                  <linkUri>http://www.dependencywalker.com/</linkUri>
+                </externalLink>.
+
+                Download and install it, and then load the IIRF.dll into the tool.
+                It will tell you if you have missing dependencies.
+                </para>
+
+
+              <mediaLink>
+                <caption placement="after" lead="Figure 10">The Depends tool showing a missing dependency
+                </caption>
+                <image placement="center"
+                       xlink:href="46a8a3fc-2f43-47b0-91ff-aee40a54392d"/>
+              </mediaLink>
+
+              </listItem>
+
+              <listItem><para> <legacyBold>Data C1 00 00 00</legacyBold>
+                <markup>
+                  <br/>
+                </markup>
+                meaning: <quoteInline>IIRF.dll is not a valid Win32 application.</quoteInline>
+                <markup>
+                  <br/>
+                </markup>
+                The associated Event ID for this is 2268. The mnemonic for the
+                error code is <literal>ERROR_BAD_EXE_FORMAT</literal>. The
+                message on IIS7 is <codeInline>Could not load all ISAPI filters
+                for site 'DEFAULT WEB SITE'.  Therefore site startup
+                aborted.</codeInline> This commonly occurs on Windows Server
+                2008, 64-bit machines, when using the x86 IIRF dll, and it is
+                configured to run in a 64-bit App Pool. In this case, verify
+                that the App Pool in which IIRF is configured to run, is enabled
+                for 32-bit applications. Alternatively, or use the x64 build of
+                IIRF in a 64-bit App Pool.  For more information on this error,
+                see
+                <externalLink>
+                  <linkText>Microsoft KB Aticle 895976</linkText>
+                  <linkAlternateText>KB Aticle 895976</linkAlternateText>
+                  <linkUri>http://support.microsoft.com/kb/895976</linkUri>
+                </externalLink>.
+                </para>
+                <para>
+                This error can also occur if the DLL is corrupted.
+                </para>
+              </listItem>
+            </list>
+
+            <para>
+              See
+              <externalLink>
+                <linkText>David Wang&apos;s article</linkText>
+                <linkAlternateText>David Wang&apos;s article</linkAlternateText>
+                <linkUri>http://blogs.msdn.com/david.wang/archive/2005/06/21/HOWTO_Diagnose_and_Fix_Common_ISAPI_Filter_Installation_Failures.aspx</linkUri>
+              </externalLink>
+              for more guidance and information on troubleshooting the
+              installation of ISAPI Filters.
+            </para>
+
+          </content>
+        </section>
+        <section address="Section2-sub2">
+          <title>IIRF Loads but does not Operate Properly?</title>
+          <content>
+            <para>
+              The first thing to check when IIRF does not operate properly is the
+              status page.  Be sure you have included a a <link
+              xlink:href="06643ce7-6c93-4d2f-ad3b-01e97fade9ef">StatusInquiry</link>
+              directive in the ini file, and point your browser to the status url,
+              which is typically <literal>http://server/iirfStatus</literal> or
+              <literal>http://server/vdir/iirfStatus</literal> .  If you get no
+              Status page, then go back to the previous step to insure IIRF is
+              loading properly.
+            </para>
+
+            <para>
+              If you see a status page, that means IIRF is properly configured as
+              an ISAPI Filter and is receiving requests. That's good.
+              <legacyItalic>But it does not mean that IIRF has read your ini
+              file.</legacyItalic> To verify that IIRF has read in the expected
+              ini file, and has read in the expected number of rules, examine the
+              status report carefully.  Verify that there are no warnings or
+              errors with the ini file.  Verify that the ini file has been read,
+              and that the timestamp on the ini file is the expected value. Verify
+              that the rewrite engine is ON.  Verify that the IIRF logfile has been
+              created in the expected path.
+            </para>
+
+            <para>
+              For IIRF to work properly, two
+              things must happen: (1) IIS must load IIRF.dll as an ISAPI filter;
+              then, (2) the IIRF.dll must find and read its configuration from the
+              iirf.ini file. If the load part succeeds, and the configuration part
+              fails, <literal>/iirfStatus</literal> will still respond, though there is no active
+              configuration for IIRF.  So, check the output of <literal>/iirfStatus</literal>
+              carefully. It is not simply a yes/no is-it-working/is-it-not-working
+              thing.
+            </para>
+
+            <para>
+              Among other things, the iirf status report indicates:
+            </para>
+
+            <list class="bullet">
+              <listItem>
+                <para>
+                  The full path of the IIRF.ini file that has been read in, if
+                  any. Does this name match what you expect? IIRF infers the path
+                  for the ini file from the physical path configured in IIS for
+                  the virtual directory. If IIRF cannot find an iirf.ini file from
+                  this location, because of some configuration confusion, or
+                  because filesystem permissions prevent it, then
+                  <literal>/iirfStatus</literal> will "work" - it will emit a
+                  report. But IIRF will have read no rules, so it will do nothing
+                  further. In particular, IIRF will never create a log file, if it
+                  has not successfully read an iirf.ini file. Check to see that the
+                  <literal>/iirfStatus</literal> report indicates the iirf.ini you
+                  expect.
+                  <mediaLink>
+                    <caption placement="after" lead="Figure 11">
+                      An IIRF Status report indicating IIRF.ini has not been found
+                    </caption>
+                    <image placement="center"
+                           xlink:href="496ac428-2346-4407-a2e9-916f5ffebca7"/>
+                  </mediaLink>
+                </para>
+              </listItem>
+
+              <listItem>
+                <para>
+                  The timestamp of the IIRF.ini file that has been
+                  read in. Check that this matches your expectation. If you have
+                  updated your ini file and IIRF is nor responding to those
+                  changes, double-check the timestamp in the filesystem (via
+                  Windows Explorer, for example) and in the <literal>/iirfStatus</literal> report. If
+                  they don't match, figure out why. Is it possible you are using
+                  an incorrect path for your IIRF.ini updates?
+                </para>
+              </listItem>
+              <listItem>
+                <para>
+                  The full path of the IIRF log file, if any. Does this match what
+                  you expect?  Check that a logfile has been created in that
+                  location. Keep in mind that the argument to the
+                  <codeInline>RewriteLog</codeInline> directive is the "stub" path
+                  for the iirf logfile that gets created. It is not the name of
+                  the logfile, nor is it the name of the directory into which the
+                  logfile will be placed.
+                </para>
+                <para>
+                  If the path of the logfile is shown in the
+                  <literal>/iirfstatus</literal> report, and yet there is no
+                  logfile at that path, it indicates that IIRF failed to create
+                  the logfile. In that case, IIRF spools an event to the Windows
+                  Event Log. If there is a logfile path listed in
+                  <literal>/iirfStatus</literal>, then either there will be an
+                  IIRF logfile at that path, or there will be a Windows Event
+                  explaining why there is no logfile at that path.
+                </para>
+                <para>
+                  For example, if there is a logfile path listed in
+                  <literal>/iirfstatus</literal>, but IIRF did not have
+                  permissions to create the logfile, then you will have a Windows
+                  Event from IIRF stating <legacyBold>Could not open log
+                  file</legacyBold>, and citing <legacyBold>error 5, access
+                  denied</legacyBold> as the reason. If, in the iirf.ini file, you
+                  specify a path that does not exist in the argument for the
+                  <codeInline>RewriteLogFile</codeInline> directive, the reason
+                  will be <legacyBold>error 3, The system cannot find the path
+                  specified.</legacyBold> These are only examples; there are other
+                  possibilities as well. This information will also be noted in
+                  the <literal>/iirfStatus</literal> report.
+                  <mediaLink>
+                    <caption placement="after" lead="Figure 12">
+                      An IIRF Status report indicating the log file could not be created
+                    </caption>
+                    <image placement="center"
+                           xlink:href="d1fc7872-c5e0-4754-a2bf-6404df472efc"/>
+                  </mediaLink>
+                </para>
+
+              </listItem>
+            </list>
+
+            <para>
+              The default path for <codeInline>StatusInquiry</codeInline> when no
+              vdir-specific ini file is found is
+              <literal>/iirfStatus</literal>. This is why it&apos;s best that you
+              use <literal>/iirfstatus</literal> for your
+              <codeInline>StatusInquiry</codeInline> directive, if you use
+              a <codeInline>StatusInquiry</codeInline> directive.  When an ini
+              file cannot be found, performing a GET request on
+              <literal>http://server/iirfStatus</literal> will return a page
+              indicating that the ini file cannot be found.  In this case, check
+              the filename and directory path and file permissions.
+            </para>
+
+            <para>
+              If the <literal>/iirfstatus</literal> report checks out ok, but IIRF
+              is still not behaving as you expect, then you need to verify that
+              the rules you have provided to the filter are correct.  Regular
+              expressions can be tricky, and that complexity coupled with the
+              rules processing logic of a rewriting filter can present a real
+              challenge to operators.  A useful tool to help you to verify the
+              rules in the ini file is the TestDriver program.  You can learn more
+              about it on the <link
+              xlink:href="6484f8dd-f1e4-4b74-917c-56d63e76d415">Other Tools</link>
+              page.
+            </para>
+
+          </content>
+
+        </section>
+      </sections>
+    </section>
+
+    <relatedTopics>
+      <link xlink:href="6484f8dd-f1e4-4b74-917c-56d63e76d415">Other Tools</link>
+    </relatedTopics>
+
+  </developerConceptualDocument>
+</topic>
+
+
+
+
+
+
+
+

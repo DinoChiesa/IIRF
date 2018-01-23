@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="d9d3d4d7-7b3a-4418-b290-c297b041ff42" revisionNumber="1">
+
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+        <para>
+          <codeInline>ProxyPass</codeInline> tells IIRF to act as a
+          reverse proxy (also known as a transparent proxy) when a
+          matching URL request is received.
+        </para>
+
+      <autoOutline />
+    </introduction>
+
+    <section address="Usage">
+      <title>Basic Syntax and Usage</title>
+      <content>
+        <para>Syntax:
+          <code lang="ini">
+            ProxyPass &lt;url-pattern&gt; &lt;target-resource&gt; [&lt;modifiers&gt;]
+          </code>
+        </para>
+
+        <para>
+          The &lt;url-pattern&gt; is a <token>Regex-singular</token>
+          that is matched to the incoming URL.  See the documentation
+          for the <link
+          xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5"> RewriteRule
+          directive</link> or <link
+          xlink:href="e013a406-9f3a-4385-b986-6c4c410dad48">the page on
+          regular expressions</link> for information and examples on how
+          that works.
+        </para>
+
+        <para>
+          If the incoming URL request matches the regular expression, then IIRF
+          acts as a transparent proxy for the specified &lt;target-resource&gt;.
+        </para>
+
+        <para>
+          The proxy action is taken immediately when a
+          <codeInline>ProxyPass</codeInline> matches. There is no further
+          evaluation of rules in the ini file, and there is no further
+          iteration. One implication of this is that a
+          <codeInline>[L]</codeInline> modifier on a
+          <codeInline>ProxyPass</codeInline> directive is nonsensical.
+        </para>
+
+
+        <para>
+          Example: <code lang="ini">
+            # add a trailing slash:
+            RedirectRule ^/iirfHelp$         /iirfhelp/          [I]
+
+            # proxy the iirfhelp directory
+            ProxyPass   ^/iirfHelp/(.*)$    http://cheeso.members.winisp.net/iirfhelp/$1  [I]
+          </code>
+        </para>
+
+
+        <para>
+          The two rules above allows the remotely-hosted IIRF help website to be
+          displayed on the local web server, as if it were a local
+          resource. Notice the use of the redirect as well as the proxy.
+        </para>
+
+
+        <para>
+          The
+          &lt;target-resource&gt; can include back-references to the matched
+          substrings in the &lt;url-pattern&gt;, back-references to matched
+          substrings in the previously
+          evaluated <codeInline>RewriteCond</codeInline> (if any),  and references
+          to server variables, just as with <codeInline>RewriteRule</codeInline>
+          or <link xlink:href="c699ba60-fe15-4e90-ac4b-74598b5c352e">RedirectRule</link>.
+        </para>
+
+
+        <para>
+          Example:
+          <code lang="ini">
+            RewriteCond %{HTTP_HOST}   ^(.+)\.users\.domain\.com$  [I]
+            ProxyPass ^/(.*)$          http://internal-server/*1/$1
+          </code>
+        </para>
+
+        <para>
+          The above <codeInline>ProxyPass</codeInline> directive applies
+          when the hostname for the request matches
+          "ANYTHING.users.domain.com". Such a request is proxied to an
+          internal server, and the URL in question is constructed from
+          the hostname and the URL path in the original request.
+        </para>
+
+      </content>
+    </section>
+
+
+    <section address="Modifiers">
+      <title>Modifiers</title>
+      <content>
+        <para>
+          These modifiers can be used
+          with the <codeInline>ProxyPass</codeInline> directive.
+        </para>
+
+        <list>
+          <listItem> I = Do case insensitive matching</listItem>
+          <listItem> NC = Do case-insensitive matching (same as I)</listItem>
+          <listItem> PH = Preserve Host (added in IIRF v2.1.1.26)</listItem>
+        </list>
+
+        <para>
+          <codeInline>[I]</codeInline> and <codeInline>[NC]</codeInline>
+          do the same thing. When either of these flags is used, it
+          means the pattern is applied in a case-insensitive
+          match. Don&apos;t use them together; it will only confuse
+          things.
+        </para>
+
+        <para>
+          The <codeInline>[PH]</codeInline> modifier tells IIRF to use
+          the <literal>Host:</literal> specified with the incoming
+          request, on the outgoing proxied request. See the page on
+          <link
+          xlink:href="a1885ba5-508f-4df1-abf9-0bab147eaec5">ProxyPreserveHost</link>
+          for more details. You need either
+          <codeInline>[PH]</codeInline> on the
+          <codeInline>ProxyPass</codeInline> directive, or a
+          <codeInline>ProxyPreserveHost</codeInline> directive at the
+          top of the Iirf.ini file, to get this behavior. You don&apos;t
+          need both.  It&apos;s redundant but not an error to use both.
+        </para>
+
+        <para>
+          Also, notice that the <codeInline>[L]</codeInline> modifier that is
+          supported on <codeInline>RewriteRule</codeInline> and
+          <link xlink:href="3d1ea0d0-eabd-43b3-a913-de7128a74bb6">RewriteHeader</link>
+          is <legacyItalic>not</legacyItalic> supported by
+          <codeInline>ProxyPass</codeInline>. This makes sense, because as
+          described previously, when a <codeInline>ProxyPass</codeInline> rule
+          matches, the proxy action is taken immediately. In other words, the
+          behavior implied by <codeInline>[L]</codeInline> is
+          implicit. If you include a <codeInline>[L]</codeInline>
+          modifier on a <codeInline>ProxyPass</codeInline> rule, it will
+          have no effect.
+        </para>
+
+      </content>
+    </section>
+
+
+
+    <section address="Implications">
+      <title>Implications of ProxyPass</title>
+      <content>
+
+        <para>
+          There are several important implications of using <codeInLine>ProxyPass</codeInLine>.
+        </para>
+
+        <list class='ordered'>
+          <listItem>
+            Resources or pages that are proxied via
+            <codeInline>ProxyPass</codeInline> will be delivered more slowly to
+            the requesting clients than resources delivered directly.  IIRF does
+            not perform caching of proxied resources. Caches still may be used -
+            for example, if a remote web server responds with a "304 Not
+            Modified", this informs the client that it may use its cached vevrsion
+            of the resource.  IIRF merely acts as a go-between in the
+            communication.
+          </listItem>
+
+
+        <listItem>
+          <para>
+            Not all web resources can be proxied effectively with a transparent
+            proxy.  A hierarchy of read-only hyperlinked documents and images is a
+            good candidate for a reverse proxy.  A dynamic web application that
+            relies on cookies for tracking client or user state, and HTTP POST
+            requests can also be proxied effectively using IIRF.
+          </para>
+          <para>
+            But, a web application that has heavy data transmission requirements
+            may not be a good candidate. Consider this before settling on a proxy
+            arrangement. Of course, perform testing to be sure.
+          </para>
+        </listItem>
+
+        <listItem>
+          <para>
+            When acting as a transparent proxy, IIRF modifies the
+            request headers, before submitting the request to the target
+            of the proxy.
+          </para>
+          <para>
+            A typical HTTP request will include a number of HTTP
+            Headers, specifying the content-type of the request, the
+            acceptable content types for the responses, and so on.  For
+            more information on these headers, see
+            <externalLink>
+              <linkText>IETF RFC 2616</linkText>
+              <linkUri>http://tools.ietf.org/html/rfc2616</linkUri>
+            </externalLink>.
+          </para>
+          <para>
+            When an IIRF rule fires that directs IIRF to proxy the request, it
+            will modify the original request headers, according to RFC 2616, in
+            the following ways:
+          </para>
+          <list class='bullet'>
+            <listItem>
+              <para>
+              IIRF injects a new <literal>>Via:</literal> header in
+              the proxied request to
+              indicate that it has acted as a proxy in the
+              communication, in compliance with RFC 2616, section
+              14.45. This header looks like:
+              <code lang="ini">
+                Via: 1.1  aa.bb.cc.dd (IIRF v2.1)
+              </code>
+              ...where <phrase>aa.bb.cc.dd</phrase> is replaced with the IP
+              address of the IIS server, and the string in parenthesis
+              indicates the IIRF version.
+              </para>
+              <para>
+                If the request already contains
+                a <literal>Via:</literal> header, IIRF appends its
+                signature to that existing header and passes the
+                appended version on in the proxied request.
+              </para>
+            </listItem>
+
+            <listItem>
+              The original <literal>Host:</literal> header will be
+              inserted into a
+              new <literal>X-Forwarded-Host:</literal> header, if
+              that header is not yet already set.  In some cases this
+              header is already set, as when multiple proxies are
+              chained in a communication exchange. If
+              the <literal>X-Forwarded-Host:</literal> header is
+              present in the original request, IIRF will not set it or
+              modify it.
+            </listItem>
+
+            <listItem>
+              If there is no <literal>X-Forwarded-For:</literal>
+              header, then IIRF sets one, with the value of the
+              requesting client&apos;s IP address. If there is
+              a <literal>X-Forwarded-For:</literal> header, IIRF
+              appends the requesting client&apos;s IP address (as can be
+              retrieved from the <codeInline>REMOTE_ADDR</codeInline>
+              server variable) to the value, separating it by
+              comma-space sequence.
+            </listItem>
+
+            <listItem>
+              IIRF adds a
+              new <literal>X-Forwarded-Server:</literal> header,
+              with the value as the name of the server running IIS and
+              IIRF, as retrieved from the <codeInline>SERVER_NAME</codeInline>
+              server variable.
+            </listItem>
+
+            <listItem>
+              IIRF inserts a new <literal>>Host:</literal> header, containing
+              the hostname of the server listed in the
+              <codeInline>ProxyPass</codeInline> rule, unless the
+              <codeInline>ProxyPreserveHost</codeInline> directive is in use, or
+              the <codeInline>[PH]</codeInline> modifier is present.
+            </listItem>
+
+          </list>
+
+          <para>
+            All other request headers are passed through the proxy.
+            This includes <literal>Cookie:</literal>,
+            <literal>Referer:</literal>,
+            <literal>Accept:</literal>,
+            <literal>Accept-Encoding:</literal>,
+            <literal>Accept-Language:</literal>,
+            <literal>Pragma:</literal>,
+            <literal>If-Modified-Since:</literal>,
+            <literal>User-Agent:</literal>, and other standard
+            headers, as well as any custom
+            (X-something) headers that your application may rely
+            on.  This includes any headers that may have been set by
+            IIRF itself for the current request, using
+            <link xlink:href="3d1ea0d0-eabd-43b3-a913-de7128a74bb6">RewriteHeader</link>
+            directives.
+          </para>
+
+          <para>
+            In particular, this treatment of HTTP headers means that web
+            sites that depend on cookies can be successfully proxied
+            through IIRF.  It also means that interested HTTP
+            applications and web sites can inspect the requests and
+            determine that the request has been proxied.
+          </para>
+        </listItem>
+
+        <listItem>
+          <para>
+            When using IIRF as a transparent proxy, the system  also modifies the
+            response headers before returning them to the original
+            requesting application.
+          </para>
+
+          <list class='bullet'>
+            <listItem>
+              The original <literal>Server:</literal> header will
+              be destroyed. In its place, IIS will insert its
+              own <literal>Server:</literal> header, whatever is
+              configured in the IIS Manager.
+            </listItem>
+
+            <listItem>
+              IIRF injects a <literal>Via:</literal> header into
+              the response. Once again, this is done to comply with the
+              requirements of IETF RFC 2616, in this case, specifically
+              section 14.45.  This injected header indicates that IIRF has
+              acted as a proxy in the communication.  The header
+              looks like:
+              <code lang="ini">
+                Via: 1.1  aa.bb.cc.dd (IIRF v2.1)
+              </code>
+              ...where <phrase>aa.bb.cc.dd</phrase> is replaced with the IP
+              address of the IIS server, and the string in parenthesis
+              indicates the IIRF version.
+            </listItem>
+
+          </list>
+        </listItem>
+
+        </list>
+      </content>
+    </section>
+
+
+    <relatedTopics>
+      <link xlink:href="95f7b027-2642-4937-8778-e7a4643a524d">ProxyTimeouts</link>
+      <link xlink:href="e4088625-c729-4a3f-9e1a-19b2edda2e19">ProxyPassReverse</link>
+      <link xlink:href="a1885ba5-508f-4df1-abf9-0bab147eaec5">ProxyPreserveHost</link>
+      <link xlink:href="2a84f55d-b0ae-422a-9071-a31e35b7d3e3">Please Donate</link>
+    </relatedTopics>
+
+  </developerConceptualDocument>
+</topic>
+

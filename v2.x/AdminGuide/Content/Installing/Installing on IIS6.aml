@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="6b426152-704a-4907-b87e-2e1938a89cad" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <!--
+        <summary>
+          <para>Optional summary abstract</para>
+        </summary>
+        -->
+    <introduction>
+      <!-- Uncomment this to generate an outline of the section and sub-section
+           titles.  Specify a numeric value as the inner text to limit it to
+           a specific number of sub-topics when creating the outline.  Specify
+           zero (0) to limit it to top-level sections only.  -->
+      <!-- <autoOutline /> -->
+      <para>Follow these steps to install IIRF on IIS6.</para>
+    </introduction>
+
+    <section address="IIS6">
+      <title>Installing on IIS6</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+        <para>
+          IIS v6.0 is included with Windows Server
+          2003.  These are the steps for installing IIRF v2.0 on to
+          Windows Server 2003 with IIS6.
+        </para>
+
+        <alert class="note">
+          If you are still using Windows XP, or Windows 2000, you cannot
+          use IIRF. At one point I was able to test IIRF on
+          Windows 2000 and Windows XP, but I cannot do so any
+          longer. Therefore I must state that IIRF
+          won&apos;t work on Windows XP, or any version of Windows 2000.
+        </alert>
+
+        <list class="ordered">
+
+          <listItem>
+            Copy the IIRF DLL (IIRF.dll) to an appropriate folder, such
+            as <literal>c:\Program Files\Ionic Shade\IIRF 2.1</literal>
+            .  Or it could be in a totally separate directory tree.
+            It&apos;s up to you.
+          </listItem>
+
+          <listItem>
+            If you create a server-wide settings file (IirfGlobal.ini),
+            you must place it in the same
+            directory as the DLL file. The filter will look for its
+            global settings in that file. You will configure
+            site-specific settings later, in a separate ini file. For
+            more information see the
+            <link xlink:href="8f5e8495-babc-4dfb-9da9-4e9101e8d029">Configuring
+              IIRF</link> topic.
+          </listItem>
+
+          <listItem>
+            <para>
+              Grant READ permissions on the DLL, and the ini file,  to
+              the appropriate principals.  To do
+              this, first view the IIRF.dll in Windows Explorer.
+            </para>
+
+            <mediaLink>
+              <caption placement="after" lead="Figure 1">Viewing the
+              IIRF.dll in Explorer</caption>
+              <image placement="center" xlink:href="3cc09fdb-91d9-4656-ae2f-4696c2c32a5e"/>
+            </mediaLink>
+
+            <para>
+              On Windows Server 2003, grant Read permissions to the
+              IIS_WPG group for the DLL and the ini file. According to
+              <externalLink>
+              <linkText>Microsoft&apos;s documentation on IIS6 and
+              Application Pool identities</linkText>
+              <linkUri>http://www.microsoft.com/technet/prodtechnol/WindowsServer2003/Library/IIS/12a3d96c-65ea-4210-96ad-86a801f6a88c.mspx?mfr=true</linkUri>
+              </externalLink>, on a clean installation of IIS 6.0, the
+              IIS worker process (w3wp.exe) runs under the new
+              built-in <codeInline>Network Service</codeInline> account
+              by default. As with IIS 5, an IIS administrator can change
+              this, but typically this is the account used.  Also, On a
+              clean installation of IIS 6.0, the IIS_WPG group contains
+              the Network Service, Local Service, LocalSystem, and
+              IWAM_<legacyItalic>ComputerName</legacyItalic> accounts.
+              If you change the identity for the Application Pool to be
+              something other than NetworkService, then you&apos;ll have to
+              grant <legacyItalic>that</legacyItalic> identity the
+              appropriate READ permissions.
+            </para>
+
+            <para>
+              Right click on the IIRF.dll, and select Properties...
+            </para>
+
+            <mediaLink>
+              <caption placement="after" lead="Figure 2">Properties for
+              IIRF.dll</caption>
+              <image placement="center" xlink:href="c03f414c-195c-4c81-842a-7f7a1d94f7e8"/>
+            </mediaLink>
+
+            <para>
+              Click the Add button and specify IIS_WPG as the group.
+            </para>
+
+            <mediaLink>
+              <caption placement="after" lead="Figure 3">Adding READ
+              permissions for a group</caption>
+              <image placement="center" xlink:href="1b7878e8-7bee-4efa-8c62-2da4f592ee26"/>
+            </mediaLink>
+
+            <para>
+              Click OK, and OK again. Confirm you want to make the
+              changes if necessary.
+            </para>
+
+            <para>
+              Create the IirgGlobal.ini file.  In Explorer, in the same
+              folder where you installed IIRF.dll, right click and
+              create a new text file.
+            </para>
+
+            <mediaLink>
+              <caption placement="after" lead="Figure 4">Creating the
+              IirfGlobal.ini file</caption>
+              <image placement="center" xlink:href="919fad8e-d2af-48b1-aa54-efd80e17bafb"/>
+            </mediaLink>
+
+            <para>
+              Specify the name as "IirfGlobal.ini" (without
+              quotes). Confirm the change of the file extension. Finally, set
+              the permissions on the INI file in the same way you&apos;ve set
+              permissions on the DLL.
+            </para>
+          </listItem>
+
+          <listItem>
+            <para>
+              Verify that the permissions are set properly. Browse to
+              the IIRF.dll in Windows
+              Explorer.  Right click on the file.  Select
+              Properties...Security tab, then click the button labeled
+              "Advanced".  You should see something like this:
+            </para>
+
+            <mediaLink>
+              <caption placement="after" lead="Figure 5">Verifying the permissions</caption>
+              <image placement="center" xlink:href="725e5631-5207-4286-b698-c83ae6c13890"/>
+            </mediaLink>
+
+            <para>
+              Click on the Effective Permissions tab, click the Select
+              button, and specify
+              <codeInline>NETWORK SERVICE</codeInline> for the
+              identity. Click
+              OK and you should see something like this:
+            </para>
+
+            <mediaLink>
+              <caption placement="after" lead="Figure 6">Verifying the permissions</caption>
+              <image placement="center" xlink:href="3399d03b-5a41-46a7-a97b-50b0ee9b03e4"/>
+            </mediaLink>
+
+            <para>
+              Notice that the checkbox next to <codeInline>List folder /
+              read data</codeInline> is checked. This shows that the
+              appropriate permissions are available to the
+              NetworkService identity on the Iirf.ini file.  If you
+              don't get this checkbox, then you'll need to go back and
+              edit the permissions so that the identity used by w3wp.exe
+              can read the Iirf.ini file.
+            </para>
+
+            <para>
+              Browse to the IirfGlobal.ini file, and verify permissions
+              in the same way.
+            </para>
+
+            <alert class="note">
+              Incorrectly set permissions on the DLL or INI file is the #1 problem in
+              IIRF installations, so please do take the time to get this
+              right. If the IIS process cannot read the DLL or ini file because
+              of security restrictions, the filter will not work.
+            </alert>
+
+          </listItem>
+
+          <listItem>
+            Now, add the DLL as an ISAPI Filter.  To do so, open the
+            Internet Information Services Manager. On Windows Server 2003, Start >
+            Administrative Tools > Internet Information Services (IIS)
+            Manager.
+
+            <mediaLink>
+              <caption placement="after" lead="Figure 7">Selecting IIS
+                Manager on Windows Server 2003</caption>
+              <image placement="center"
+                     xlink:href="6e33decb-12c8-42f2-8b4b-6de2b61bd4ac"/>
+            </mediaLink>
+          </listItem>
+
+          <listItem>Choose the appropriate level for the ISAPI filter:
+            <list class="bullet">
+              <listItem>to use the ISAPI filter with all Web sites, select the "Web Sites"
+                icon just under the machine name. </listItem>
+              <listItem> to use the ISAPI filter with a specific Web site, select the icon
+                for that Web site (for example, the default Web site). </listItem>
+            </list>
+          </listItem>
+
+          <listItem>Right-click the level (icon) that you selected. Click the
+            Properties button.
+            <mediaLink>
+              <caption placement="after" lead="Figure 8">Web site Properties</caption>
+              <image placement="center"
+                     xlink:href="b8a7cb78-d57a-4e2d-95df-dc67d15736ea"/>
+            </mediaLink>
+          </listItem>
+
+          <listItem>
+            Click the ISAPI Filters tab.
+            <mediaLink>
+              <caption placement="after" lead="Figure 9">The ISAPI Filters tab</caption>
+              <image placement="center"
+                     xlink:href="838862a9-c315-4e2f-a6aa-8e4d961ea23e"/>
+            </mediaLink>
+          </listItem>
+
+          <listItem>
+            <para>
+            Click <legacyBold>Add</legacyBold>.  Type a name for the
+            ISAPI filter. Eg, "Ionic Rewriter".
+            Click Browse and select the ISAPI filter DLL that you copied in
+            step 1.   Click OK.
+            </para>
+
+            <mediaLink>
+              <caption placement="after" lead="Figure 10">Add IIRF as an
+              ISAPI Filter</caption>
+              <image placement="center"
+                     xlink:href="db899141-1641-46b5-aa1b-7ec31fae4852"/>
+            </mediaLink>
+
+            <para>
+              If you have multiple ISAPI filters running, you may want
+              to modify the 1filter load order.  For example, if you have
+              Ruby-on-Rails installed on IIS, it typically uses an ISAPI
+              filter. You may need to specify that IIRF should load
+              first, prior to Rails. What this means is that IIRF gets
+              the first chance to rewrite the URL, before Rails sees the
+              URL.  See also, the
+              <link xlink:href="0bbc46c4-837e-4aa7-99f4-0ceaad24bb0d">RewriteFilterPriority</link>
+              directive.
+            </para>
+
+            <alert class="note">
+              The relative load order of ISAPI filters is oberved only
+              for those filters that have the same priority.
+            </alert>
+
+          </listItem>
+
+          <listItem>
+            <para>
+              Optional: If you want to use ProxyPass with POST, you must also configure the
+              DLL as a ISAPI Extension. To do this, within IIS Manager,
+              on the left hand side, right click the Web Sites node, and
+              select Properties.
+            </para>
+
+            <mediaLink>
+              <caption placement="after" lead="Figure 11">Configuring
+              Properties for all IIS Websites</caption>
+              <image placement="center"
+                     xlink:href="fdce7818-59b9-4e66-bf07-03adbb8d194b"/>
+            </mediaLink>
+
+            <para>
+              Click on the Home Directory tab on the resulting panel,
+              and select the Configuration button.
+            </para>
+
+            <mediaLink>
+              <caption placement="after" lead="Figure 12">Configuring
+                ISAPI Extensions</caption>
+              <image placement="center"
+                     xlink:href="a89400ed-daed-45c3-8529-1273476a4e3a"/>
+            </mediaLink>
+
+            <para>
+              Click Add, to add a new ISAPI Extension.
+            </para>
+
+            <mediaLink>
+              <caption placement="after" lead="Figure 13">Adding an ISAPI Extension</caption>
+              <image placement="center" xlink:href="5e2ee39c-4cce-4b8d-adb3-d293db2f224a"/>
+            </mediaLink>
+
+            <para>
+              Select the path to the IIRF DLL, specify .iirf as the
+              extension, and uncheck the "verify that file exists" box.
+              Click OK.  IIS Manager may ask you if want to apply those
+              changes to other websites; do that for each appropriate
+              website.
+            </para>
+
+            <mediaLink>
+              <caption placement="after" lead="Figure 14">Adding IIRF as an ISAPI Extension</caption>
+              <image placement="center" xlink:href="0c24028d-9f37-4d9c-a3a6-f692174b2cca"/>
+            </mediaLink>
+
+          </listItem>
+
+          <listItem>
+            On Windows Server 2003, insure that the IIRF DLL is allowed
+            to run. In the left hand side of IIS Manager,
+            click <legacyBold>Web Service Extensions</legacyBold>.  On
+            the right hand side, right click the IIRF extension, and
+            click <legacyBold>Allow</legacyBold>.
+            <mediaLink>
+              <caption placement="after" lead="Figure 15">Allowing IIRF
+                as an extension</caption>
+              <image placement="center" xlink:href="1af3af59-9b6a-4ba6-aec4-b27147820f71"/>
+            </mediaLink>
+          </listItem>
+
+          <listItem>
+            The filter is now installed. You do not need to stop and restart IIS.
+          </listItem>
+
+        </list>
+
+        <para>
+          IIRF is now installed.  You must now proceed to
+          <link xlink:href="8f5e8495-babc-4dfb-9da9-4e9101e8d029">
+            configuring IIRF.</link>
+        </para>
+
+      </content>
+    </section>
+
+    <relatedTopics>
+      <link xlink:href="153e7d87-ace3-4fd1-bead-86bd248f6087">Installing on IIS7</link>
+      <link xlink:href="6e3750a8-96e1-4f4b-95ad-8c6c98a45d40">Verifying Installation</link>
+      <link xlink:href="8f5e8495-babc-4dfb-9da9-4e9101e8d029">Configuring IIRF</link>
+      <externalLink>
+        <linkText>Manually adding DLLs as allowed ISAPI Extensions</linkText>
+        <linkAlternateText>Microsoft KB Article 328419</linkAlternateText>
+        <linkUri>http://support.microsoft.com/kb/328419/</linkUri>
+      </externalLink>
+
+      <link xlink:href="2a84f55d-b0ae-422a-9071-a31e35b7d3e3">Please Donate</link>
+
+
+      <!-- One or more of the following:
+           - A local link
+           - An external link
+           - A code entity reference
+
+           <link xlink:href="Other Topic's ID"/>
+           <link xlink:href="Other Topic's ID">Link inner text</link>
+
+           <codeEntityReference>API member ID</codeEntityReference>
+
+           Examples:
+
+           <link xlink:href="00e97994-e9e6-46e0-b420-5be86b2f8270" />
+           <link xlink:href="00e97994-e9e6-46e0-b420-5be86b2f8278">Some other topic</link>
+
+           <externalLink>
+             <linkText>SHFB on CodePlex</linkText>
+             <linkAlternateText>Go to CodePlex</linkAlternateText>
+             <linkUri>http://shfb.codeplex.com</linkUri>
+           </externalLink>
+
+           <codeEntityReference>T:TestDoc.TestClass</codeEntityReference>
+           <codeEntityReference>P:TestDoc.TestClass.SomeProperty</codeEntityReference>
+           <codeEntityReference>M:TestDoc.TestClass.#ctor</codeEntityReference>
+           <codeEntityReference>M:TestDoc.TestClass.#ctor(System.String,System.Int32)</codeEntityReference>
+           <codeEntityReference>M:TestDoc.TestClass.ToString</codeEntityReference>
+           <codeEntityReference>M:TestDoc.TestClass.FirstMethod</codeEntityReference>
+           <codeEntityReference>M:TestDoc.TestClass.SecondMethod(System.Int32,System.String)</codeEntityReference>
+           -->
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>
+

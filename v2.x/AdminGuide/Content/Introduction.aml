@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="939138c5-f121-44ad-bb6d-139637a22328" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <para>
+        IIRF is <legacyBold>Ionic&apos;s ISAPI Rewriting Filter</legacyBold>,
+        a free and open source rewriting filter for IIS.  The source as
+        well as binary packages are available on
+        <externalLink>
+          <linkText>the IIRF codeplex project page</linkText>
+          <linkUri>http://iirf.codeplex.com</linkUri>
+        </externalLink>.
+      </para>
+
+      <autoOutline />
+
+    </introduction>
+
+    <section address="What">
+      <title>What is IIRF?</title>
+      <content>
+        <para>
+          IIRF is <legacyBold>Ionic&apos;s ISAPI Rewriting Filter</legacyBold>,
+          a free and open source URL rewriter for IIS.  It installs as an
+          ISAPI Filter on the IIS server, for IIS6 or IIS7.
+          Source and binary downloads are available on
+          <externalLink>
+            <linkText>the IIRF codeplex project page</linkText>
+            <linkUri>http://iirf.codeplex.com</linkUri>.
+          </externalLink>
+        </para>
+      </content>
+
+      <sections>
+        <section address="Features">
+          <title>Overview of Features and Capabilities</title>
+          <content>
+            <list class="bullet">
+              <listItem>
+                IIRF can rewrite URLs, to map between  the externally-facing
+                URL and the internally-used URL on the server. See
+                the <link xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule</link>
+                directive.
+              </listItem>
+
+              <listItem>
+                IIRF can rewrite request headers.  This works in the same
+                way as rewriting the URL.  In fact, rewriting the URL is
+                just a special case of rewriting any request header. See
+                the <link xlink:href="3d1ea0d0-eabd-43b3-a913-de7128a74bb6">RewriteHeader</link>
+                directive.
+              </listItem>
+
+              <listItem>
+                IIRF can redirect requests, sending HTTP 301 or 302 response
+                codes.
+              </listItem>
+
+              <listItem>
+                IIRF can act as a transparent (reverse) proxy for selected
+                URLs. See
+                the <link xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link>
+                directive.
+              </listItem>
+
+              <listItem>
+                IIRF can inject HTTP return codes for particular
+                URLs based on a variety of factors.
+              </listItem>
+
+              <listItem>
+                IIRF can select which requests to rewrite, redirect, or
+                proxy; or which headers to rewrite, based on a
+                regular-expression pattern match on the incoming request
+                URL, as well as pattern matching on any server variable,
+                including any request header.
+              </listItem>
+            </list>
+
+          </content>
+        </section>
+      </sections>
+    </section>
+
+    <section address="Why">
+      <title>Why was IIRF created?</title>
+      <content>
+        <para>
+          The mod_rewrite module is widely used with the Apache HTTP Server to
+          rewrite URL requests before they reach web application engines.  IIS 5.0
+          (Windows 2000) 5.1 (Windows XP) and v6.0 (Windows Server 2003) and v7.0
+          Vista lack a built-in URL rewriting function.  (Windows Server
+          2008 with IIS v7.5 has an add-on URL Rewriting Module
+          available from <externalLink>
+            <linkText>IIS.NET</linkText>
+            <linkUri>http://www.iis.net</linkUri>
+          </externalLink>).
+        </para>
+
+        <para>
+          There are several add-on tools that can add the URL re-writing
+          function to IIS. Some of them are:
+        </para>
+
+        <list class="bullet">
+          <listItem>
+            <externalLink>
+              <linkText>UrlRewriting.Net</linkText>
+              <linkUri>http://www.UrlRewriting.Net</linkUri>
+            </externalLink> - an ASP.NET URL Rewriter</listItem>
+          <listItem> the <token>IIS6RK</token> includes the UrlRemap tool.</listItem>
+          <listItem> IISRewrite</listItem>
+          <listItem> ISAPI Rewrite, from Helicon Tech</listItem>
+          <listItem> Mod_Rewrite 2</listItem>
+          <listItem> the <token>IIS7RM</token>, from Microsoft</listItem>
+        </list>
+
+        <para>All of the ones I know about, have drawbacks. </para>
+
+        <para>
+          The UrlRewriting.Net tool is free, and open source.  It uses
+          <token>Regex</token> for pattern matching, which is good.  But,
+          it requires ASP.NET, and all URLs run through ASP.NET; even
+          static files would have to be served by the ASP.NET runtime.
+          This can imply a performance cost, and it also may be
+          undesirable in some cases to deploy .NET on web servers. For
+          example, some web administrators want to serve only PHP content,
+          and do not want to install or deploy ASP.NET. Also, it lacks
+          some features, and its configuration file syntax is novel and
+          unfamiliar to users of mod_rewrite.
+        </para>
+
+        <para>
+          The <token>IIS6RK</token> filter is provided by Microsoft, and is
+          supported.  The drawback: it does not allow specifying rules via
+          <token>Regex</token>, and as a result it is not as flexible as
+          some would like. Also, it&apos;s not an open source option.
+          If you like this tool but want it to do one small additional
+          thing, you&apos;re out of luck.
+        </para>
+
+        <para>
+          Helicon&apos;s ISAPI Rewrite module is a commercial offering and is
+          commercially supported, and does use <token>Regex</token>, but is
+          expensive. There is a "lite" version available for free, but it
+          does not support Regular Expressions. Likewise Mod_Rewrite and
+          IISRewrite.
+        </para>
+
+        <para>
+          The <token>IIS7RM</token>
+          is a free add-on from Microsoft, and it has some
+          nice GUI tools for setup and administration.  But it works only with
+          IIS7 and later.
+        </para>
+
+        <para>
+          I built IIRF to add one more option to the list. The goal was
+          to provide nice features on IIS6, for a good price (Free).  IIRF is
+          open-source, and available in source or binary form
+          at no cost. It does mapping pattern matching based
+          on <token>Regex</token>, via the open source <token>PCRE</token>
+          (PCRE) library.  The source code for the filter is available so
+          you can analyze or modify the filter if you want to, or need
+          to. As well, the source for the <token>PCRE2</token>
+          library is also available, from its maintainers.
+        </para>
+
+      </content>
+    </section>
+
+
+
+    <section address="Compat">
+      <title>Compatibility</title>
+      <content>
+        <para>
+          IIRF works on Windows, including Windows XP (but you should
+          upgrade), Windows Server 2003, Windows Vista, or Windows
+          Server 2008. It works only with IIS Server, not with other web
+          servers. I have not tested it on Windows 7.  It used to work
+          on Windows 2000, but I&apos;m not sure if it still does.  I
+          don&apos;t test it anymore on Windows 2000 either.
+        </para>
+
+        <para>
+          IIRF works with any web application logic, including but not
+          limited to: Active Server Pages (ASP), ASP.NET, Cold Fusion
+          (CFM), JSP, PHP, as well as static files like CSS, JPG, HTM,
+          xml, and so on.  It works with web applications and frameworks
+          like Joomla, Wordpress, CakePHP, Sharepoint, and others.
+        </para>
+
+        <para>
+          IIRF is handy for cleaning up ASPNET MVC urls on IIS6, to
+          eliminate the <literal>.mvc</literal> extension.  It is
+          also useful for doing something similar with WCF service URLs
+          on any server, removing the <literal>.svc</literal> extension.
+        </para>
+
+        <para>
+          As with any filter, compatibility issues may arise with other
+          ISAPI filters, especially with regards to ordering of
+          execution.  You can set the load order and priority for IIRF,
+          as with other filters.  Usually this lets you find a configuration
+          that works for you.
+        </para>
+
+      </content>
+    </section>
+
+
+    <section address="Donationware">
+      <title>IIRF is DonationWare!</title>
+      <content>
+        <para>
+          If you use IIRF, I&apos;d encourage you to donate.  IIRF is
+          completely free but if you like it and would like to show your
+          appreciation for the effort I put in, I am accepting donations
+          on behalf of my favorite charity. To donate please visit
+
+          <externalLink>
+            <linkText>the donation page</linkText>
+            <linkUri>http://cheeso.members.winisp.net/IirfDonate.aspx</linkUri>
+          </externalLink>. It&apos;s easy to donate via Paypal or any credit card, and
+          takes just a moment.  Your consideration is appreciated. Any amount will help.
+        </para>
+      </content>
+
+    </section>
+
+
+    <relatedTopics>
+      <link xlink:href="d01a9d1d-8937-42e6-af42-68cca55870d7" />
+      <link xlink:href="2a84f55d-b0ae-422a-9071-a31e35b7d3e3">Please Donate</link>
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>
+
+
+
+
+

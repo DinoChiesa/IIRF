@@ -1,0 +1,1200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="e013a406-9f3a-4385-b986-6c4c410dad48" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <autoOutline />
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Regular Expressions</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+
+        <para>
+          <token>regex</token> are expressions that describe patterns within
+          strings of text. Think of regular expressions as a specialized
+          computer programming language dedicated to pattern matching within text.
+          The <phrase>regular expression language</phrase> is a formal one, and is
+          used in various guises by computer tools of many types.  Some examples:
+          Text editors use regular expressions for search-and-replace, the
+          unix-based command line tool grep uses it to find text within files, the
+          scripting language Perl uses it to process input, Javascript includes
+          support for it in its String class, and the base class libraries provide
+          it for other languages, including C#, VB, and Java.
+        </para>
+        <para>
+          Often the short names <legacyBold>regex</legacyBold>,
+          or <legacyBold>regexp</legacyBold>, are used to refer to
+          regular expressions.
+        </para>
+
+        <para>
+          An example will help.  The character <literal>.</literal> (a dot or period),
+          in the regular expression language, is a wildcard that matches any character,
+          even a space.  The character <literal>*</literal> is a quantifier, which means
+          "zero or more".  Normal characters match themselves.  Therefore the regular
+          expression <literal>A.*e</literal> matches any word that begins with
+          upper-case A, ends in a lowercase e, and includes zero or more other
+          characters in between.  This regular expression can then be matched against
+          strings.  That pattern matches these text
+          strings: <literal>Apple</literal>, <literal>Ape</literal>,
+          <literal>A1245-ee</literal>, <literal>Ae</literal>, and <literal>And
+          one</literal>.  That specific pattern does not match these text
+          strings: <literal>apple</literal>, <literal>Bottle</literal>,
+          <literal>Aardvark</literal>,
+          <literal>178-36h</literal>, <literal>182-22-1777</literal>,
+          or <literal>couple</literal>.
+        </para>
+
+        <para>
+          The Regular Expression language is powerful, but because of its
+          terseness, the baroque nature of the syntax, and its flexibility, it can
+          be challenging to apply correctly.  For many people Regular Expressions
+          can be a sort of "dark magic" but with a little study, and with some
+          useful examples, most people can get productive with regular
+          expressions.
+        </para>
+
+        <para>
+          IIRF uses regular expressions to apply patterns in your ini file rules
+          against incoming HTTP requests, to determine whether a particular rule
+          should apply to a particular request.  IIRF uses the well-known and
+          proven regular expression library, <token>PCRE2</token>, for its regular
+          expression capability.
+        </para>
+
+        <para>
+          To learn regular expressions, a good starting approach is to follow the
+          examples I&apos;ve included here, and extend them where necessary.
+        </para>
+      </content>
+    </section>
+
+    <section address="Section2">
+      <title>A Basic Overview</title>
+      <content>
+
+        <para>
+          This document won&apos;t provide a complete reference for the regular
+          expression language - that is provided in the <token>PCRE2</token>
+          manual page.  But this document will provide a brief introduction and a
+          few examples.
+        </para>
+
+        <para>
+          If you can manage to understand characters, ranges, quantifiers, and groups
+          (subpatterns within parens), you have 80% of the essentials  of regex.  The two
+          additional aspects that may be useful to know and understand are
+          non-capturing assertions and character classes.  I&apos;ll describe all of
+          those things here.
+        </para>
+      </content>
+
+      <sections>
+
+        <section address="SubSection0">
+          <title>Special Characters</title>
+          <content>
+            <para>
+              In a regular expression pattern, regular characters match themselves.
+              &apos;a&apos; when it appears in a pattern, matches &apos;a&apos; in the
+              text.  There are a few exceptions, special characters that have a
+              different meaning:
+            </para>
+            <table>
+              <tableHeader>
+                <row>
+                  <entry>character</entry>
+                  <entry>meaning when used in a regex</entry>
+                </row>
+              </tableHeader>
+              <row>
+                <entry>\
+                </entry>
+                <entry>escape prefix character</entry>
+              </row>
+              <row>
+                <entry>.</entry>
+                <entry>"wildcard" - matches any character</entry>
+              </row>
+              <row>
+                <entry>?</entry>
+                <entry>quantifier: "zero or one" (more about this in the next section)</entry>
+              </row>
+              <row>
+                <entry>*</entry>
+                <entry>quantifier: "zero or more"</entry>
+              </row>
+              <row>
+                <entry>+</entry>
+                <entry>quantifier: "one or more"</entry>
+              </row>
+              <row>
+                <entry>^</entry>
+                <entry>beginning-of-line (except when used within a range)</entry>
+              </row>
+              <row>
+                <entry>$</entry>
+                <entry>end-of-line</entry>
+              </row>
+
+              <row>
+                <entry>|</entry>
+                <entry>logical OR, among subpatterns within a group</entry>
+              </row>
+
+              <row>
+                <entry>[ ]</entry>
+                <entry>range delimiters</entry>
+              </row>
+              <row>
+                <entry>( )</entry>
+                <entry>group delimiters</entry>
+              </row>
+
+              <row>
+                <entry>{ }</entry>
+                <entry>quantifier delimiters</entry>
+              </row>
+
+            </table>
+
+            <para>The <literal>^</literal> and <literal>$</literal>
+              are <phrase>zero-width assertions</phrase>: they match only at the
+              appropriate positions in the text, but they don&apos;t match a
+              particular character.  For any of the special characters, if you
+              want to match the characters itself, you need to escape it with a
+              backslash.  Therefore \. matches a dot, while \\ matches a single
+              backslash.
+            </para>
+
+          </content>
+        </section>
+
+
+        <section address="SubSection1">
+          <title>Quantifiers</title>
+          <content>
+            <para>
+              <legacyBold>Quantifiers</legacyBold>:
+              In addition to the <literal>*</literal> quantifier, which means "zero or more" of
+              the prior sub-pattern, there is a <literal>+</literal>, which means "one or
+              more", and a <literal>?</literal>, which means "zero or one."  You can also specify a
+              quantifier as a pair of numbers within  curly-braces to
+              specify upper and lower bounds of quantities.  For example
+              <literal>a{2,5}</literal> matches any sequence of between 2 and 5 &apos;a&apos; characters
+              in succession.  If you omit either of the numbers, but leave the
+              comma, zero or unlimited
+              is assumed, respectively.  If there is a single number only, then it
+              is an exact quantifier.  Therefore <literal>{3,}</literal> implies "three or more" of
+              the prior sub-pattern, while <literal>{4}</literal> means "exactly four" of the prior
+              subpattern.  Any of these quantifiers can be applied to
+              wildcard or range matches.  For example, <literal>[a-z]{5}</literal>
+              means any sequence of exactly 5 lowercase alphabetic characters.
+            </para>
+
+          </content>
+        </section>
+
+
+        <section address="SubSection2">
+          <title>Ranges</title>
+          <content>
+            <para>
+              <legacyBold>Ranges</legacyBold>: any sequence of characters specified
+              within square brackets implies a sort-of limited wild card: it will match
+              any of those characters.  So, <literal>[abcde]</literal> matches any
+              single character, a, b, c, d, or e.  Ranges can be specified with dashes
+              so that <literal>[a-e]</literal> is equivalent
+              to <literal>[abcde]</literal>, and <literal>[a-z]</literal> means what you
+              think it should.  If you need to specify a dash within a range, specify it
+              first (<literal>[-a-z]</literal>), or escape it
+              (<literal>[a-z\-]</literal>).  Ranges can also be negated if you place a
+              caret as the first character, so that <literal>[^abcde]</literal> means
+              "any character that is NOT a,b,c,d, or e."  A caret within a range, in any
+              but the first position, matches a
+              caret. Therefore <literal>[a-z^]</literal> means "any character a through
+              z, or caret".
+            </para>
+
+            <para>
+              Ranges can be combined with quantifiers so that
+              <literal>[a-z]+</literal> means "any sequence of one or more
+              lowercase characters between a and z."
+            </para>
+
+            <para>
+              Often when defining patterns for parsing URLs, you will use ranges
+              specified like <literal>[^/]+</literal>, to imply, any sequence of one or
+              more characters, none of which is a slash.  This could be used to match a
+              segment in a URL path.  We&apos;ll see more how that works in a little
+              bit.
+            </para>
+
+          </content>
+        </section>
+
+        <section address="SubSection3">
+          <title>Groups</title>
+          <content>
+            <para>
+              <legacyBold>Capturing Groups</legacyBold> are defined by
+              parentheses. Therefore <literal>(abc)</literal> matches the string
+              'abc'. Within the parens you can have any pattern, including ranges
+              and quantifers.  In an example that is relevant to URL
+              parsing, <literal>([^/]+)</literal> will <legacyItalic>match and
+              capture</legacyItalic> a single segment of a URL path. Groups can be
+              nested arbitrarily. As mentioned above, because the paren is a "special
+              character" in the regex language,  if you want to match on a paren, you need
+              to <phrase>escape it</phrase> with a backslash. You can see things
+              start to get complicated, eh?
+            </para>
+
+            <para>
+              Within the parens you can use the vertical bar to indicate a logical OR
+              between subpatterns.
+              Therefore <literal>([a-z]+\.(gif|jpg|png|bmp))</literal> will match the
+              filename (without a qualifying path) of an image file. In that example
+              there are two capturing groups.  The outer one captures the entire
+              filename (for example, "image1.jpg"), and the second group captures just
+              the file extension (in this example, "jpg").
+            </para>
+
+            <para>
+              A capture group itself can be quantified, so that
+              <literal>^(abc)+$</literal> matches 'abcabc' but does not match
+              'abca'.
+            </para>
+
+          </content>
+        </section>
+
+
+        <section address="SubSection4">
+          <title>An Example: parsing an HTTP url</title>
+          <content>
+
+            <para>
+              The regular
+              expression <literal>(https?)://([^/]+)(/([^\?]+(\?(.*))?)?)?</literal>
+              can be applied to an http URL to split it into the scheme, server
+              name and port (if any), url path (if any), and query string (if
+              any).  This looks complicated at first, but we can understand it by
+              breaking it down into parts.  There are three top-level capturing
+              groups in the
+              regex: <literal>(https?)</literal>, <literal>([^/]+)</literal>, and
+              <literal>(/([^\?]*\??(.*)?)?)</literal>.  The first and second
+              groups are separated by fixed text (<literal>://</literal>), and the second and third
+              are adjacent. The third group is quantified with a ?, meaning "zero
+              or more" of whatever the group captures.  The third group contains
+              nested capture groups.
+            </para>
+
+            <para>
+              The first group, <literal>(https?)</literal>, matches the scheme,
+              which is either http or https. The first <literal>?</literal> immediately follows the
+              s and is applied to it, so that it means "zero or more 's'".
+              Therefore the sequence https? matches
+              either <codeInline>http</codeInline>
+              or <codeInline>https</codeInline>.
+            </para>
+
+            <para>
+              The second
+              group, <literal>([^/]+)</literal>, matches any sequence of one or
+              more characters that is not a slash.  In an HTTP URL, this is the server name, and
+              potentially a port number.
+            </para>
+
+            <para>
+              The third top-level group, <literal>(/([^\?]+(\?(.*))?)?)</literal>,
+              immediately follows the second group.  This is meant to capture the URL
+              Path and query string.  Let&apos;s once more break it down  by parts. The initial
+              character is a slash, and then there is a nested group followed by the <literal>?</literal>
+              quantifier:
+              <literal>(/(something)?)</literal>. The <literal>?</literal> quantifier means there are
+              zero or one of the thing within the nested parens.  This should make
+              sense - a URL can optionally have a slash, and then <legacyItalic>if
+                it has a slash</legacyItalic>, it can optionally have stuff that
+              follows the slash. Analytically "it can optionally have x" can be
+              translated into "zero or one of x", and that, my friends, means the
+              ? quantifier.
+            </para>
+
+            <para>
+              Now look at the nested
+              group, <literal>([^\?]+(\?(.*))?)</literal>. This captures
+              the thing that follows the initial slash in any URL.
+              It starts with a one or more of any character that is not a question
+              mark (although some may say that a question mark is a
+              legal first character in a URL).  In practice, this will capture the
+              path and name of any document or script.  Following the series of
+              characters that are not question mark, that is another nested
+              group: <literal>(\?(.*))</literal>, which matches a
+              question mark (when backslash-escaped, the ? matches itself), and a
+              series of zero or more characters of any sort.  This of course is
+              intended to match an optional query string.
+            </para>
+
+            <para>
+              Let&apos;s now apply this regex to some example URLs, and look at the
+              outputs.
+            </para>
+
+              <table>
+                <tableHeader>
+                  <row>
+                    <entry>URL</entry>
+                    <entry>output</entry>
+                  </row>
+                </tableHeader>
+                <row>
+                  <entry>https://server.com</entry>
+                  <entry>
+                    <para>Two groups:</para>
+                    <list class="ordered">
+                      <listItem>https</listItem>
+                      <listItem> server.com</listItem>
+                    </list>
+                  </entry>
+                </row>
+
+                <row>
+                  <entry>https://server.com/</entry>
+                  <entry>
+                    <para>Three groups:</para>
+                    <list class="ordered">
+                      <listItem>https</listItem>
+                      <listItem> server.com</listItem>
+                      <listItem> / </listItem>
+                    </list>
+                  </entry>
+                </row>
+
+
+                <row>
+                  <entry>https://server.com/a/b/c</entry>
+                  <entry>
+                    <para>Four groups:</para>
+                    <list class="ordered">
+                      <listItem>https</listItem>
+                      <listItem> server.com</listItem>
+                      <listItem> /a/b/c </listItem>
+                      <listItem> a/b/c </listItem>
+                    </list>
+                  </entry>
+                </row>
+
+                <row>
+                  <entry>https://server.com/a/b/c.aspx?</entry>
+                  <entry>
+                    <para>Five groups:</para>
+                    <list class="ordered">
+                      <listItem> https</listItem>
+                      <listItem> server.com</listItem>
+                      <listItem> /a/b/c.aspx?</listItem>
+                      <listItem> a/b/c.aspx?</listItem>
+                      <listItem> ?</listItem>
+                    </list>
+                  </entry>
+                </row>
+
+                <row>
+                  <entry>http://server.com/a/b/c.aspx?p1=foo</entry>
+                  <entry>
+                    <para>Six groups:</para>
+                    <list class="ordered">
+                      <listItem> http</listItem>
+                      <listItem> server.com</listItem>
+                      <listItem> /a/b/c.aspx?p1=foo</listItem>
+                      <listItem> a/b/c.aspx?p1=foo</listItem>
+                      <listItem> ?p1=foo</listItem>
+                      <listItem> p1=foo</listItem>
+                    </list>
+                  </entry>
+                </row>
+              </table>
+
+              <para>
+                As you can see, this regex is useful in parsing and breaking down an
+                HTTP URL.  In IIRF, the groups that are captured can be referenced
+                by number in the replacement string, using the $ prefix.
+                <literal>$1</literal> refers to the first captured group,
+                <literal>$6</literal> refers to the sixth.  In some cases the
+                captured group may be empty.  The above regex for URLs is a perfect
+                example: there is a maximum of 6 groups that can be captured, but
+                not every URL results in 6 captured groups.  Keep this in mind when
+                constructing your replacement strings.
+              </para>
+
+              <alert class="important">
+                Remember, as you write patterns for URLs as part of <link
+                xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule</link>,
+                that you will not be matching against the scheme, server and port.
+                Instead, in <codeInline>RewriteRule</codeInline>, you will match
+                only against the URL path and query string, if any.  On the other
+                hand, you can do pattern matching against the scheme, server name,
+                and port if you like, via the <link
+                xlink:href="39dbb30e-2afd-4cb1-aaff-45497fe2cbe6">
+                RewriteCond</link> directive.
+              </alert>
+            </content>
+          </section>
+
+          <section address="SubSection5">
+            <title>Non-capturing groups</title>
+            <content>
+              <para>
+                Non-capturing groups act just like capturing groups, except they do not
+                capture. Non-capturing groups are denoted
+                with parens, with a ?: as the first two characters within the parens.
+                These can be helpful if you&apos;d like to apply a quantifier without
+                capturing, or if you want to apply a conditional without capturing.
+              </para>
+            </content>
+          </section>
+
+          <section address="SubSection6">
+            <title>Non-capturing assertions</title>
+            <content>
+              <para>
+                The regular expression language includes
+                <phrase>assertions</phrase>, which allow you to express additional
+                qualifiers in the pattern.  There are "look ahead" assertions and
+                "look behind" assertions, which apply to the succeeding or preceding
+                text in the string, respectively.  Either way, there are two
+                variants: positive and negative.  So the types of assertions are:
+                positive look-ahead, negative look-ahead, positive look-behind, and
+                negative look-behind. Though the regex syntax
+                uses parens to define assertions, assertions do not
+                capture.
+              </para>
+
+              <para>
+                A positive look-ahead assertion is
+                (?=<phrase>subpattern</phrase>), and means "this pattern will match if
+                the thing just ahead matches the subpattern."  A negative look-ahead
+                is expressed with (?!<phrase>subpattern</phrase>), and works the way
+                you think  it should: it evaluates to true if the
+                pattern <phrase>does not</phrase> match.
+                Example: <literal>(?!www)([a-z\.]+)</literal> will match any string of
+                letters and dots, as long as the string does not begin with the
+                sequence 'www'.
+              </para>
+
+              <para>
+                Look-behind assertions apply to the portion of text just
+                matched. The positive lookbehind assertion uses the syntax
+                (?&lt;<phrase>subpattern</phrase>), and the negative lookbehind
+                assertion uses the syntax
+                (?&lt;!<phrase>subpattern</phrase>). Consider
+                <literal>([^/]+\.php)</literal>.  Remembering that
+                <literal>[^/]</literal> means "any character that is not a slash",
+                and + is the "one or more" quantifier, and \. matches a dot, we see
+                that this regex will match "the name of a php script", without a
+                qualifying path. On the other hand, taking advantage of a negative
+                look-behind assertion, using the ?&lt;! syntax, we can use
+                <literal>([^/]+)(?&lt;!\.php)</literal> to say, "any thing that is
+                not the name of a PHP script".  Therefore, index.aspx matches this
+                latter regex, while index.php does not match.
+              </para>
+
+              <para>
+                Assertions <phrase>do not move the position within the test
+                string</phrase>. When a capturing group is applied to a subject
+                string, the "cursor" in the test string moves forward.  For example,
+                applying a subpattern of <literal>(a*)</literal> to a string like
+                "aardvark" will advance the cursor within the subject string to the
+                first <literal>r</literal>.  Any subpattern that appears after
+                <literal>(a*)</literal> will be matched against just a portion of
+                the subject string: "rdvark".  On the other hand, assertions do not
+                move the cursor.  A positive lookahead assertion of
+                <literal>(?=a*)</literal> will leave the cursor at the beginning of
+                the subject string, so that subsequent subpatterns apply to the full
+                subject, "aardvark".  Mmkay?
+              </para>
+
+            </content>
+          </section>
+
+
+          <section address="SubSection7">
+            <title>Character classes</title>
+            <content>
+              <para>
+                The final essential piece of is the concept of character classes and
+                special escape sequences.
+                They are summarized here:
+              </para>
+              <table>
+                <tableHeader>
+                  <row>
+                    <entry>sequence</entry>
+                    <entry>meaning</entry>
+                  </row>
+                </tableHeader>
+                <row>
+                  <entry>\xHH</entry>
+                  <entry>The character defined by the hex code HH. For example, \x20
+                    matches a space. </entry>
+                </row>
+                <row>
+                  <entry>\d</entry>
+                  <entry>any decimal digit.  Equivalent to [0-9].</entry>
+                </row>
+                <row>
+                  <entry>\D</entry>
+                  <entry>any character that is not a decimal digit. Equivalent to [^0-9].</entry>
+                </row>
+                <row>
+                  <entry>\s</entry>
+                  <entry>any whitespace character (tab, space)</entry>
+                </row>
+                <row>
+                  <entry>\S</entry>
+                  <entry>any non-whitespace character</entry>
+                </row>
+              </table>
+
+              <para>These sequences can be used alone, or can be included in ranges
+                or groups, or they can be quantified.  So, for
+                example, <literal>\d{3}</literal> matches any sequence of exactly 3
+                decimal digits.
+              </para>
+
+            </content>
+          </section>
+
+        </sections>
+      </section>
+
+
+      <section address="Section3">
+        <title>Many more Examples</title>
+        <content>
+          <para>
+            Use this as a cookbook for regular expressions.
+          </para>
+
+          <table>
+            <tableHeader>
+              <row>
+                <entry>regex</entry>
+                <entry>English translation</entry>
+              </row>
+            </tableHeader>
+            <row>
+              <entry>.*</entry>
+              <entry>zero or more of any character.  The * is a quantifier implying
+              "zero or more" or whatever it follows.  The dot is a wildcard that
+              implies "any character".  Put them together and you get "zero or more of
+              any character" .</entry>
+            </row>
+
+            <row>
+              <entry>.+</entry>
+              <entry>one or more of any character.  The + is a quantifier implying
+              "one or more" or whatever it follows. This is often preferable to .* in
+              regexes applied to URLs. </entry>
+            </row>
+
+            <row>
+              <entry>a+</entry>
+              <entry>one or more 'a' characters.</entry>
+            </row>
+
+            <row>
+              <entry>A.*e</entry>
+              <entry>Any sequence that begins with A and ends with e. Ape, Apple,
+                and Airedale all match, as does "A e" and Ae. Remember,
+                . matches <literalItalic>any character</literalItalic>, including a
+                space, and the * means "zero or more".  The string "Ae" has zero
+                characters between the A and e, and it matches .  </entry>
+            </row>
+
+            <row>
+              <entry>A.e</entry>
+              <entry>Any three-character sequence that begins with A and ends with
+                e. Ape matches, as does "A e" and "A/e".  Apple does not match, nor does "Ae".
+              </entry>
+            </row>
+
+            <row>
+              <entry>A.+e</entry>
+              <entry>Any sequence of three or more characters that begins with A and
+                ends with e. Ape matches, as does "A e" and Apple.  "Ae" does not match.
+              </entry>
+            </row>
+
+            <row>
+              <entry>A[plr]e</entry>
+              <entry>matches a sequence of three characters that begins with A and
+              ends with e, and includes a p , l , or r as the middle
+              character. The square brackets denote a range which matches one of
+              the characters specified inside the square brackets. This regex
+              matches Ale , Are, or Ape, but does not match Abe , Ace , or Apple .
+              </entry>
+            </row>
+
+            <row>
+              <entry>\d{3}</entry>
+              <entry>any sequence of exactly 3 decimal digits.  The \d implies a
+              character class including any of the digits from 0 to 9.  You could also
+              write that with a range like [0-9].  The curly-brackets around a number
+              are a specific numeric quantifier. This quantifier can be used like * or +
+              except it is definite, not open ended. Put the character class and the
+              quantifier together and you get a pattern than matches exactly three
+              decimal digits. </entry>
+            </row>
+            <row>
+              <entry>[0-9]{5}</entry>
+              <entry>any sequence of exactly 5 decimal digits; a US zip code.  In
+              regex, square brackets denote a range of characters.  The unescaped
+              dash within the square brackets indicates "from...to..." .
+              Therefore [0-9] means "any character from 0 through 9".  (This
+              particular range could also be written using the shorthand \d.)
+              Secondly, this pattern has a numeric quantifer in curly
+              brackets. Together, the range and quantifier means "any sequence of
+              5 numeric digits." </entry>
+            </row>
+
+            <row>
+              <entry>[A-Za-z0-9]{5,8}</entry>
+              <entry>any sequence of between 5 and 8 alpha-numeric characters.
+              Like the previous example, this one uses a range and a quantifier.
+              The range is expanded - it includes several "from...to..."
+              subranges.  Also the quantifier has a lower and upper limit.  You
+              can omit either of the numbers for an open-ended quantity.  For
+              example the * quantifier is a shorthand for {0,} , which means "zero
+              or more".  Writing {5,} means "five or more". The quantifier always
+              applies to the preceding atom in the regex, where the atom could be
+              a single character, a range (denoted in square brackets), or a group
+              (denoted in parentheses).
+              </entry>
+            </row>
+
+            <row>
+              <entry>[^/]+</entry>
+              <entry>one or more characters, none of which are slash.  Square
+              brackets define a range, right?  Within square brackets, the caret
+              indicates a negation of all characters that follow.  Therefore [^/]
+              implies "any character except slash".  The + is the "one or more"
+              quantifier. This expression fragment is useful when matching on URL
+              paths, to match a single path element. </entry>
+            </row>
+
+            <row>
+              <entry>/([^/]+)/([^/]+)</entry>
+              <entry>matches a slash, followed by a capture group, another slash,
+              and another capture group.  Each of the capture groups must be a
+              sequence of one or more characters, none of which are slash.  This
+              matches a URL path like /alpha/beta , and captures $1 = alpha and $2
+              = beta .  </entry>
+            </row>
+
+            <row>
+              <entry>[^\.]+</entry>
+              <entry>one or more characters, none of which are dot.  In this
+              negated range, the dot is escaped, so that it matches
+              itself. Therefore [^\.] implies "any character except dot".  The +
+              is the "one or more" quantifier. This fragment is useful when
+              matching on filenames in a url path.  </entry>
+            </row>
+
+            <row>
+              <entry>[^/\.]+\.gif</entry>
+              <entry>matches one or more characters, none of which are dot or
+              slash, followed by .gif .  In other words, it matches a filename for
+              a gif file. This matches strings like small.gif as well as
+              small-40x20.gif , but does not match a string like small/50x32.gif ,
+              because of the presence of the slash in the string. </entry>
+            </row>
+
+            <row>
+              <entry>aardvark</entry>
+              <entry>matches the string 'aardvark'. On a successful match, there
+              are no capture groups beyond the zeroth group, which is always
+              filled.  The zeroth group can be accessed in the
+              <legacyItalic>replacement string</legacyItalic> with $0, and
+              contains the entire matched string. In this case, it will contain
+              aardvark.
+              </entry>
+            </row>
+
+            <row>
+              <entry>(aardvark)</entry>
+              <entry>matches the string 'aardvark', and captures it into $1. On a
+              successful match, the capture groups and their contents are: $0 =
+              aardvark , $1 = aardvark.  Keep in mind that the $N notation is not
+              strictly part of the regular expression (pattern matching)
+              language. In the case of IIRF, the $N can be used in a
+              <legacyItalic>replacement string</legacyItalic> (which is not a
+              regular expression) to refer to subgroups captured when the regexp
+              was applied.
+              </entry>
+            </row>
+
+            <row>
+              <entry>(aard)(vark)</entry>
+              <entry>matches the string 'aardvark'. On a successful match, the
+              capture groups and their contents are: $0 = aardvark , $1 = aard ,
+              $2 = vark .
+              </entry>
+            </row>
+
+            <row>
+              <entry>(a(a(r(d(vark)))))</entry>
+              <entry>matches the string 'aardvark'. On a successful match, the
+              capture groups and their contents are: $1 = aardvark , $2 = ardvark
+              , $3 = rdvark , $4 = dvark, $5 = vark .
+              </entry>
+            </row>
+
+            <row>
+              <entry>(a)(a)(r)(d)(vark)</entry>
+              <entry>matches the string 'aardvark'. On a successful match, the capture
+              groups and their contents are:  $1 = a ,  $2 = a , $3 = r , $4 = d, $5 =
+              vark .
+              </entry>
+            </row>
+
+            <row>
+              <entry>(artists|bands)</entry>
+              <entry>matches and captures the string 'artists' or the string 'bands'.
+              The result is stored in the capture group $1. </entry>
+            </row>
+
+            <row>
+              <entry>(?:artists|bands)</entry>
+              <entry>matches but does not capture the string 'artists' or the
+              string 'bands'.  Because ?: appears as the first two characters
+              within the parens, the group is non-capturing.  The capture group $1
+              will remain empty. You can use the ?: to apply what is known as
+              "alternation" - to match either artists or bands, without actually
+              capturing. In general when using regular expressions, it is better
+              (more efficient, faster) to capture subgroups only when necessary.
+              If you need alternation but don't need to capture, use the
+              non-capturing ?: prefix. </entry>
+            </row>
+
+            <row>
+              <entry>[a-zA-Z0-9]+\.(gif|jpg|png|bmp)</entry>
+              <entry>the name of an image file .  This regex starts with a range
+              and a quantifier, followed by a dot (escaped with a slash), and then
+              a capturing group.  Within the capturing group is a set of options
+              separated by the | to indicate a "logical or".  Thus, all together
+              this regex matches a filename of an image file. Because the range
+              includes only alphabetic and numeric characters, filenames with
+              characters outside that range, such as dashes or underscores, will
+              not match.  </entry>
+            </row>
+
+            <row>
+              <entry>\.html?</entry>
+              <entry>matches either .htm or .html .  The unescaped ? character is
+              a quantifier meaning "zero or one", and it applies to the preceding
+              atom in the regex, which in this case is the lowercase L.  The ?
+              quantifier could also be written as {0,1}. </entry>
+            </row>
+
+            <row>
+              <entry>^(https?://www\.mysite\.net/)</entry>
+              <entry>matches either
+                <literal>http://www.mysite.net</literal>
+                or <literal>https://www.mysite.net</literal>. The https? matches either
+                http or https, because ? as a {0,1} quantifier applies to the preceding s
+                character. (On the other hand, if you write (https)? then the ? applies to the entire
+                https string, which means it matches when there is zero or one
+                "https").  Then, what follows is a :// and a domain name, with the dots
+                appropriately backslash-escaped.  This pattern can be used
+                in a RewriteCond applied against HTTP_REFERER to prevent
+                image leaching.  The RewriteCond will return true only when the REFERER
+                is one of the specified URLs. </entry>
+            </row>
+            <row>
+              <entry>^(?!https?://www\.mysite\.net/)</entry>
+              <entry>This matches the opposite of the prior example: anything that is
+                neither <literal>http://www.mysite.net</literal>
+                nor <literal>https://www.mysite.net</literal>. When ?! appears as the
+                first two characters within parens, that denotes what is known as a
+                "non-capturing negative lookahead." Non-capturing means it never puts
+                anything into $1 or any other back-reference.  A "negative look ahead"
+                is a non-capturing assertion that "matches" (or returns true) when the
+                string in question does NOT match the pattern that follows the ?!
+                , <phrase>but leaves the cursor position in the subject string
+                unchanged.</phrase> What follows in this case is a URL pattern.  The
+                https? matches either http or https, because ? as a {0,1} quantifier
+                applies to the preceding s character. (On the other hand, if you write
+                (https)? then the ? applies to the entire https string, which means it
+                matches when there is zero or one "https").  Then, what follows is a ://
+                and a domain name, with the dots appropriately backslash-escaped.  This
+                pattern can be used in a RewriteCond applied to the HTTP_HOST to rewrite
+                if the hostname is NOT matched by the pattern. </entry>
+            </row>
+
+            <row>
+              <entry>^(?!www.)([^\.]+)\.example\.org</entry>
+              <entry>matches any hostname in the example.org domain, except for
+              'www.example.org'.  Again, the ?! implies a non-capturing negative
+              lookahead assertion: it says match anything that <legacyItalic>does
+              not</legacyItalic> start with www. Follwing the non-capturing
+              assertion, there is a capture group, followed by an escaped dot, and
+              example.org. The capture group is defined by a range [^\.] with a
+              1-or-more quantifier, the + sign.  This combination matches one or
+              more characters, none of which is a dot; positioned where it is in
+              the rgeex, this group thus captures the first part of the
+              multi-part hostname.
+              </entry>
+            </row>
+
+            <row>
+              <entry>^/(?!index\.aspx)(.*)$</entry>
+              <entry>any URL that does not begin with index.aspx .  The substring
+              within the non-capturing negative lookahead is "index.aspx", with
+              the obligatory backslash for the dot, since the un-escaped dot is a
+              wildcard.  The result is that the assertion (?!index\.aspx) matches
+              (but does not capture) any string that does NOT begin with
+              index.aspx .  This assertion is then followed by a capturing group,
+              which matches and captures a series of zero or more
+              characters. </entry>
+            </row>
+
+            <row>
+              <entry>^/(?!index.php)(?!.*\/$)(.*)(?&lt;!\.html)$</entry>
+              <entry>any Url that does not begin with /index.php,
+                does not end in a slash,
+                and does not end in a .html .   This pattern uses two consecutive
+                non-capturing negative lookaheads, followed by a capturing group,
+                followed by a non-capturing negative look-behind.  The ?&lt;! is the
+                negative look-behind.  It works just like a lookahead, except,
+                obviously it applies to the prior characters, not the following ones.
+                To specify a positive look-ahead or look-behind - just omit the
+                ! . </entry>
+            </row>
+
+            <row>
+              <entry>p1=([^&amp;]+)&amp;p2=([^&amp;]+)</entry>
+              <entry>matches a set of query string parameters, fitting the pattern
+                p1=something&amp;p2=something. [^&amp;] means "any character that is
+                not &amp;".  The + quantifier means "one or more".  </entry>
+            </row>
+
+            <row>
+              <entry>'/(A[KLRZ]|C[AOT]|D[CE]|FL|GA|HI|I[ADLN]|K[SY]|LA|M[ADEINOST]|N[CDEHJMVY]|O[HKR]|PA|RI|S[CD]|T[NX]|UT|V[AT]|W[AIVY])/'</entry>
+              <entry>a US state abbreviation, surrounded by slashes.  /PA/ matches, but
+                /USA/ does not, nor does PA (Without the slashes). Let&apos;s break it down:
+                The pattern is a slash, followed by a single capturing group (in
+                parens), and then another slash.  The capturing group itself includes a
+                number of options, separated by | , to indicate a logical "or".  Each
+                sub-pattern separated by the vertical pipe is either a pair of
+                characters referring to s specific USA state abbreviation, or a single
+                character followed by a range of characters - the range specified in
+                square brackets. This latter matches any state abbreviation beginning
+                with the first character. For example, C[AOT] matches either CA, CO, or
+                CT, for California, Colorado, or Connecticut.
+             </entry>
+            </row>
+
+
+            <row>
+              <entry>(19|20)[0-9]{2}</entry>
+              <entry>this pattern matches a year, between 1900 and 2099.  There is
+              one capturing group.  On a successful match, $0 holds the full year,
+              and $1 holds either 19 or 20.  The lower 2 digits of the year are
+              not captured separately. </entry>
+            </row>
+
+
+            <row>
+              <entry>(19|20)([0-9]{2})</entry>
+              <entry>a year, between 1900 and 2099.  There are two capturing
+              groups.  On a successful match, $0 holds the four-digit year, $1
+              holds either 19 or 20, and $2, holds a two-digit number from 00 to
+              99. </entry>
+            </row>
+
+
+            <row>
+              <entry>((?:18|19)[0-9]{2})</entry>
+              <entry>a year, between 1800 and 1999.  There is only one capturing
+                group, and it contains the entire 4-digit year on a successful
+                match. The sequence ?: - when it appears as the first two
+                characters within parens - makes the group a non-capturing group. It is
+                used in this case to apply a conditional - matching either 18 or 19 -
+                without capturing what is conditionally matched.
+              </entry>
+            </row>
+
+
+            <row>
+              <entry>(20(?:(?:0[0-9])|10))</entry>
+              <entry>a year, between 2000 and 2010.  There is only one capturing group,
+                represented by the outermost pair of parens.  On a successful match, $1
+                contains the entire 4-digit year. The inner, non-capturing groups,
+                denoted with ?: , are used to support the conditional match.
+              </entry>
+            </row>
+
+
+            <row>
+              <entry>((?:(?:18|19)[0-9]{2})|(?:20(?:(?:0[0-9])|(?:10))))</entry>
+              <entry>a year, between 1800 and 2010.  There is only one capturing
+                group, represented by the outermost pair of parens.  On a
+                successful match, $1 contains the entire 4-digit year.
+              </entry>
+            </row>
+
+
+
+            <row>
+              <entry>^/community/?$</entry>
+              <entry>a URL Request /community or /community/ , in other
+                words, with or without a trailing
+                slash. Because the $ terminator lies at the end of the pattern, implying
+                <phrase>end-of-string</phrase>, a URL with a query string or additional
+                path following  /community or /community/ will
+                not match. If the incoming  URL has a trailing slash, and anything
+                following the trailing slash (Example: /community/? ), will also not match.
+                There are no capturing groups. </entry>
+            </row>
+
+            <row>
+              <entry>^/artists/(\d{2,9})/([^\?/]+)(?&lt;!\.aspx)</entry>
+              <entry>
+                any URL that begins with /artists, followed by a slash, followed by
+                a sequence of between 2 and 9 decimal digits, another slash, followed by
+                a sequence of one or more of any characters not including question mark
+                or slash, and the final sequence must not end in
+                .aspx. The <literal>(?&lt;!\.aspx)</literal> that ends the pattern is a
+                non-capturing negative look-behind subpattern, which says "the string
+                must not end in .aspx".
+              </entry>
+            </row>
+
+            <row>
+              <entry>^/([^/]+)/([^/]*)$</entry>
+              <entry>A URL path with exactly two segments, and the second segment
+                must not end in .aspx.   /alpha/beta  matches, and alpha
+                would be stored in $1 while beta would be captured by
+                $2.  A URL path with three segments, like
+                /alpha/beta/gamma , will not match.  This is because
+                the range used within the capturing group (the
+                parentheses) is "any character except slash". </entry>
+            </row>
+
+
+            <row>
+              <entry>^/([^/]+)/([^/]*)(?&lt;!\.aspx)$</entry>
+              <entry>
+                A URL path with exactly two segments, and the second segment must not
+                end in .aspx.  /alpha/beta matches, and places alpha in $1, and beta in
+                $2.  But /alpha/beta.aspx does not match.
+                The <literal>(?&lt;!\.aspx)</literal> that ends the pattern is a
+                non-capturing negative look-behind subpattern, which says "the string
+                must not end in .aspx".
+              </entry>
+            </row>
+
+
+            <row>
+              <entry>^/products/(.*)$</entry>
+              <entry>a URL of two segments, where the first segment
+                is <literal>products</literal>, and the second segment is anything,
+                possibly empty, and possibly including a query
+                string. The <literal>(.*)</literal> captures a sequence of zero or more
+                of <legacyItalic>any</legacyItalic> character.</entry>
+            </row>
+
+            <row>
+              <entry>^/products/([^\.]+\.php)$</entry>
+              <entry>a URL of two segments, where the first segment
+                is <literal>products</literal>, and the second segment is the name of a
+                php file.  The <literal>[^\.]+</literal> segment captures a sequence of one or
+                more characters, none of which is a dot.  Immediately following that is
+                an escaped dot, which matches dot, then the letters php.  Therefore,
+                together this pattern matches the name of any php page. It will not
+                match any URL with a query string, because the <literal>$</literal>,
+                indicating <phrase>end-of-line</phrase>, immediately follows the
+                subpattern. </entry>
+            </row>
+
+            <row>
+              <entry>^/([^\.]+).(?:css|jpeg|jpg|gif|png|html|txt|htm|aspx)$</entry>
+              <entry>a URL with no leading path, that ends in one of the
+                extensions listed. index.aspx matches, but data.xml does not.
+                The sequence ?: - when it appears as the first two characters
+                within parens - makes the group a non-capturing group. If it
+                matches it will not store anyting in the back-references like $1,
+                %1, and so on. </entry>
+            </row>
+
+            <row>
+              <entry>^/Tours/([-a-zA-Z\020&amp;]+)/?$</entry>
+              <entry>a URL of two segments, where the first is "Tours" and the
+                second has only alpha characters, spaces, ampersands, or dashes. When -
+                appears as the first character within square brackets, it refers to -
+                rather than to a "from ... to..." meaning.  The URL
+                optionally ends in a slash. </entry>
+            </row>
+
+            <row>
+              <entry>^/video/([^/])/([^/]+)$</entry>
+              <entry>any URL with three segments, where the first segment is
+                "video", the second segment is exactly one character
+                long, and the third segment is one or more characters
+                long. A successful match will have no query string (no
+                question mark).</entry>
+            </row>
+
+            <row>
+              <entry>^/register/([0-9]{3-8})$</entry>
+              <entry>any URL with 2 segments, where the first is "register" and the
+                second is a series of between 3 and 8 decimal digits. </entry>
+            </row>
+
+
+          </table>
+
+        </content>
+      </section>
+
+
+
+      <section address="Section4">
+        <title>For More Information</title>
+        <content>
+          <para>
+            For more information on regular expressions, try these links:
+          </para>
+          <list>
+            <listItem>
+              <externalLink>
+                <linkText>the Wikipedia page</linkText>
+                <linkUri>http://en.wikipedia.org/wiki/Regular_expression</linkUri>
+              </externalLink>
+            </listItem>
+
+            <listItem>
+              <externalLink>
+                <linkText>the tutorial on regular-expressions.info</linkText>
+                <linkUri>http://www.regular-expressions.info/tutorial.html</linkUri>
+              </externalLink>
+            </listItem>
+
+            <listItem>
+              <externalLink>
+                <linkText>the PCRE documentation</linkText>
+                <linkUri>http://www.pcre.org/pcre.txt</linkUri>
+              </externalLink>
+            </listItem>
+
+            <listItem>
+              <externalLink>
+                <linkText>Mushclient&apos;s HTML-ized PCRE man page</linkText>
+                <linkUri>http://mushclient.com/pcre/pcrepattern.html</linkUri>
+              </externalLink>
+            </listItem>
+
+            <listItem>
+              <externalLink>
+                <linkText>the documentation for Perl Regular Expressions</linkText>
+                <linkUri>http://www.perl.com/doc/manual/html/pod/perlre.html</linkUri>
+              </externalLink>
+            </listItem>
+
+            <listItem>
+              <externalLink>
+                <linkText>Jeffrey Friedl&apos;s book</linkText>
+                <linkUri>http://www.amazon.com/exec/obidos/tg/detail/-/1565922573?v=glance</linkUri>
+              </externalLink>
+            </listItem>
+
+            <listItem>or,
+              <externalLink>
+                <linkText>search</linkText>
+                <linkAlternateText>Bing search</linkAlternateText>
+                <linkUri>http://www.bing.com/search?q="regular+expressions"</linkUri>
+              </externalLink>
+            </listItem>
+
+
+          </list>
+
+        </content>
+        <!-- If a section contains a sections element, its content creates
+             sub-sections.  These are not collapsible.
+             <sections>
+               <section address="SubSection1">
+                 <title>Sub-section 1</title>
+                 <content>
+                   <para>Sub-section content.</para>
+                 </content>
+               </section>
+               <section address="SubSection2">
+                 <title>Sub-section 2</title>
+                 <content>
+                   <para>Sub-section content.</para>
+                 </content>
+               </section>
+             </sections> -->
+      </section>
+      <relatedTopics>
+        <link xlink:href="2a84f55d-b0ae-422a-9071-a31e35b7d3e3">I welcome Donations</link>
+        <!-- One or more of the following:
+             - A local link
+             - An external link
+             - A code entity reference
+
+             <link xlink:href="Other Topic's ID"/>
+             <link xlink:href="Other Topic's ID">Link inner text</link>
+
+             <externalLink>
+               <linkText>Link text</linkText>
+               <linkAlternateText>Optional alternate link text</linkAlternateText>
+               <linkUri>URI</linkUri>
+             </externalLink>
+
+             <codeEntityReference>API member ID</codeEntityReference>
+
+             Examples:
+
+             <link xlink:href="00e97994-e9e6-46e0-b420-5be86b2f8270" />
+             <link xlink:href="00e97994-e9e6-46e0-b420-5be86b2f8278">Some other topic</link>
+
+             <externalLink>
+               <linkText>SHFB on CodePlex</linkText>
+               <linkAlternateText>Go to CodePlex</linkAlternateText>
+               <linkUri>http://shfb.codeplex.com</linkUri>
+             </externalLink>
+
+             <codeEntityReference>T:TestDoc.TestClass</codeEntityReference>
+             <codeEntityReference>P:TestDoc.TestClass.SomeProperty</codeEntityReference>
+             <codeEntityReference>M:TestDoc.TestClass.#ctor</codeEntityReference>
+             <codeEntityReference>M:TestDoc.TestClass.#ctor(System.String,System.Int32)</codeEntityReference>
+             <codeEntityReference>M:TestDoc.TestClass.ToString</codeEntityReference>
+             <codeEntityReference>M:TestDoc.TestClass.FirstMethod</codeEntityReference>
+             <codeEntityReference>M:TestDoc.TestClass.SecondMethod(System.Int32,System.String)</codeEntityReference>
+             -->
+      </relatedTopics>
+    </developerConceptualDocument>
+  </topic>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

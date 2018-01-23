@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="563a06a2-bd46-45e8-9d5a-1184eade19df" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <introduction>
+      <autoOutline />
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Example: Block Requests from a particular IP Address</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+        <code lang="ini">
+          # Iirf.ini
+          #
+          # ini file to block requests by IP address
+          #
+
+          RewriteLogLevel 1
+          RewriteLog c:\inetpub\iirfLogs\iirf
+          RewriteEngine ON
+          StatusInquiry ON
+          IterationLimit 5
+
+          RewriteCond %{REMOTE_ADDR} ^24\.132\.226\.94$  [OR]
+          RewriteCond %{HTTP_USER_AGENT} ^$
+          RewriteRule ^/(.*)$ /$1 [F]
+        </code>
+
+        <para>
+          Explanation: There&apos;s just a single rule, and it returns
+          "403 Forbidden" for any URL, if the HTTP_USER_AGENT is empty
+          or if the remote IP address is 24.132.226.94.  You could chain
+          additional IP addresses in there, also, by including
+          additional RewriteCond statements, linked by [OR].  You can
+          also use wildcards in the IP address pattern.
+        </para>
+
+        <para>
+          Black-listing by IP address obviously won&apos;t work if the
+          request arrives from an anonymous proxy.
+        </para>
+
+      </content>
+    </section>
+
+
+    <section address="Section2">
+      <title>Example: Allow Requests from IP Address range</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+        <code lang="ini">
+          # Iirf.ini
+          #
+          # ini file to allow requests by IP address range
+          #
+
+          RewriteLogLevel 1
+          RewriteLog c:\inetpub\iirfLogs\iirf
+          RewriteEngine ON
+          StatusInquiry ON
+          IterationLimit 5
+
+          # If the IP address is not in the specified range, return 404
+          # (NF = Not Found)
+          RewriteCond %{REMOTE_ADDR} ^(?!24\.132\.(\d+)\.(\d+))
+          RewriteRule ^/.*$ - [NF]
+
+          # If URL processing has gotten this far, do nothing (no rewrite).
+        </code>
+
+        <para>
+          Explanation: There&apos;s just a single rule, and it returns
+          "404 Forbidden" for any URL, if if the remote IP address is
+          not of the form 24.132.nnn.nnn (eg, a subnet). You could
+          whitelist additional IP address ranges, by including
+          additional RewriteCond statements, linked by [AND].
+        </para>
+
+        <para>
+          Whitelisting by IP address obviously won&apos;t work if the
+          request arrives from an anonymous proxy.
+        </para>
+
+      </content>
+    </section>
+
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+
+
+

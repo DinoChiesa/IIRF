@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<content xml:space   ="preserve"
+         xmlns:ddue  ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+         xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+  <item id="SEO">
+    <ddue:externalLink>
+      <ddue:linkText>Search Engine Optimization</ddue:linkText>
+      <ddue:linkUri>http://en.wikipedia.org/wiki/Search_engine_optimization</ddue:linkUri>
+      <ddue:linkTarget>_blank</ddue:linkTarget>
+    </ddue:externalLink>
+  </item>
+  <item id="IIS7RM">
+    <ddue:externalLink>
+      <ddue:linkText>IIS7 RewriteModule</ddue:linkText>
+      <ddue:linkUri>http://www.iis.net/downloads/default.aspx?tabid=34&amp;g=6&amp;i=1691</ddue:linkUri>
+      <ddue:linkTarget>_blank</ddue:linkTarget>
+    </ddue:externalLink>
+  </item>
+  <item id="IIS6RK">
+    <ddue:externalLink>
+      <ddue:linkText>IIS6 Resource Kit</ddue:linkText>
+      <ddue:linkUri>http://www.microsoft.com/downloads/details.aspx?FamilyID=56fc92ee-a71a-4c73-b628-ade629c89499</ddue:linkUri>
+      <ddue:linkTarget>_blank</ddue:linkTarget>
+    </ddue:externalLink>
+  </item>
+  <item id="UnderstandingIIS1">
+    <ddue:externalLink>
+      <ddue:linkText>Understanding IIS Applications and IIS virtual directories</ddue:linkText>
+      <ddue:linkUri>http://learn.iis.net/page.aspx/150/understanding-sites-applications-and-virtual-directories-in-iis-70/</ddue:linkUri>
+      <ddue:linkTarget>_blank</ddue:linkTarget>
+    </ddue:externalLink>
+  </item>
+  <item id="PCRE">
+    <ddue:externalLink>
+      <ddue:linkText>Perl Compatible Regular Expressions</ddue:linkText>
+      <ddue:linkUri>http://www.pcre.org/</ddue:linkUri>
+      <ddue:linkTarget>_blank</ddue:linkTarget>
+    </ddue:externalLink>
+  </item>
+  <item id="PCRE2">
+    <ddue:externalLink>
+      <ddue:linkText>PCRE</ddue:linkText>
+      <ddue:linkUri>http://www.pcre.org/</ddue:linkUri>
+      <ddue:linkTarget>_blank</ddue:linkTarget>
+    </ddue:externalLink>
+  </item>
+  <item id="REST">
+    <ddue:externalLink>
+      <ddue:linkText>REST</ddue:linkText>
+      <ddue:linkUri>http://en.wikipedia.org/wiki/REST</ddue:linkUri>
+      <ddue:linkTarget>_blank</ddue:linkTarget>
+    </ddue:externalLink>
+  </item>
+  <item id="Regex">
+    <ddue:externalLink>
+      <ddue:linkText>Regular Expressions</ddue:linkText>
+      <ddue:linkUri>http://www.regular-expressions.info/</ddue:linkUri>
+      <ddue:linkTarget>_blank</ddue:linkTarget>
+    </ddue:externalLink>
+  </item>
+  <item id="Regex-singular">
+    <ddue:externalLink>
+      <ddue:linkText>regular expression</ddue:linkText>
+      <ddue:linkUri>http://www.regular-expressions.info/</ddue:linkUri>
+      <ddue:linkTarget>_blank</ddue:linkTarget>
+    </ddue:externalLink>
+  </item>
+  <item id="RFC3986">
+    <ddue:externalLink>
+      <ddue:linkText>RFC 3986 - Uniform Resource Identifiers (URI): Generic Syntax</ddue:linkText>
+      <ddue:linkUri>http://www.ietf.org/rfc/rfc3986.txt</ddue:linkUri>
+      <ddue:linkTarget>_blank</ddue:linkTarget>
+    </ddue:externalLink>
+  </item>
+  <item id="RFC2616">
+    <ddue:externalLink>
+      <ddue:linkText>RFC 2616 -   Hypertext Transfer Protocol -- HTTP/1.1</ddue:linkText>
+      <ddue:linkUri>http://www.ietf.org/rfc/rfc2616.txt</ddue:linkUri>
+      <ddue:linkTarget>_blank</ddue:linkTarget>
+    </ddue:externalLink>
+  </item>
+
+  <item id="SandcastleStyles">
+    <ddue:externalLink>
+      <ddue:linkText>Sandcastle Styles</ddue:linkText>
+      <ddue:linkUri>http://www.codeplex.com/SandcastleStyles</ddue:linkUri>
+      <ddue:linkTarget>_blank</ddue:linkTarget>
+    </ddue:externalLink>
+  </item>
+
+  <item id="SandcastleVersion">May 2008</item>
+  <item id="BuildDate">{@BuildDate:MMMM d, yyyy}</item>
+</content>
+

@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="b7a83a1c-5ae4-476b-83ef-34d2dab3c788" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <introduction>
+      <autoOutline />
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Redirect requests for the old Hostname, to the new name.
+      Also translate .htm requests to .aspx requests. </title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+        <para>
+          This approach <legacyItalic>redirects</legacyItalic> requests
+          based on the incoming hostname.  It also converts requests for
+          static .htm pages into .aspx pages.
+        </para>
+
+<code lang="ini">
+# IIRF.ini
+#
+# ini file for redirecting requests for the old domain name to the new one
+#
+
+RewriteLog c:\logs\iirf
+RewriteLogLevel 1
+IterationLimit 10
+MaxMatchCount 10
+RewriteEngine ON
+StatusInquiry ON
+
+# With a request like http://olddomain.com/Alpha.htm or http://olddomain.com/Alpha.asp (or
+# if the olddomain is prefixed with www) , redirect (HTTP 301)
+# the request to http://www.domain.com/Alpha.aspx
+
+RewriteCond  %{HTTP_HOST}            ^(www\.)?olddomain\.com$
+RedirectRule ^/(.+)\.(htm|asp)$       http://www.newdomain.com/$1.aspx         [R=301]
+
+</code>
+      </content>
+    </section>
+
+
+
+    <section address="Section2">
+      <title>Force the use of the www prefix on hostname</title>
+      <content>
+        <para>
+          This approach <legacyItalic>redirects</legacyItalic> requests
+          if the hostname used on the incoming request does not use
+          www as the prefix on the server name.
+        </para>
+
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for redirecting all requests to www server.
+#
+
+RewriteLog c:\logs\iirf
+RewriteLogLevel 2
+IterationLimit 10
+MaxMatchCount 10
+RewriteEngine ON
+StatusInquiry ON
+
+RewriteCond  %{HTTP_HOST}  ^(?!www\.).*example\.com$
+RedirectRule ^/(.*)$       http://www.example.com/$1     [R=301]
+
+</code>
+      </content>
+    </section>
+
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+
+

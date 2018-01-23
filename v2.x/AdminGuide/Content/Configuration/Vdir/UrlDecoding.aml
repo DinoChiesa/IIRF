@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="d0aa762b-9c46-4d02-94d0-1b8ad820596b" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <!--
+        <summary>
+          <para>Optional summary abstract</para>
+        </summary>
+        -->
+    <introduction>
+      <!-- Uncomment this to generate an outline of the section and sub-section
+           titles.  Specify a numeric value as the inner text to limit it to
+           a specific number of sub-topics when creating the outline.  Specify
+           zero (0) to limit it to top-level sections only.  -->
+      <!-- <autoOutline /> -->
+      <para>
+      </para>
+    </introduction>
+    <!-- Add one or more top-level section elements.  These are collapsible.
+         If using <autoOutline />, add an address attribute to identify it
+         and specify a title so that it can be jumped to with a hyperlink. -->
+    <section address="Section1">
+      <title>UrlDecoding [ON | OFF]</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+        <para>
+          Disables or explicitly enables decoding of URLs before
+          applying the pattern match.
+        </para>
+
+        <para>
+          According to <token>RFC3986</token>, these characters are not allowed in
+          URLs:
+        </para>
+
+        <list class="bullet">
+          <listItem> any US-ASCII characters in the range of 0x00-0x1F, as well as
+            0x7F.  </listItem>
+
+          <listItem> delimiters  &gt;, &lt;, #, %, &quot; </listItem>
+          <listItem> The SPACE (ASCII 32) </listItem>
+        </list>
+
+        <para>
+          HTTP applications must encode URLs before submitting them, so
+          that any disallowed characters are properly represented in the URL.
+          For example:
+        </para>
+
+        <list class="bullet">
+          <listItem>  SPACE is encoded as '+' or <literal>%20</literal>. </listItem>
+          <listItem>Other disallowed characters are encoded as %NN,
+          where NN is the hexadecimal
+          representation of the character.  For example, % is encloded
+          as <literal>%25</literal>.  </listItem>
+        </list>
+
+        <para>
+          Also, some characters are allowed only once in a URI.  For
+          example, the <literal>?</literal> separates the hierarchical
+          part of the URI from the query, according to the names used by
+          RFC 3986.  Therefore, HTTP applications must
+          encode <literal>?</literal> as <literal>%3F</literal> if it is
+          to be included in the value of a query parameter.
+        </para>
+
+        <para>
+          By default, IIRF performs a URL-decode on incoming requests,
+          before applying the regular expression pattern match in a
+          <codeInline>RewriteRule</codeInline>, <codeInline>RedirectRule</codeInline>,
+          <codeInline>RewriteHeader</codeInline>, or <codeInline>ProxyPass</codeInline>
+          directive.  This means that <literal>%20</literal> will be decoded to an actual
+          SPACE in the incoming URL, <literal>%0A</literal> will be decoded to a LINEFEED,
+          and so on.  With this directive,
+          operators can modify this behavior so that no decoding is
+          performed prior to pattern matching. This gives you the
+          opportunity to specify patterns that search for and match on
+          URL-escape sequences within the URL.
+        </para>
+
+        <para>
+          Normally you would not use this directive; you would leave it
+          as the default.  Only use it if you want your rules to examine
+          or perform matches on the URL-encoded sequences that may
+          appear in the URL.
+        </para>
+
+      </content>
+
+    </section>
+
+
+    <relatedTopics/>
+  </developerConceptualDocument>
+</topic>
+
+
+
+

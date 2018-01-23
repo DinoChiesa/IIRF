@@ -1,0 +1,42 @@
+# SampleUrls.txt
+# 
+# Expected result may be a URL, or one of the following: 
+#
+#     NO REWRITE 
+#     FORBIDDEN
+#     REDIRECT <code>  <URL>
+#     NOT FOUND 
+#
+# You can also specify the same URL for the expected result, in the 
+# "No rewrite" case.
+
+
+# Incoming URL                    Expected Result
+#-----------------------------    ------------------------------------------ 
+
+/test1.php                        /phpdir/test1.php
+/test1.php?test=1                 /phpdir/test1.php?test=1
+/test1.php?test=1&test2=2         /phpdir/test1.php?test=1&test2=2
+
+
+/phpdir/test1.php                 /phpdir/test1.php
+/phpdir/test1.php?test=1          /phpdir/test1.php?test=1
+/phpdir/test1.php?test=1&test2=2  /phpdir/test1.php?test=1&test2=2
+
+
+/test/test1.php                   /phpdir/test/test1.php
+/test/test1.php?test=1            /phpdir/test/test1.php?test=1
+/test/test1.php?test=1&test2=2    /phpdir/test/test1.php?test=1&test2=2
+
+
+
+/Page.jsp                         /jspdir/Page.jsp
+/Page.jsp?test=1                  /jspdir/Page.jsp?test=1
+/Page.jsp?test=1&test2=2          /jspdir/Page.jsp?test=1&test2=2
+
+/test/Page2.jsp                   /jspdir/test/Page2.jsp
+/test/Page2.jsp?test=1            /jspdir/test/Page2.jsp?test=1
+/test/Page2.jsp?test=1&test2=2    /jspdir/test/Page2.jsp?test=1&test2=2
+
+
+

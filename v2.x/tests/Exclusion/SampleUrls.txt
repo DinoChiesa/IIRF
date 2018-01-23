@@ -1,0 +1,51 @@
+# SampleUrls.txt
+# 
+# Expected result may be a URL, or one of the following: 
+#
+#     NO REWRITE 
+#     FORBIDDEN
+#     REDIRECT <code>  <URL>
+#     NOT FOUND 
+#
+#
+
+
+# Incoming URL                                 Expected Result
+#---------------------------------------------------------------------- 
+#
+
+# This one will get picked up by Rule #1
+/foo.htm                                       /index.php?id=foo
+
+# This will match no rule in the ini file
+/Index.html                                    NO REWRITE
+
+# Rule #2 will fire for these two URLs
+/93838.htm                                     /93838.aspx
+/Cloud9.htm                                    /Cloud9.aspx
+
+# Rule #3 won't fire here
+/options/Index.htm                             NO REWRITE
+
+# Rule #3 will fire here
+/options/Index.cfm                             /options/Index.aspx
+
+# Rule #3 won't fire here
+/options/Index.jsp                             NO REWRITE
+
+# or here
+/Catalog.cfm                                   NO REWRITE
+
+# or here (because of the dot)
+/Dir.Dots/Catalog.cfm                          NO REWRITE
+
+# but Rule #3 will fire here
+/NoDots/Catalog.cfm                            /NoDots/Catalog.aspx
+
+
+/NoEscaping/File1.doc                          NO REWRITE
+
+/This%25Directory/Uses%25Escaping/File2.doc    /PleaseDontUseEscapeSequencesInDirectoryNames.aspx?path=This%25Directory/Uses%25Escaping&file=File2.doc
+
+/This%Uses%Percent%Chars/File3.doc             NO REWRITE
+

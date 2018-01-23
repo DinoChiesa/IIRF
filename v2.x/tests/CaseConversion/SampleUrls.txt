@@ -1,0 +1,24 @@
+# SampleUrls.txt
+# 
+# Expected result may be a URL, or one of the following: 
+#
+#     NO REWRITE 
+#     FORBIDDEN
+#     REDIRECT <code>  <URL>
+#     NOT FOUND 
+#
+#
+
+
+# Incoming URL                                   Expected Result
+#---------------------------------------------------------------------- 
+#
+/lowercase/This.Is.A.Test.asp                    /lowercase-output/this.is.a.test.asp
+
+/lowercase/ALL_THIS_WILL_BE_LOWERCASE.asp        /lowercase-output/all_this_will_be_lowercase.asp
+
+/uppercase/TesTiNgCaseConVerSion.asp             /uppercase-output/TESTINGCASECONVERSION.asp
+
+/OneCharLower/OnlyTheFirstCharLower.asp          /OneCharLower-output/onlyTheFirstCharLower.asp
+
+/OneCharUpper/onlythefirstcharupper.asp          /OneCharUpper-output/Onlythefirstcharupper.asp

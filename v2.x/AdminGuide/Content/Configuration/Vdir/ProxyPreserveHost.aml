@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="a1885ba5-508f-4df1-abf9-0bab147eaec5" revisionNumber="1">
+
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+        <para>
+          <codeInline>ProxyPreserveHost</codeInline> tells IIRF to preserve the
+          hostname used in the original request, when performing Proxy
+          operations. This directive was first supported in IIRF in v2.1.1.26.
+        </para>
+
+      <autoOutline />
+    </introduction>
+
+    <section address="Usage">
+      <title>Basic Syntax and Usage</title>
+      <content>
+        <para>Syntax:
+          <code lang="ini">
+            ProxyPreserveHost {ON|OFF}
+          </code>
+        </para>
+
+        <para>
+          When this option is turned ON, IIRF will pass the
+          <codeInline>Host:</codeInline> line from the incoming request
+          to the proxied host, instead of the hostname specified in the URL for the
+          <link xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link>
+          directive.
+        </para>
+
+        <para>
+          When an HTTP application such as a web browser sends a request, it
+          includes along with that request, a set of request "headers". (See
+          section 4.2 in
+
+          <externalLink>
+            <linkText>IETF RFC 2616</linkText>
+            <linkUri>http://tools.ietf.org/html/rfc2616</linkUri>
+          </externalLink> )
+
+          One of those headers is the <literal>Host</literal> header, which
+          carries the name of the server that the client (usually a browser)
+          thinks it is contacting. For example, when sending a query to
+          google.com, the Host header will carry the value of "www.google.com" .
+          A Proxy operation is essentially a relayed communication transaction: a
+          proxy server like IIRF receives an HTTP message, then, sends a proxied
+          HTTP message out, receives the response, and then relayes a transformed
+          version of that response to the sender of the original incoming message.
+          Normally the HTTP message that the proxy server <legacyItalic>sends
+          out</legacyItalic> follows the HTTP rules - the Host header will carry
+          the name of the host the proxy application thinks it is contacting. With
+          this directive, or the [PH] modifier on a <link
+          xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link> rule,
+          the proxy application (IIRF) will use a Host header that mirrors the
+          Host header used on the incoming HTTP message.
+        </para>
+
+        <para>
+          Example: <code lang="ini">
+            # add a trailing slash:
+            RedirectRule ^/app1$         /app1/          [I]
+
+            # proxy the app1 directory
+            ProxyPass   ^/app1/(.*)$    http://s1.partner.net/app1/$1  [I]
+          </code>
+        </para>
+
+        <para>
+          Suppose the above ini file is used on an IIRF running on a server which
+          is reachable via <literal>http://server1.example.com</literal>.  When a
+          browser sends a request for
+          <literal>http://server1.example.com/app1/index.htm</literal>, the
+          <codeInline>ProxyPass</codeInline> rule applies. In that incoming
+          request, the Host header carries the value
+          <literal>server1.example.com</literal>. IIRF then sends out a proxied
+          request to the url
+          <literal>http://s1.partner.net/app1/index.htm</literal>, and in that
+          request, the Host header carries the value
+          <literal>s1.partner.net</literal>.  If
+          <codeInline>ProxyPreserveHost</codeInline> had been used in the ini
+          file, then the Host header in the proxied request message would carry
+          the value <literal>server1.example.com</literal>.
+        </para>
+
+        <para>
+          This option should normally be turned Off, and is turned off by default,
+          in the absence of a <codeInline>ProxyPreserveHost</codeInline>
+          directive. It is mostly useful in special configurations, such as when
+          proxying is used in concert with mass name-based virtual hosting. In
+          this case, the original Host header may need to be evaluated by the
+          backend server, and this option will be useful.  Otherwise, probably
+          not.  If you&apos;re not sure, probably not.
+        </para>
+
+        <para>
+          This directive allows you to turn on the "preserve host"
+          behavior for all <codeInline>ProxyPass</codeInline> directives
+          in a vdir.  You can also enable this behavior on a one-by-one
+          basis using the <codeInline>[PH]</codeInline> modifier on each
+          <codeInline>ProxyPass</codeInline> directive.
+        </para>
+
+        <alert class="note">
+          FYI: The <codeInline>ProxyPreserveHost</codeInline> directive does
+          not "count" as a rule, in the totals provided by the
+          <codeInline>/iirfStatus</codeInline> page.
+        </alert>
+
+      </content>
+    </section>
+
+
+    <relatedTopics>
+      <link xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link>
+    </relatedTopics>
+
+  </developerConceptualDocument>
+</topic>
+

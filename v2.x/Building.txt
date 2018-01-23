@@ -1,0 +1,120 @@
+Mon, 24 Aug 2009  05:04
+
+Readme - Ionic's Isapi Rewrite Filter (IIRF)  2.0
+
+
+IIRF is an open source rewriting filter for IIS 5, 6, and 7.x. 
+
+This readme tells you how to build IIRF from the source.
+
+If you want to USE IIRF, then download a binary release from 
+http://iirf.codplex.com, and read the documentation (CHM file).
+
+
+
+
+License
+---------------------------------
+
+Ionic's ISAPI Rewrite Filter (IIRF) is an add-on to IIS that can
+rewrite URLs.  IIRF and its documentation is distributed under
+the Microsoft Permissive License.  See the License.txt file for
+full details. 
+
+IIRF depends upon PCRE, which is licensed independently and
+separately.  Consult the License.pcre.txt file for details.
+
+
+
+
+Implementation
+---------------------------------
+
+This filter is implemented in C. 
+IIRF compiles with the Microsoft VC9 compiler, which ships with
+Visual Studio 2008.  
+
+It may also build with Visual C++ 2008 Express Edition, but I haven't
+tested it.  Express is a free version of  Visual Studio. 
+For more information on it, see
+http://www.microsoft.com/express/vc
+
+The compiler (cl.exe) is the same for the Express and the commercial
+Visual Studio offering. Some people have supposed or guessed that the
+free compiler does not support the same set off options as the compiler
+included with the commercial tool. This is not true.  It's the same
+compiler, regardless of how you get it.  It produces the same code.
+
+
+
+Pre-requisites for building
+--------------------------------------------
+
+Visual Studio or possibly Visual C++ 2008 Express
+  http://msdn.microsoft.com/vstudio/express/visualc/
+  You need the compiler to build the source. 
+
+Microsoft Windows SDK download (WS2008 Edition)
+  http://www.microsoft.com/downloads/details.aspx?familyid=E6E1C3DF-A74F-4207-8586-711EBE331CDC&displaylang=en
+  You need this for the header files and libraries.
+  You only need the IIS portion of the SDK. 
+
+  The Windows SDK is large and modular - there are subsets of the
+  Windows SDK that cover things like the filesystem, device drivers,
+  transactions, and many others. You need at least the core files and
+  the IIS SDK.
+
+
+
+Building PCRE
+--------------------------------------------
+
+IIRF depends on PCRE for the regular expression support.  The version of
+PCRE used in IIRF is v7.8 (from 2008).  The source distribution of IIRF
+re-distributes the PCRE binary.  Check the PCRE license file for
+information on how PCRE is licensed.
+
+If you want to build PCRE, you should download the source from
+www.pcre.org.  I found that I had to change the makefile to get PCRE to
+build successfully on Windows.  I've included the makefile I used,
+here.   You will need to edit that makefile to specify the install
+location for your VC++ compiler, and your Windows SDK. 
+
+
+
+
+Building IIRF
+--------------------------------------------
+
+Unpack the source zip into a new directory. 
+
+IIRF is packaged as a Visual Studio 2008 solution.  There is also a
+makefile that can build the same source.  Here are the options for
+building IIRF: 
+
+1. If you have VS2008 installed, you can build IIRF interactively, from
+   within Visual Studio.
+
+
+2. If you have VS2008 installed, you can also build IIRF using
+   msbuild.exe.  Just run "msbuild.exe" from the directory that contains
+   the IIRF.sln file.
+
+
+3. You can build IIRF using nmake.exe, and the supplied makefile.  
+
+   Before running nmake, you will need to edit the supplied makefile to
+   specify the install location for your VC++ compiler, and your Windows
+   SDK.
+
+   Then just run nmake.exe from the directory that contains the Makefile.
+
+
+
+
+
+If you have questions, use the forms on http://iirf.codeplex.com . 
+
+-Dino
+
+dpchiesa@hotmail.com

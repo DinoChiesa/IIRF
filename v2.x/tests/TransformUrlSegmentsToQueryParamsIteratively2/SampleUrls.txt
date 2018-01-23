@@ -1,0 +1,23 @@
+# SampleUrls.txt
+# 
+# Expected result may be a URL, or one of the following: 
+#
+#     NO REWRITE 
+#     FORBIDDEN
+#     REDIRECT <code>  <URL>
+#     NOT FOUND 
+#
+#
+
+
+# Incoming URL                                            Expected Result
+#--------------------------------------------------------------------------------------------- 
+#
+
+/id/7                                                     /help.cfm?id=7
+/id/7/category/44                                         /help.cfm?id=7&category=44
+/bucket/77/action/refresh/item/92                         /help.cfm?bucket=77&action=refresh&item=92
+/oneLonelySegment                                         /FoundOnlyOneSegment.cfm
+/this/1/URL/2/has/3/a/4/large/5/number/6/of/7/segments/8  /help.cfm?this=1&URL=2&has=3&a=4&large=5&number=6&of=7&segments=8
+/this/1/URL/2/has/3/an/4/odd/5/number/6/of/7/segments     /ResourceNotFound.cfm
+

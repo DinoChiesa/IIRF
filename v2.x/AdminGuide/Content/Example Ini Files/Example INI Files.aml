@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="1ccbf1ec-0984-49d9-9ab0-63eab3ff9c63" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <!-- <autoOutline /> -->
+      <para></para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Example INI files</title>
+      <content>
+        <!-- <autoOutline /> -->
+        <list class="bullet">
+          <listItem><link xlink:href="1f093ad2-7c4f-42a0-9b72-90afbbe94305">ASP.NET MVC</link></listItem>
+          <listItem><link xlink:href="d42e49bc-38d4-4407-9512-1a5539f221c1">Block by User Agent</link></listItem>
+          <listItem><link xlink:href="563a06a2-bd46-45e8-9d5a-1184eade19df">Block and Allow by IP Address</link></listItem>
+          <listItem><link xlink:href="f642f5c1-a0a7-4bdf-b86a-713c0847af72">CakePHP</link></listItem>
+          <listItem><link xlink:href="25f051da-9e8a-482b-8f36-318d2bd61ef5">Chained RewriteCond</link></listItem>
+          <listItem><link xlink:href="49492102-e623-40d7-9dc3-d1411800be80">Clean URLs</link></listItem>
+          <listItem><link xlink:href="7beacc75-db83-49f0-8197-ddc4802fd0e2">Clean URLs 2</link></listItem>
+          <listItem><link xlink:href="f7710c81-9a58-4e17-aec7-16253834b555">Consolidated Access</link></listItem>
+          <listItem><link xlink:href="b7a83a1c-5ae4-476b-83ef-34d2dab3c788">Domain Name Migration</link></listItem>
+          <listItem><link xlink:href="433ee271-392b-4f14-9558-3c40265552d2">Internationalized Urls</link></listItem>
+          <listItem><link xlink:href="c9b0524f-2f70-4f48-9a38-13f6c0f45086">Make Mambo the default page</link></listItem>
+          <listItem><link xlink:href="b77f3dc3-e861-428c-96c1-a6af56d3c062">Prevent Image Leeching</link></listItem>
+          <listItem><link xlink:href="c01af086-562e-41bb-a60e-f33ca073499a">Proxy a website</link></listItem>
+          <listItem><link xlink:href="85e56ec7-6769-4a34-bb91-e843e02fba37">Redirect to WWW host</link></listItem>
+          <listItem><link xlink:href="0ce888a6-060b-4860-8b19-aaa03b35a0eb">Redirect based on a Cookie</link></listItem>
+          <listItem><link xlink:href="5b3e2db6-952e-4a4c-aefc-211ab192d86e">Redirect based on a Map</link></listItem>
+          <listItem><link xlink:href="5a3d3e7f-5f40-484d-a4af-2f395f94b6f2">Redirect to Secure site</link></listItem>
+          <listItem><link xlink:href="77dd5ab8-9638-45e9-a920-6182fca3f767">Rewrite based on a Map</link></listItem>
+          <listItem><link xlink:href="63be1460-dbd0-4ad4-ad39-4b68352fe9a6">Route by hostname</link></listItem>
+          <listItem><link xlink:href="1f3f41aa-75d4-4873-9c9a-5b41c2f97a01">Transform Domain name to Query String Param</link></listItem>
+          <listItem><link xlink:href="6d73ed65-1219-4abf-b739-a197b9976ef8">Virtual Hosts for Users</link></listItem>
+        </list>
+      </content>
+    </section>
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>

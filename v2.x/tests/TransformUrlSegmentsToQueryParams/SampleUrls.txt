@@ -1,0 +1,18 @@
+# SampleUrls.txt
+# 
+#
+
+
+# Incoming URL                   Expected Result
+#--------------------------------------------------------------------- 
+#
+
+/a/uploads/docs/imports/view     /controller.jsp?page=a&v=uploads/docs/imports/view
+/alpha/forms/catalog             /controller.jsp?page=alpha&v=forms/catalog
+/inc/scripts/renew.js            NO REWRITE
+/one/two/three/four/five         /controller.jsp?v=one/two/three/four/five
+
+/web/france/                     /content-web.aspx?country=france
+/web/france/paris                /content-web.aspx?country=france&city=paris
+/web/france/paris/15/            /content-web.aspx?country=france&city=paris&area=15
+

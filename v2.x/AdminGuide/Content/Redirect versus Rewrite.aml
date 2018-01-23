@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="2e820208-c2eb-4d6d-a134-c63f7d41244f" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <autoOutline />
+      <para>
+        Many people confuse or conflate Rewrite with Redirect, while
+        other people don&apos;t distinguish between these two actions.
+        They are not the same, and if you&apos;re going to use IIRF, or
+        any other rewriter, it&apos;s important to understand the
+        difference. Trust me, you will be much happier if you do.
+      </para>
+    </introduction>
+
+    <!-- Add one or more top-level section elements.  These are collapsible.
+         If using <autoOutline />, add an address attribute to identify it
+         and specify a title so that it can be jumped to with a hyperlink. -->
+    <section address="Section1">
+      <title>What&apos;s the Difference between Rewriting and Redirecting?</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+        <para>
+          Redirecting and rewriting are distinct, although many people use the
+          terms interchangeably.  It&apos;s better to understand the differences
+          clearly, so you know how to do what you want with your server.
+        </para>
+
+        <para>
+          The main difference between Rewrite and Redirect can be
+          described succintly:
+        </para>
+        <list class="bullet">
+          <listItem> Rewrite is a Server-Side operation</listItem>
+          <listItem> Redirect sends an immediate HTTP response to the Client</listItem>
+        </list>
+
+      </content>
+    </section>
+
+    <section address="RewritingIs">
+      <title>Rewriting is a Server-side mapping of URLs</title>
+      <content>
+        <para>
+          To rewrite a URL means that, on receiving an HTTP Request,
+          in the IIS server, the request is transformed before any
+          application is invoked.  URLs are thus "mapped" from one
+          form to another, from an external form to an internal
+          form. The requester (browser) is not aware that this
+          mapping occurs.
+        </para>
+
+        <para>
+          If the browser is unaware that the request has been rewritten,
+          then why Rewrite URLs at all?  People often want the externally
+          facing URL to be short, simple, and search-engine friendly.  On
+          the other hand, technology platforms dictate that the internal
+          form of a URL is technology-specific (it has an extension like
+          .php, .aspx, .htm and so on).  URLs of the "internal form" can
+          also be complicated and not search-engine friendly.  URL rewriting
+          allows the server itself to map between friendly URLs preferred by
+          search engines, and the technology- or platform-specific formats
+          employed by web application platforms.
+        </para>
+
+        <para>
+          <legacyItalic>What is meant by mapping?</legacyItalic>
+          Using URL rewriting, a request
+          like <literal>http://server/Info/Hammer</literal>
+          arriving from outside, might actually be served by an ASPX
+          page, that would normally (in the absence of rewriting) be
+          available at the
+          URL <literal>http://server/ProductInfo.aspx?pid=17282</literal>,
+          where 17282 is the product ID of a Hammer.
+          URL Rewriting is the mapping of the external to the internal URL
+          forms that is the core of URL Rewriting.
+        </para>
+
+        <para>
+          <legacyItalic>A URL rewrite happens only on the server.  It is a
+          server-side operation.</legacyItalic> The result of the rewrite could be a
+          URL referring to static page, or to an image file, or to a dynamic page
+          (like a php page or an aspx page).  Regardless of the result of the URL
+          rewrite, the browser is not notified that a rewrite has occurred, inside
+          the web server. For example, if the browser requests /product/1763, and
+          the target of the rewritten URL ends in .aspx, the browser will be
+          completely unaware of that.
+        </para>
+
+        <para>
+          This is a cause for confusion among many people, so I will repeat
+          it: the browser cannot detect if the server has rewritten its
+          request. There is no difference to the browser. If a server URL
+          rewrite occurs, the browser is not informed, and no update of the
+          address shown in the browser URL address bar occurs.
+        </para>
+
+        <para>
+          A useful analogy: many telephone systems allow a person to forward
+          incoming telephone calls.  When an outside caller calls a number, the call
+          may actually be forwarded to an entirely different number. The caller is
+          not aware if the call has been forwarded. This is similar to a URL
+          Rewrite; the browser is not aware that the call (request) has been
+          forwarded (rewritten).
+        </para>
+
+      </content>
+    </section>
+
+    <section address="RedirectingIs">
+      <title>Redirect sends an immediate response to the Client</title>
+      <content>
+        <para>
+          A redirect implies sending an HTTP response to the client, notifying the
+          client of a new URL it should use.  Using a rewrite, the browser might ask
+          for <literal>http://myserver.com/definition/soccer.htm</literal> and if
+          the server does a redirect to <literal>/definition/futbol.htm</literal>,
+          that effectively is a response saying, "No, you don't want soccer.htm,
+          what you really want is futbol.htm . You should ask again."
+        </para>
+
+        <para>
+          Normally, when a client receives an HTTP response telling it to redirect -
+          that is to say, either a HTTP 301 (Moved Permanently) or an HTTP 302
+          (Moved Temporarily) or some other 3xx code, along with a new URL - the
+          browser will update the browser address bar with that new URL, and then
+          make a new request for that new URL. Most HTTP programming libraries, like
+          AJAX libraries such as jQuery that are commonly used in rich-content web
+          pages, also do this automatic re-request when a redirect response is
+          received. This happens quickly, so a normal user may be unaware that
+          there are messages travelling back and forth between browser and server
+          making this happen.
+        </para>
+
+        <para>
+          In the telephone call analogy, an HTTP redirect is like calling a number,
+          and receiving a recording that says "The number you have reached has been
+          changed.  The new number is: xxx-xxxx".  It is then up to you, the caller,
+          to end the first call, then place a new telephone call to the new number.
+        </para>
+
+        <para>
+          It may seem like a detail, but to truly understand URL rewriting and
+          redirecting, it's important understand that in a redirect scenario, the
+          browser will send a new network message on the user's behalf, a new HTTP
+          request.
+        </para>
+
+      </content>
+
+    </section>
+
+
+    <section address="IirfIs">
+      <title>IIRF acts as a Rewriter, a Redirector, and a Proxy</title>
+      <content>
+        <para>
+          To make things even more confusing, the general term "URL Rewriting
+          Engine" or "URL Rewriter" <phrase>typically</phrase> implies a system or
+          tool that can do both rewrites and redirects, and also some other things,
+          like maybe proxying requests and caching. When people speak informally of
+          a rewriting engine, like IIRF or Apache&apos;s mod_rewrite, they are most
+          often thinking of a system that can perform both rewrites and redirects,
+          and some other things.  IIRF falls into that category - it does rewrite,
+          redirect, and proxy.  You can read about using HTTP proxies on <link
+          xlink:href="8f731705-8474-4598-b0f0-e4d67dba9329"> the page dedicated to
+          that topic.</link>
+        </para>
+      </content>
+    </section>
+
+
+    <section address="BetterTogether">
+      <title>You can use Redirect and Rewrite together</title>
+      <content>
+
+        <para>
+          In many cases, a set of rules will include both
+          RewriteRule directives and RedirectRule directives. For
+          example, often rules
+          will <legacyBold>redirect</legacyBold> erroneous or
+          malformed requests to a "Not Found" page, while correctly
+          formed requests might
+          get <legacyBold>rewritten</legacyBold> on the server side.
+        </para>
+
+        <para>
+          A more typical scenario is a pair of rules that redirects
+          and rewrites.  Suppose you have a web application that has
+          been running for some time.  It uses unfriendly, non-SEO URLs, such
+          as <literal>http://myserver.com/ProductInfo.aspx?pid=17282</literal>.
+        </para>
+
+        <list class="bullet">
+          <listItem>
+            A RedirectRule that redirects (HTTP Response 301) that
+            non-SEO rule to the friendly
+            URL <literal>http://myserver.com/Info/Hammer</literal>.
+            If any external client uses the unfriendly URL, the
+            client will be notified, via the HTTP Redirect, that the
+            URL has changed.
+          </listItem>
+
+          <listItem>
+            A RewriteRule that maps from the friendly
+            URL <literal>http://myserver.com/Info/Hammer</literal>
+            to the original, technology-specific URL such as
+            <literal>http://myserver.com/ProductInfo.aspx?pid=17282</literal>.
+          </listItem>
+
+        </list>
+
+        <para>
+          Example: <code lang="ini">
+
+          # use Rewrite and Redirect together, to expose SEO URLs
+          ReWriteRule ^/Info/Hammer /ProductInfo.aspx?pid=17282      [L]
+          RedirectRule ^/.*Info\.aspx\?pid=17282$ http://myserver.com/Info/Hammer [R=301]
+          </code>
+        </para>
+
+        <para>
+          If a browser requests <literal>http://myserver.com/Info/Hammer</literal>,
+          the first rule <legacyItalic>Rewrites</legacyItalic> it to the (non SEO)
+          <literal>/ProductInfo.aspx?pid=17282</literal> URL .  Because
+          the <literal>[L]</literal> modifier is used on that <codeInline>
+          RewriteRule</codeInline>, no more rules are processed for that particular
+          request, and the result is that content is actually served by the CMS.
+          The companion second rule redirects the unfriendly URL like <literal>
+          http://myserver.com/ProductInfo.aspx?pid=17282</literal> to the
+          simpler SEO URL.  The browser then sends a new request to the simpler URL,
+          which gets internally rewritten and served, as in the first scenario.
+        </para>
+
+        <para>
+          If you forget to apply the [L] modifier to the RewriteRule, you can get a
+          message from your browser like <legacyItalic>The page isn't redirecting
+          properly</legacyItalic> and <legacyItalic>the server is redirecting the
+          request for this address in a way that will never
+          complete.</legacyItalic>.  Or something similar.
+        </para>
+
+      </content>
+    </section>
+
+
+
+
+    <relatedTopics>
+      <link xlink:href="8f731705-8474-4598-b0f0-e4d67dba9329">HTTP Proxies</link>
+
+      <!-- One or more of the following:
+           - A local link
+           - An external link
+           - A code entity reference
+
+           <link xlink:href="Other Topic's ID">Link inner text</link>
+
+           <externalLink>
+             <linkText>Link text</linkText>
+             <linkAlternateText>Optional alternate link text</linkAlternateText>
+             <linkUri>URI</linkUri>
+           </externalLink>
+
+           <codeEntityReference>API member ID</codeEntityReference>
+
+           Examples:
+
+           <link xlink:href="00e97994-e9e6-46e0-b420-5be86b2f8270" />
+           <link xlink:href="00e97994-e9e6-46e0-b420-5be86b2f8278">Some other topic</link>
+
+           <externalLink>
+             <linkText>SHFB on CodePlex</linkText>
+             <linkAlternateText>Go to CodePlex</linkAlternateText>
+             <linkUri>http://shfb.codeplex.com</linkUri>
+           </externalLink>
+
+           <codeEntityReference>T:TestDoc.TestClass</codeEntityReference>
+           <codeEntityReference>P:TestDoc.TestClass.SomeProperty</codeEntityReference>
+           <codeEntityReference>M:TestDoc.TestClass.#ctor</codeEntityReference>
+           <codeEntityReference>M:TestDoc.TestClass.#ctor(System.String,System.Int32)</codeEntityReference>
+           <codeEntityReference>M:TestDoc.TestClass.ToString</codeEntityReference>
+           <codeEntityReference>M:TestDoc.TestClass.FirstMethod</codeEntityReference>
+           <codeEntityReference>M:TestDoc.TestClass.SecondMethod(System.Int32,System.String)</codeEntityReference>
+           -->
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>
+
+

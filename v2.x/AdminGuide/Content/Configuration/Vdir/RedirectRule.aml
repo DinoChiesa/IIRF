@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="c699ba60-fe15-4e90-ac4b-74598b5c352e" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>RedirectRule &lt;url-pattern&gt;   &lt;replacement-string&gt;   [&lt;modifiers&gt;]</title>
+      <content>
+        <para>
+          This directive works the same was
+          as <link xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule</link>,
+          except that the result is a REDIRECT: When the rule matches, or "fires",
+          the ISAPI filter immediately issues a "301 Moved Permanently" or "302 Moved
+          Temporarily" (or other 3xx) HTTP response back to the browser, setting the Location header
+          in that response to the URL specified by the replacement string. When
+          the 301 or 302 code is returned to the browser, the browser then
+          re-submits the request to the new location, and updates the URL in the
+          browser address bar.  The user sees the new address. Repeat: with
+          browser redirects, the URL bar in the browser is updated.
+        </para>
+
+        <para>
+          This response is sent back immediately when
+          a <codeInline>RedirectRule</codeInline> matches.  There is no further
+          evaluation of rules in the ini file, and there is no further iteration.
+        </para>
+
+        <para>
+          If you do not understand the difference between a server-side REWRITE
+          and a REDIRECT, please see
+          <link xlink:href="2e820208-c2eb-4d6d-a134-c63f7d41244f"/>.
+          Understanding the difference now will eliminate a lot of confusion for
+          you later, I promise.
+        </para>
+
+        <para>
+          The url pattern and the replacement string used here work the
+          same way as in the <codeInline>RewriteRule</codeInline>
+          directive.  The url pattern is a regular expression, and the
+          replacement string can include: constant text; references to
+          the matched substrings in the input; references to the matched
+          substrings in the most recently evaluated RewriteCond
+          associated to the rule; references to server variables; case
+          folding opcodes; and URL-encoding opcodes. See <link
+          xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">the
+          documentation for RewriteRule</link>
+          for complete details.
+        </para>
+
+        <para>
+          In the case of <codeInline>RedirectRule</codeInline>, unlike that for
+          <codeInline>RewriteRule</codeInline>, the replacement-string can include
+          the scheme, hostname, and port (if any).  If the scheme, hostname, and
+          port are excluded, then the redirect is made to the local server.
+        </para>
+
+        <para>
+          One special note: the target of a redirection may include the #
+          (octothorpe) character followed by the name of an anchor on the resulting
+          HTML page. This tells the browser to scroll to the named anchor.  By
+          default in IIRF, the octothorpe is used for case-folding and url-encoding
+          opcodes (See <link xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">the
+          documentation for RewriteRule</link> for complete details). If the named
+          anchors begin with one of the characters used for opcodes (U u L l E X),
+          then you can have confusion. In that case, you can either "escape" the
+          octothorpe by doubling it (## in the replacement string evaluates to # in
+          the output), or set the case-folding flag character to a different value
+          with the <link
+          xlink:href="e49a6636-15bd-470a-98b3-e50532c684db">FlagCharacters</link>
+          directive.
+        </para>
+
+        <para>
+          The <codeInline>RedirectRule</codeInline> supports the
+          <codeInline>[I]</codeInline> modifier flag and its alias the
+          <codeInline>[NC]</codeInline> flag, which work as the do with RewriteRule,
+          for case-insensitive matching.</para>
+
+        <para>
+          There is an additional modifier flag supported on the
+          <codeInline>RedirectRule</codeInline> directive, the
+          <codeInline>[R]</codeInline> flag, which sets the HTTP response code. The
+          details are here:
+        </para>
+
+        <table>
+          <tableHeader>
+            <row>
+              <entry>modifer flag</entry>
+              <entry>meaning</entry>
+            </row>
+          </tableHeader>
+          <row>
+            <entry>[R=3xx]</entry>
+            <entry>
+              <para>
+                The [R=code] form allows you to specify the HTTP status code for the
+                redirect.
+              </para>
+              <para>
+                The default code is 302 (HTTP Status code for Moved Temporarily or "Object
+                Moved"), but you may wish to use 301 (Moved Permanently), or some other
+                redirect code (eg, 304 "Not Modified" or 307 "Moved Temporarily").  The
+                range of valid values for the R code is 301 to 399.  If you specify a code
+                outside that range, the default 302 code will be used. If you
+                specify a code in that range
+                that is not valid for HTTP, IIRF will blindly return that code to the
+                requesting browser.  So do be careful.
+              </para>
+
+              <para> See the <externalLink>
+                  <linkText>IETF RFC 2616</linkText>
+                  <linkUri>http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html</linkUri>
+                </externalLink>.
+                for complete details on HTTP Redirect codes and their meanings.
+              </para>
+
+              <para>If you specify <codeInline>[R=302]</codeInline>
+                or <codeInline>[R]</codeInline>
+                to <codeInline>RedirectRule</codeInline>, it is the same as no
+                flag at all.  Remember, the default behavior
+                for <codeInline>RedirectRule</codeInline> is to send a 302
+                response. It&apos;s ok to specify a 302 in order to be explicit
+                about it.
+              </para>
+            </entry>
+          </row>
+        </table>
+
+
+        <para>
+          Also, notice that the <codeInline>[L]</codeInline> modifier is not supported by
+          <codeInline>RedirectRule</codeInline>. This makes sense, because as
+          described previously, when a <codeInline>RedirectRule</codeInline> rule
+          matches, the redirect is sent immediately. In other words, the
+          behavior implied by <codeInline>[L]</codeInline> is implicit.
+        </para>
+
+
+
+              <para>Example: <code lang="ini">
+                    RedirectRule ^/Wookie/(.*)$  http://wookie.example.org/$1  [R=301]
+                </code>
+                For an incoming URL request like <literal>
+                /Wookie/hello.php</literal>, this rule would redirect the browser
+                with a <computerOutputInline>301 (Moved
+                Permanently)</computerOutputInline> response, specifying
+                the URL <literal>
+                http://wookie.example.org/hello.php</literal> as the
+                new location.
+              </para>
+
+              <para>
+                The browser would then update the address bar and submit the request to
+                that new location.
+              </para>
+
+              <para>
+                With this directive, IIRF can redirect to a different IIS
+                instance on the same server, a different IIS on a different server, or
+                a non-IIS server on either the local server or a remote server.  For
+                example, if you have multiple websites on a single Windows
+                Server machine, an IIRF installed on one of those instances
+                would be able to redirect to another instance.
+              </para>
+
+              <para>
+                You can also use this directive to change the scheme, so that all
+                requests go through a secure channel (https).
+              </para>
+
+              <para>
+                This directive can also be used to redirect requests to
+                an anchor point in an HTML document - URLs containing a
+                # followed by an anchor name.
+              </para>
+
+
+              <para>Example: <code lang="ini">
+                    RedirectRule ^/([^.?]+[^.?/])$ /$1/ [R=301]
+                </code>
+                This rule says, add a trailing slash to all URLs that don&apos;t end in a
+                slash, and also don&apos;t have any dots in the URL.
+              </para>
+
+              <para>The above rule will have the following results: </para>
+
+              <table>
+                <tableHeader>
+                  <row>
+                    <entry>incoming request</entry>
+                    <entry>rewritten URL</entry>
+                  </row>
+                </tableHeader>
+                <row>
+                  <entry>
+                    /foo/something</entry>
+                  <entry>Browser Redirect (301)
+                    to <computerOutputInline>/foo/something/</computerOutputInline>
+                  </entry>
+                </row>
+
+                <row>
+                  <entry>/home/foo/admin</entry>
+                  <entry>Redirect (301) to <computerOutputInline>/home/foo/admin/</computerOutputInline>
+                  </entry>
+                </row>
+                <row>
+                  <entry>/module.php</entry>
+                  <entry>No redirect</entry>
+                </row>
+                <row>
+                  <entry>/foo/something.aspx</entry>
+                  <entry>No redirect  </entry>
+                </row>
+                <row>
+                  <entry>/foo/something.</entry>
+                  <entry>No redirect  </entry>
+                </row>
+                <row>
+                  <entry>/something.php/hallo</entry>
+                  <entry>No redirect  </entry>
+                </row>
+              </table>
+
+              <para>You could imagine combining this rule with a "directory existence"
+                <link xlink:href="39dbb30e-2afd-4cb1-aaff-45497fe2cbe6">RewriteCond</link>,
+                (see the notes on the -d flag), so that the redirect
+                would occur only if the target directory actually exists.
+              </para>
+
+              <alert class='note'>
+              <para>Be aware that IIS 6.0 automatically sends a "courtesy redirect" for URL
+                requests that correspond to a directory.  See
+                <externalLink>
+                  <linkText>KB article 298408</linkText>
+                  <linkUri>http://support.microsoft.com/kb/298408</linkUri>
+                </externalLink> for details.
+                The result of this is that you can get a doubling of requests for URLs
+                that lack a dot.  The request will be sent, and processed by
+                IIRF, but IIS will also send a redirect response, so the browser
+                will send the request again.
+              </para>
+              </alert>
+
+      </content>
+    </section>
+
+    <relatedTopics>
+      <link xlink:href="39dbb30e-2afd-4cb1-aaff-45497fe2cbe6">RewriteCond directive</link>
+      <link xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule directive</link>
+      <link xlink:href="2a84f55d-b0ae-422a-9071-a31e35b7d3e3">Please Donate!</link>
+    </relatedTopics>
+
+  </developerConceptualDocument>
+</topic>
+
+
+

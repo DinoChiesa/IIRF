@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="7beacc75-db83-49f0-8197-ddc4802fd0e2" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <introduction>
+      <!-- <autoOutline /> -->
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Example: Clean URLs for a Wiki</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for the Ionic&apos;s ISAPI rewriting filter (IIRF).
+#
+
+RewriteLog c:\inetpub\iirfLogs\iirf
+RewriteLogLevel 3
+MaxMatchCount 1
+RewriteEngine On
+IterationLimit 4
+StatusInquiry ON
+
+# Checks for local file existence so that .css, .js and other  static
+# files aren&apos;t rewritten
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^/.*$          -     [L]
+
+RewriteRule ^/wiki/$                   /w/index.php          [I,L]
+RewriteRule ^/wiki/Special:Search(.*)$ /w/index.php$1        [I,L]
+RewriteRule ^/wiki/(.*)$               /w/index.php?title=$1 [I,L]
+</code>
+
+        <para>Explanation: This ini file just cleans up URLs for a wiki server.
+        </para>
+
+      </content>
+    </section>
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+
+

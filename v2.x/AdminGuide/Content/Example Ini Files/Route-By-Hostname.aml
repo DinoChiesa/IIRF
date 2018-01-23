@@ -1,0 +1,373 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="63be1460-dbd0-4ad4-ad39-4b68352fe9a6" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <introduction>
+      <autoOutline />
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Rewrite requests based on the Hostname, method #1</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+        <para>
+          This approach rewrites the incoming requests to a different
+          virtual directory for each different hostname used in the
+          requests.  It uses a server variable, %{HTTP_HOST}, which
+          holds the value of the hostname on the incoming request.  If
+          the appropriately named virtual directory does not exist, IIS
+          will return a 404 "Not Found".
+        </para>
+
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for routing by hostname
+#
+
+RewriteLog c:\logs\iirf
+RewriteLogLevel 1
+IterationLimit 10
+MaxMatchCount 10
+RewriteEngine ON
+StatusInquiry ON
+
+# With a request like http://aaa.example.com/Alpha.htm, rewrite the request
+# to /host-aaa.example.com/Alpha.htm.  This assumes there is a vdir set
+# up in IIS  for each hostname.   If the server is not configured with a
+# vdir named "host-aaa.example.com", then IIS will return a 404 "Not Found".
+
+RewriteRule ^/(?!host-)(.*)$ /host-%{HTTP_HOST}/$1
+
+</code>
+      </content>
+    </section>
+
+
+    <section address="Section2">
+      <title>Rewrite requests based on the Hostname, method #2</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+        <para>
+          This approach uses a pattern to extract the first segment of
+          the three-part domain name for the hostname, on the incoming
+          request.  When a match is found, the request is rewritten to
+          a virtual directory that is named for the host in the
+          request. Only the first segment of the hostname is used.
+        </para>
+
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for routing by hostname
+#
+
+# --------------------------------------------
+# Logging directives
+RewriteLog c:\logs\iirf
+RewriteLogLevel 3
+
+# --------------------------------------------
+# IterationLimit
+#
+# Specifies the limit of mapping iterations for a single URL request. The default is 8.
+IterationLimit 10
+
+# --------------------------------------------
+# MaxMatchCount
+#
+# Specifies the maximum number of sub-expression matches to capture for a single pattern.
+# The default is 10.
+MaxMatchCount 10
+
+# --------------------------------------------
+# RewriteEngine
+#
+# Enable or disable rewriting for this vdir or site
+#
+RewriteEngine ON
+
+# --------------------------------------------
+# StatusInquiry
+#
+# specify the url stub to use for status inquiries
+#
+StatusInquiry ON
+
+# --------------------------------------------
+# explicitly specify the use of * for RewriteCond back-references
+CondSubstringBackrefFlag *
+
+
+# --------------------------------------------
+# Rules
+# With a request like http://host1.example.com/Alpha.htm, rewrite the request
+# to /host1/Alpha.htm.  If the server is not configured with a
+# vdir named "host1", then IIS will return a 404 "Not Found".
+# The [L] modifier insures the rewriting will not loop infinitely.
+
+RewriteCond  %{HTTP_HOST}  ^([^\.]+)\.example\.com$
+RewriteRule  ^/(.*)$       /*1/$1                   [L]
+
+</code>
+      </content>
+    </section>
+
+
+
+
+    <section address="Section3">
+      <title>Rewrite requests based on the Hostname, method #3</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+        <para>
+          This approach uses a RewriteCond with a pattern to extract the
+          first segment of the three-part domain name for the hostname,
+          on the incoming request.  Then a second RewriteCond tests for
+          existence of a particular directory, with the -d operation.
+          If a match is found, the request is rewritten to the virtual
+          directory that is named for the host in the request. Only the
+          first segment of the hostname is used.
+        </para>
+
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for routing by hostname
+#
+
+# --------------------------------------------
+# Logging directives
+RewriteLog c:\logs\iirf
+RewriteLogLevel 2
+
+# --------------------------------------------
+# IterationLimit
+#
+# Specifies the limit of mapping iterations for a single URL request. The default is 8.
+IterationLimit 10
+
+# --------------------------------------------
+# MaxMatchCount
+#
+# Specifies the maximum number of sub-expression matches to capture for a single pattern.
+# The default is 10.
+MaxMatchCount 10
+
+RewriteEngine ON
+StatusInquiry ON
+
+# explicitly specify the use of * for RewriteCond back-references
+CondSubstringBackrefFlag *
+
+# With a request like http://host1.example.com/Alpha.htm, if
+# the directory c:\docroot\host1 exists, then rewrite the request
+# to /host1/Alpha.htm.
+# This will work if  c:\docroot is the path for the master virtual
+# directory, and within that directory, there is a different
+# Subdirectory for each host name.
+
+RewriteCond  %{HTTP_HOST}   ^([^\.]+)\.example\.com$
+RewriteCond  c:\docroot\*1  -d
+RewriteRule  ^/(.*)$        /*1/$1                   [L]
+
+</code>
+      </content>
+    </section>
+
+
+
+
+    <section address="Section4">
+      <title>Rewrite requests based on the Hostname, method #4</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+        <para>
+          This approach uses no wildcards for matching the hostname.  All matches are done on
+          a fixed set of name matches, and rewritten to specific URLs
+          when one of the set of host names is seen on the incoming request.
+        </para>
+
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for routing by hostname
+#
+
+RewriteLog c:\logs\iirf
+RewriteLogLevel 2
+IterationLimit 10
+MaxMatchCount 10
+RewriteEngine ON
+StatusInquiry ON
+
+# With a request like http://main.example.com/Alpha.htm, rewrite the request
+# to /original/Alpha.htm.  If the server is not configured with a
+# vdir named "original", then IIS will return a 404 "Not Found".
+
+RewriteCond  %{HTTP_HOST}  ^main\.example\.com$
+RewriteRule  ^/(.*)$       /original/$1                [L]
+
+# With a request like http://newhost.example.com/Alpha.htm, rewrite the request
+# to /newVdir/Alpha.htm.  If the server is not configured with a
+# vdir named "newVdir", then IIS will return a 404 "Not Found".
+
+RewriteCond  %{HTTP_HOST}  ^newhost\.example\.com$
+RewriteRule  ^/(.*)$       /newVdir/$1                [L]
+
+</code>
+      </content>
+    </section>
+
+
+
+    <section address="Section5">
+      <title>Proxy requests based on the Hostname</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+        <para>
+          This is similar to the above examples, but performs a
+          request Proxy, rather than a Rewrite.
+        </para>
+
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for routing by hostname
+#
+
+RewriteLog c:\logs\iirf
+RewriteLogLevel 2
+IterationLimit 10
+MaxMatchCount 10
+RewriteEngine ON
+StatusInquiry ON
+
+# With a request like http://special.example.com/maps/Alpha.htm, reverse
+# proxy the request to http://internalserver1/maps/Alpha.htm
+
+RewriteCond  %{HTTP_HOST}      ^special\.example\.com$
+ProxyPass    ^/maps/(.*)$      http://internalserver1/maps/$1  [I]
+
+</code>
+      </content>
+    </section>
+
+
+
+    <section address="Section6">
+      <title>Force the use of the www prefix on hostname</title>
+      <content>
+        <para>
+          This approach <legacyItalic>redirects</legacyItalic> requests
+          if the hostname used on the incoming request does not use
+          www as the prefix on the server name.
+        </para>
+
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for redirecting all requests to www server.
+#
+
+RewriteLog c:\logs\iirf
+RewriteLogLevel 2
+IterationLimit 10
+MaxMatchCount 10
+RewriteEngine ON
+StatusInquiry ON
+
+RewriteCond  %{HTTP_HOST}  ^(?!www\.).*example\.com$
+RedirectRule ^/(.*)$       http://www.example.com/$1     [R=301]
+
+</code>
+      </content>
+    </section>
+
+
+    <section address="Section6.1">
+      <title>Never allow the www prefix on hostname</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+        <para>
+          This approach <legacyItalic>redirects</legacyItalic> requests
+          if the hostname used on the incoming request uses the www
+          prefix.
+        </para>
+
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for redirecting all requests to the short-name of the example.
+#
+
+RewriteLog c:\logs\iirf
+RewriteLogLevel 2
+IterationLimit 10
+MaxMatchCount 10
+RewriteEngine ON
+StatusInquiry ON
+
+RewriteCond  %{HTTP_HOST}  ^www\.example\.com$
+RedirectRule ^/(.*)$       http://example.com/$1     [R=301]
+
+</code>
+      </content>
+    </section>
+
+
+
+    <section address="Section7">
+      <title>Redirect, transforming hostname into vdir path segment</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+        <para>
+          This approach <legacyItalic>redirects</legacyItalic> requests
+          based on the incoming hostname.  It takes the hostname prefix
+          and transforms it into a segment in the URL path.
+        </para>
+
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for redirecting by hostname
+#
+
+RewriteLog c:\logs\iirf
+RewriteLogLevel 2
+IterationLimit 10
+MaxMatchCount 10
+RewriteEngine ON
+StatusInquiry ON
+CondSubstringBackrefFlag  *
+
+# transform hostname prefix into a segment in the url path:
+# With a request like http://foo.example.com/Alpha.htm, redirect (HTTP 301)
+# the request to http://example.com/foo/Alpha.htm
+
+RewriteCond  %{HTTP_HOST}  ^(.*)\.example\.com$
+RedirectRule ^/(.*)$       http://example.com/*1/$1     [R=301]
+
+
+</code>
+      </content>
+    </section>
+
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+
+
+

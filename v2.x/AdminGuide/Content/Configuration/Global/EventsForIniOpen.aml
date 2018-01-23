@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="82d6724e-9b6a-46c6-9f6b-277d89204ddd" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>EventsForIniOpen {ON|OFF}</title>
+      <content>
+        <para>
+          Disables or explicitly enables the spooling of events to the Windows Event Log
+          in the case that a vdir ini file cannot be opened.
+        </para>
+
+        <para>
+          In the case that IIRF cannot open an IIRF.ini file for a vdir,
+          either because of permissions, or because the file does not exist,
+          or for some other reason, by default IIRF will write an event to
+          the Windows Event Log, specifically the Application log, to notify
+          the server operator. This is not always desired. In some cases,
+          the operator doesn&apos;t want to be notified that an IIRF.ini file could
+          not be opened.  For example, in some cases, IIRF is installed on a
+          server with numerous virtual directories or sub-applications, and
+          IIRF is used on a subset of them.  For all vdirs that do not have
+          an associated IIRF.ini, by default, IIRF will log an event.
+          This directive allows the operator to turn off that behavior.
+        </para>
+
+        <para>Example usage: <code lang="ini">
+            EventsForIniOpen OFF
+          </code>
+        </para>
+
+        <para>
+          If there is no <codeInline>EventsForIniOpen</codeInline> directive found in the ini file, then
+          IIRF will write an event to the Windows Event Log if it tries and fails to open an ini file.
+        </para>
+
+        <para>
+          A <codeInline>EventsForIniOpen</codeInline> directive in the global ini
+          file (IirfGlobal.ini) applies to all vdirs.
+        </para>
+
+        <alert class="note">
+          This directive is new for IIRF v2.1.1.26.
+        </alert>
+
+        <alert class="note">
+          Changes in the IirfGlobal.ini are effective only when the IIS server or IIRF is restarted.
+        </alert>
+
+      </content>
+    </section>
+
+    <relatedTopics/>
+  </developerConceptualDocument>
+</topic>
+

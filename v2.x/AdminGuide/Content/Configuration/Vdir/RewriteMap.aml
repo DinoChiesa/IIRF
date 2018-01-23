@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="6d072500-64b1-4efc-970a-64e94faf1bbd" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <para>
+        This directive specifies a mechanism to specify a map that associates
+        input keys to output values, to use in substitutions in rewrites,
+        redirects, conditions, etc.
+      </para>
+      <autoOutline />
+    </introduction>
+
+
+    <section address="Section1">
+      <title>Basic Syntax and Usage</title>
+      <content>
+        <para>Syntax:
+          <code lang="ini">
+            RewriteMap  &lt;mapName&gt; &lt;<legacyItalic>mapType:mapSource</legacyItalic>&gt;
+          </code>
+        </para>
+
+        <para>
+          Use maps to perform substitutions - replacing one string with another -
+          in the replacement patterns within
+          <link xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">RewriteRule</link>,
+          <link xlink:href="c699ba60-fe15-4e90-ac4b-74598b5c352e">RedirectRule</link>,
+          <link xlink:href="3d1ea0d0-eabd-43b3-a913-de7128a74bb6">RewriteHeader</link>,
+          or <link xlink:href="d9d3d4d7-7b3a-4418-b290-c297b041ff42">ProxyPass</link>
+          directives.  Within a replacement pattern,
+          the syntax to use a map is one of the following:
+          <code lang="ini">
+            ${ mapName : lookupKey }
+            ${ mapName : lookupKey | defaultValue }
+          </code>
+        </para>
+
+      </content>
+    </section>
+
+    <section address="Section1-sub0">
+      <title>Map types and Map sources</title>
+      <content>
+
+        <para>
+          The following combinations of <legacyItalic>mapType</legacyItalic> and <legacyItalic>mapSource</legacyItalic> can be used:
+        </para>
+
+        <list class="bullet">
+          <listItem>
+            <para>
+              <legacyBold>Standard Plain Text</legacyBold>
+            </para>
+
+            <para>
+              mapType: <codeInline>txt</codeInline>, mapSource: a path
+              to a filesystem file that contains text. The filename can
+              be relatively or fully qualified.  It can have any
+              extension; "txt" is recommended.
+            </para>
+
+            <para>
+              The file must be a plain ASCII file containing either blank lines, comment
+              lines (starting with a '#' character) or key/value pairs separated by
+              whitespace.  A comment can also follow each key/value pair.  Example:
+
+              <code lang="ini">
+                # This is a map file
+
+                oak        http://this.is.an.oak/tree     # optional comment
+                azalea     http://arbor.com/azalea.php
+                bluegrass  http://lawns.org/bluegrass.about.html
+                bamboo     http://bamboo.org/
+              </code>
+            </para>
+
+            <para>
+              If the above content were in the file <literal>c:\maps\map_plants.txt</literal>,  you
+              might define that map in your ini file as:
+              <code lang="ini">
+                RewriteMap  plantmap   txt:c:\maps\map_plants.txt
+              </code>
+            </para>
+
+            <para>
+              And then to apply the map in a rule, you might use a
+              RedirectRule like so:
+              <code lang="ini">
+                RedirectRule ^/plant/(.*) ${plantmap:$1}   [R=301]
+              </code>
+            </para>
+
+            <para>
+              In this RedirectRule, a reference to a map is used in the
+              replacement pattern.  Within that map reference, the
+              mapName is <legacyItalic>plantmap</legacyItalic>.
+              The <legacyItalic>lookupKey</legacyItalic> is $1. This
+              will evaluate to the 2nd segment in the URL path.
+            </para>
+
+            <para>
+              The end result is, for example, to redirect an incoming
+              request with a URL path
+              of <literal>/plant/bamboo</literal>
+              to <literal>http://bamboo.org/</literal>
+            </para>
+
+          </listItem>
+
+
+
+          <listItem>
+            <para>
+              <legacyBold>Randomized Plain Text</legacyBold>
+            </para>
+
+            <para>
+              mapType: <codeInline>rnd</codeInline>, mapSource: a path to a filesystem
+              file. The filename can be relatively or fully qualified.  It can have any
+              extension; "txt" is recommended.
+            </para>
+
+            <para>
+              This is like the Standard Plain Text mapType described
+              above but adds a post-processing step: the looked-up value
+              is split by | characters, and one of the options is then
+              selected at random.  For example, you might use the
+              following map file and directives to provide a random load
+              balancing between several back-end servers, via a
+              reverse-proxy. Requests for images, stylesheets, and
+              scripts are sent to one of the servers in the 'content'
+              pool; all other requests go to one of the servers in the
+              'appservers' pool.
+
+              <code lang="ini">
+                #
+                # map_servers.txt
+                #
+                # Specifies the list of servers in each "pool".
+                #
+                content     static1|static2
+                appservers  app1|app2|app3|app4
+              </code>
+
+              <code lang="ini">
+                RewriteMap servers rnd:c:\maps\map_servers.txt
+
+                ProxyPass ^/(.+\.(png|gif|jpg|js|css))$  http://${servers:content}/$1    [NC]
+                ProxyPass ^/(.*)$                        http://${servers:appservers}/$1
+              </code>
+
+            </para>
+
+          </listItem>
+
+        </list>
+
+        <alert class="note">
+          The mod_rewrite module for Apache includes support for other types of
+          sources for RewriteMap, including pgm and dbm.  These are not currently
+          supported by IIRF.
+        </alert>
+      </content>
+    </section>
+
+
+
+    <section address="Section1-sub1">
+      <title>Lookup key values</title>
+      <content>
+
+        <para>
+          Within a replacement pattern or a
+          <legacyItalic>test-string</legacyItalic> in a
+          <link xlink:href="39dbb30e-2afd-4cb1-aaff-45497fe2cbe6">RewriteCond</link>,
+          the syntax to apply a map is one of the following:
+          <code lang="ini">
+            ${ mapName : lookupKey }
+            ${ mapName : lookupKey | defaultValue }
+          </code>
+        </para>
+
+        <para>
+          The <legacyItalic>mapName</legacyItalic> is defined by the RewriteMap directive.
+        </para>
+
+        <para>
+          The <legacyItalic>lookupKey</legacyItalic> can be:
+          <list class="bullet">
+            <listItem> a plain string </listItem>
+            <listItem> a back-reference to a captured group in the URL path
+              ($1, $2, etc)</listItem>
+            <listItem>a back-reference to a captured group in the subject of the most-recently evaluated
+              <codeInline>RewriteCond</codeInline>
+              (*1, *2, etc) </listItem>
+            <listItem> a reference to a server variable, of the form %{VARNAME}</listItem>
+            <listItem> a map specification (nested maps!)</listItem>
+            <listItem> some combination of the above.</listItem>
+          </list>
+        </para>
+
+        <para>
+          Some examples:
+        </para>
+
+        <list class="bullet">
+          <listItem>
+
+            <para>
+              Using a <legacyItalic>lookupKey</legacyItalic> of
+              $1 evaluates to the first captured subgroup in the URL Path,
+              and performs a lookup of that value in the named map.  And,
+              *1Foo evaluates to the first captured subgroup of the most
+              recently evaluated <codeInline>RewriteCond</codeInline>, concatenated with the plain
+              text "Foo".
+            </para>
+
+          </listItem>
+
+          <listItem>
+            <para>
+              As another example, using <literal>%{HTTP_HOST}</literal> as
+              the <legacyItalic>lookupKey</legacyItalic> will expand to the
+              value of the HTTP_HOST server variable, and look up that value
+              in the map.
+            </para>
+          </listItem>
+
+          <listItem>
+            <para>
+              As a final example on lookup keys, given the following ini file:
+              <code lang="ini">
+                RewriteMap   mymap        txt:map1.txt
+                RewriteRule  ^/z/(.*)     /index.php?class=${mymap:$1pippo}
+              </code>
+
+              When a request with the URL path
+              of <codeInline>/z/123</codeInline> arrives, a lookup is
+              performed in the txt map named <codeInline>mymap</codeInline>,
+              using <codeInline>123pippo</codeInline> as
+              the <legacyItalic>lookupKey</legacyItalic>.
+
+            </para>
+          </listItem>
+        </list>
+
+      </content>
+    </section>
+
+
+
+    <section address="Section1-sub1a">
+      <title>Take care to use proper lookup keys</title>
+      <content>
+        <para>
+          In both the <legacyBold>rnd</legacyBold> and
+          <legacyBold>txt</legacyBold> map types, the lookups are
+          <legacyItalic>case sensitive</legacyItalic>. You may wish to fold the
+          case of the lookup key, to upper or lower case, using the case-folding
+          operators in the replacement string, as with:
+          <code lang="ini">
+            RedirectRule ^/plant/(.*) ${plantmap:#L$1#E}   [R=301]
+          </code>
+          See the documentation on
+          <link
+              xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5#Subsection3">case
+            folding in replacement strings</link> for more information.
+        </para>
+
+        <alert class="note">
+          The <codeInline>I</codeInline> or <codeInline>NC</codeInline> modifiers
+          apply to the regex match only.  They do not case-fold the captured
+          string, and they do not affect how lookups are performed in the maps.
+        </alert>
+
+        <para>
+          Also remember to consider query strings.  In the example given above,
+          the regex captures <legacyItalic>everything</legacyItalic> following the
+          initial url path of <codeInline>/plant/</codeInline>.  If the incoming
+          request includes a query string, such as
+          <literal>/plant/silvermaple?size=large</literal>, then the capture
+          denoted by <codeInline>$1</codeInline> will be
+          <literal>silvermaple?size=large</literal>.  This is the string that will
+          then be looked up in the map, using the example above.
+        </para>
+        <para>
+          If you don&apos;t want to use the querystring in the value of the lookup
+          key, you must exclude it using the regular expression. One way to do
+          this is to exclude <literal>?</literal> in the regex wildcard pattern,
+          like so:
+
+          <code lang="ini">
+            RedirectRule ^/plant/([^\?]*) ${plantmap:$1}   [R=301]
+          </code>
+        </para>
+      </content>
+    </section>
+
+
+    <section address="Section1-sub2">
+      <title>Default values for the lookup</title>
+      <content>
+        <para>
+          If the lookupKey is not found in the map file, then the value of a
+          map reference in a substitution is
+          <literal>${mapName:lookupKey}</literal>, where
+          <legacyItalic>lookupKey</legacyItalic> is replaced with the final
+          value of the key.
+        </para>
+
+        <para>
+          You can optionally specify a default value that will be returned
+          when the key is not found in the named map. Use a | character
+          to delimit the default value from the key.  For example:
+
+          <code lang="ini">
+            #
+            # pets.txt
+            # maps type of pets into classes
+            #
+            collie      medium-dog
+            greatdane   large-dog
+            poodle      small-dog
+            yorky       small-dog
+            parakeet    small-bird
+            goldfish    aquatic
+          </code>
+
+          <code lang="ini">
+            RewriteMap   petmap       txt:c:\maps\pets.txt
+            RewriteRule  ^/mypet/(.*) /petcare.php?class=${petmap:$1|general}
+          </code>
+
+          In this case, when the url path <literal>/mypet/yorky</literal> is
+          requested, it is rewritten
+          to <literal>/petcare.php?class=small-dog</literal>. When the url
+          path <literal>/mypet/beagle</literal> is presented, it is rewritten
+          to <literal>/petcare.php?class=general</literal>.
+        </para>
+
+        <para>
+          Suppose the rule does not specify a default value, such as in the following:
+          <code lang="ini">
+            RewriteMap   petmap       txt:c:\maps\pets.txt
+            RewriteRule  ^/mypet/(.*) /petcare.php?class=${petmap:#L$1#E}
+          </code>
+        </para>
+
+        <para>
+          ... then when the url
+          path <literal>/mypet/Python</literal> is presented, it is rewritten
+          to <literal>/petcare.php?class=${petmap:python}</literal>.
+        </para>
+
+        <para>
+          The <legacyItalic>defaultValue</legacyItalic> can be any plain string,
+          or it may be a map reference.  For more on that, see below.
+        </para>
+      </content>
+    </section>
+
+
+
+    <section address="Section1-sub3">
+      <title>Nesting Map lookups</title>
+      <content>
+
+        <para>
+          You can also nest map lookups, with syntax like this:
+          <code lang="ini">
+            RewriteMap   map1   rnd:c:\maps\map2.txt
+            RewriteMap   map2   txt:c:\maps\map2.txt
+            RewriteRule  ^/mysite/(.*) /index.php?class=${map1:${map2:$1|AA}|BB}
+          </code>
+
+          What this says, in English, is, do a map lookup on the value of $1 in
+          map2. If there value is not found in map2, then use AA.
+          Lookup the result of <legacyItalic>that</legacyItalic> in
+          map1.  If that isn&apos;t found, then return BB.
+        </para>
+
+        <para>
+          Or, you can
+          apply maps to the default value, like this:
+          <code lang="ini">
+            RewriteMap   map1   rnd:c:\maps\map2.txt
+            RewriteMap   map2   txt:c:\maps\map2.txt
+            RewriteRule  ^/mysite/(.*) /index.php?class=${map1:$1|${map2:$1}}
+          </code>
+
+          In this case, if the value that $1 evaluates to is not found
+          as a key in map1, then return the "default value", which is
+          the result of the lookup of $1 in map2.
+        </para>
+
+        <para>
+          There&apos;s no limit to the depth of nesting.
+        </para>
+
+        <para>
+          Be careful using the nesting capability, though; URL rewriting
+          is confusing enough. The multiple levels of mapping can make
+          things even more confusing for maintainers.
+        </para>
+      </content>
+    </section>
+
+
+    <section address="Section1-sub4">
+      <title>Applying a Rule Only When the Key is Present in the Map</title>
+      <content>
+
+        <para>
+          In some cases the desire is to apply the map only if the key is
+          found. In the event that a string isn&apos;t found in the map,
+          you&apos;d like processing to just continue to the following rule.
+          Consider the example of a table that lists a set of old, defunct
+          product IDs, and the product IDs for the products that replace the
+          defunct ones.  This map might be described in a map file like this:
+
+          <code lang="ini">
+            # old productid    new productid
+            # ------------------------------------
+            12                 100
+            20                 111
+            25                 discontinued
+            32                 233
+            # etc
+          </code>
+
+          Now suppose we want to apply this map in a rule, but only for
+          those products that have been replaced or discontinued.  In the
+          first case, for any product that&apos;s been discontinued, we want
+          to redirect to a static html page.  And then, for any other
+          product id listed as a key the map, we want to redirect the user
+          to the page for the new product.  We don&apos;t want to redirect any
+          requests for products NOT found in the map.
+        </para>
+
+        <para>
+          To do that, we could use a set of rules like this:
+
+          <code lang="ini">
+            # define the map
+            RewriteMap   replacements                 txt:c:\maps\product_replacements.txt
+
+            # Rule 1. define a rule to handle discontinued products
+            RewriteCond  ${replacements:$1}           discontinued
+            RedirectRule ^/(\d*)/product/(.*)$        /discontinued.html              [I,R=301]
+
+            # Rule 2. define a rule to map all remaining products that are found in the map
+            RewriteCond  ${replacements:$1|NotFound}  !NotFound
+            RedirectRule ^/(\d*)/product/(.*)$        /${replacements:$1}/product/$2  [I,R=301]
+
+            # URL requests for product IDs not listed in the map will fall
+            # through to here, and continue processing rules found below....
+          </code>
+        </para>
+
+        <para>
+          What this does is use <codeInline>RewriteCond</codeInline> statements,
+          conditionals, applied to the result of the lookups in the maps. Rule #1
+          applies only for product IDs that result in a value of "discontinued" when
+          looked up in the map. Because it&apos;s a redirect, an HTTP response of 301 is
+          sent back to the browse immediately, and no further rule processing occurs
+          for that initial request.  The URL in the browser address bar changes, and
+          the browser submits a new request.
+        </para>
+
+        <para>
+          For any products that do not return "discontinued" when looked up
+          in the map, Rule #2 is evaluated.  This one redirects products
+          that have been <legacyItalic>replaced</legacyItalic>.  The
+          condition in this case uses the map lookup syntax with a default
+          value.  The result of that lookup is either a number, or the value
+          of <inlineCode>NotFound</inlineCode>, if the lookup key isn&apos;t
+          present in the map. The result of the lookup is then compared with
+          the pattern <codeInline>!NotFound</codeInline>.  This means the
+          RedirectRule applies only when the product code
+          <legacyItalic>is</legacyItalic> found in the map.  Finally, if the
+          product is not discontinued, and not replaced, then neither Rule
+          #1 nor Rule #2 applies, and processing of the URL continues with
+          the rules following Rule #2.
+        </para>
+      </content>
+    </section>
+
+
+    <section address="Section1-sub5">
+      <title>Miscellaneous notes on RewriteMap</title>
+      <content>
+
+        <para>
+          For the plain text map files, the key/value pairs are cached in
+          memory for quick matching. IIRF loads new values automatically
+          when the map file changes.
+        </para>
+
+        <para>
+          The RewriteMap directive can occur more than once in an ini
+          file. For each mapping-function, use one RewriteMap directive to
+          declare its name and the associated mapSource.
+        </para>
+
+        <alert class="note">
+          A common error when using RewriteMap files is incorrect
+          permissions on the map file.  The IIS worker process must be able
+          to read the map files.  Be sure to grant read access on the map
+          files to the IIS worker-process principal or group.
+        </alert>
+
+      </content>
+    </section>
+
+    <relatedTopics/>
+  </developerConceptualDocument>
+</topic>
+
+

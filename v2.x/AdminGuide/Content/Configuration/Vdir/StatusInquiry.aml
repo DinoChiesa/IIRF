@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="06643ce7-6c93-4d2f-ad3b-01e97fade9ef" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <!--
+        <summary>
+          <para>Optional summary abstract</para>
+        </summary>
+        -->
+
+    <introduction>
+        <para>
+          This directive alters the status inquiry capability in
+          IIRF. Using this directive, you can enable status inquiries
+          for a particular vdir;  set the URL path for a status inquiry request;
+          and also enable remote status inquiries, which are
+          disabled, by default.
+        </para>
+      <autoOutline/>
+
+    </introduction>
+
+    <!-- Add one or more top-level section elements.  These are collapsible.  If
+         using <autoOutline />, add an address attribute to identify it and specify
+         a title so that it can be jumped to with a hyperlink. -->
+
+
+    <section address="Usage">
+      <title>Basic Syntax and Usage</title>
+      <content>
+
+        <para>Syntax
+          <code lang="ini">
+            StatusInquiry [ON|OFF] [&lt;url-path&gt;] [RemoteOk]
+          </code>
+        </para>
+
+        <para>
+          You may want to quickly check the status of IIRF, to see if it is
+          configured as you expect, or to quickly check if there were any errors or
+          warnings in the INI file.  Using the
+          <codeInline>StatusInquiry</codeInline> directive turns on a feature in
+          IIRF so that when IIRF receives a GET request on a given "well known" URL
+          path - by default the path is <literal>/iirfStatus</literal> - the filter
+          will respond directly to that request, rather than evaluating the rules on
+          it.  The response will include basic status information on the operation
+          and configuration of the filter.
+        </para>
+
+        <para>Example usage:
+          <code lang="ini">
+            StatusInquiry ON
+          </code>
+        </para>
+
+        <para>
+          By default, when a vdir-specific ini file is NOT present, the status
+          inquiry capability for that particular vdir is ON.  When a vdir-specific
+          ini file is present, and there is no
+          <codeInline>StatusInquiry</codeInline> directive in that ini file. the
+          status inquiry capability for that particular vdir is OFF.  When the
+          status inquiry capability is OFF, submitting a request to
+          <literal>http://localhost/iirfStatus</literal> will return a 404.  If you
+          include a <codeInline>StatusInquiry ON</codeInline> directive in your
+          vdir-specific ini file you will turn ON the status inquiry capability for
+          that vdir. Regardless of the presence or not of ini files or
+          <codeInline>StatusInquiry</codeInline> directives in those ini files,
+          status inquiries work only if not disabled globally in <link
+          xlink:href="38b088f3-528b-4741-a65e-40a42095762b">IirfGlobal.ini</link> .
+          See the documentation on the <link
+          xlink:href="073042fc-11c2-4c9a-a28a-49d07447685b">StatusInquiry</link>
+          directive for more information.
+        </para>
+
+        <para>
+          When status inquiries are enabled, submitting a request
+          to <literal>http://localhost/iirfStatus</literal>, or the
+          alternative Status URL you&apos;ve configured, will
+          return the status report, which looks like this:
+
+          <mediaLink>
+            <caption placement="after" lead="Figure 1">IIRF Status Response</caption>
+            <image placement="center"
+                   xlink:href="42fa3e23-4b26-441c-ab57-c30711516ed8"/>
+          </mediaLink>
+        </para>
+
+        <para>
+          If you have a problem in your ini file, it will be noted
+          here. Look in particular at the lines for warnings and
+          errors. If there are any warnings or errors, these rows in the
+          table will be highlighted in red to alert you. . Also, in
+          v2.1.1.28 and later, if there are any messages, just below the
+          table IIRF will display them.
+        </para>
+
+        <para>
+          You can also verify other vital signs for IIRF here: the time
+          you last updated the INI file, whether the rewrite engine is
+          enabled, how many requests have been processed, whether you
+          have logging turned on or not, the actual location of the log
+          file, and so on.
+        </para>
+
+        <alert class="note">The request count is kept in a 32-bit integer field.
+          It will "roll over" for very high request counts.
+        </alert>
+
+        <para>
+          The default url-path for a status inquiry
+          is <literal>/iirfStatus</literal>.
+          You can optionally specify an alternative url path to use for status
+          inquiries, using this syntax:
+
+          <code lang="ini">
+            StatusInquiry ON /alternativePathForIirfStatus.htm
+          </code>
+        </para>
+
+        <para>
+          It is required that the url-path have no spaces.  Beyond that, there are no
+          other restrictions.  The URL path should normally begin with
+          a slash.   Your status URL should include the full virtual path for the containing
+          virtual directory.  The only exception to this rules is when
+          <link xlink:href="bc80da98-83e2-4d22-8b71-2fd116e2610a">RewriteBase</link>
+          is enabled.  When <codeInline>RewriteBase</codeInline> is
+          enabled, then the base URL is prepended to the provided status URL,
+          to get the actual status url path.
+        </para>
+
+        <para>
+          For example, suppose you have an ini located in the physical
+          directory root for the vdir accessible at virtual
+          path <literal>/vpath</literal>.  Also suppose you have this in
+          your ini file:
+
+          <code lang="ini">
+            RewriteBase ON
+            StatusInquiry ON /alternativePathForIirfStatus.htm
+          </code>
+        </para>
+
+        <para>
+          In this case, the actual virtual path for the status inquiry
+          for IIRF
+          is <literal>/vpath/alternativePathForIirfStatus.htm</literal>.
+        </para>
+
+        <para>
+          On the other hand, if your ini file is located in the physical
+          directory for the root vdir (accessible at virtual
+          path <literal>/</literal>, then IIRF will not double the
+          slashes. Using the same ini file as above in this situation,
+          the actual virtual path for the status inquiry for IIRF will
+          be <literal>/alternativePathForIirfStatus.htm</literal>.
+        </para>
+
+        <para>
+          In general, though, you should avoid explicitly setting a path
+          for the status inquiry.  It&apos;s better to just use the
+          built-in default. See the next section for the reasoning
+          behind this recommendation.
+        </para>
+
+        <para>
+          There is a second optional argument: the keyword "RemoteOk".  This keyword
+          is case-insensitive. If present it allows remote requests for the IIRF
+          status.  By default, only local requests will get a status
+          response, and  requests on the IIRF status URL from remote browsers will be
+          handled as any other request - processed through the rule set defined in the
+          ini file.  Administrators may want to leave remote query disabled, for
+          security purposes.
+        </para>
+
+        <para>Example usage:
+          <code lang="ini">
+            StatusInquiry ON RemoteOk
+          </code>
+        </para>
+
+        <para>
+          In the above example, status inquiries are enabled, and remote inquiries
+          will be honored.  Because <codeInline>RemoteOk</codeInline> is a keyword,
+          it&apos;s not possible to specify a url-path for status inquiries as
+          "RemoteOk", unless you use 2 arguments.  I recommend against using
+          "RemoteOk" for the url-path; it would likely be confusing.
+        </para>
+
+        <para>
+          You can specify both an alternatie url-path and the "RemoteOk"
+          keyword. If both are present, the URL must appear first.
+          Here&apos;s an example that provides both :
+          <code lang="ini">
+            StatusInquiry ON /alternativePathForIirfStatus.htm   RemoteOk
+          </code>
+        </para>
+
+      </content>
+    </section>
+
+
+    <section address="ChooseWisely">
+      <title>Choose the status URL Wisely</title>
+      <content>
+
+        <para>
+          The status URL is matched in a case-insensitive manner.  If you do not
+          provide a url-path, or if you specify <literal>/iirfStatus</literal> as
+          the url-path, then a request to <literal>/IIRFSTATUS</literal> is as good
+          as a request to <literal>/iirfStaTUS</literal>
+          or <literal>/iirfstatus</literal>.  They all work.
+        </para>
+
+        <para>
+          IIRF interprets an incoming request as a status request when the
+          incoming URL path <legacyItalic>ends with</legacyItalic> the status
+          inquiry url-path (compared in a case-insensitive manner).  Submitting a request
+          like <literal>http://localhost/x/y/z/iirfStatus</literal> is as
+          good as submitting a request
+          to <literal>http://localhost/iirfStatus</literal>.
+        </para>
+
+        <para>
+          Because of how this works, it&apos;s possible to unintentionally obscure active URLs on the
+          server with a poorly selected url-path specified to <codeInline>StatusInquiry</codeInline>.  As a
+          simple example, if you specify a path
+          of <literal>/app/page1.aspx</literal> to
+          the <codeInline>StatusInquiry</codeInline> directive. Whether
+          or not
+          there  actually
+          is a page available at <literal>/app/page1.aspx</literal> on the
+          server, all requests for <literal>/app/page1.aspx</literal> will
+          be handled by IIRF as a status inquiry.
+          Any actual page at <literal>/app/page1.aspx</literal>  will
+          be <legacyItalic>obscured</legacyItalic>, or effectively hidden.
+        </para>
+
+        <para>
+          Consider a second example: suppose you use
+          a <codeInline>StatusInquiry</codeInline> directive, and you explicitly
+          provide "inquiry" as the url-path, like so:
+          <code lang="ini">
+            StatusInquiry ON inquiry
+          </code>
+        </para>
+
+        <para>
+          Notice that the url-path specified to
+          the <codeInline>StatusInquiry</codeInline> directive does not begin with a
+          slash.  Now, suppose that you send an HTTP GET to the IIS Server, with
+          the URL path and query like so:
+          <literal>/App1/Page1.aspx?q=738&amp;p=inquiry</literal>.  This
+          request is intended for a functioning application on the server, but
+          IIRF will compare the tail of the incoming URL to the url-path
+          provided by the <codeInline>StatusInquiry</codeInline> directive, and will
+          find a match. IIRF will then respond to the request directly, with a status report.
+          Once again, as in the previous example, a meaningful URL
+          will be obscured.
+        </para>
+
+        <para>
+          For this reason, it&apos;s best to use a slash as the first character
+          in the url-path used with the <codeInline>StatusInquiry</codeInline>
+          directive.
+        </para>
+
+        <para>
+          The reason IIRF compares only the tail of the incoming URL to
+          the configured url-path, is to allow IIRF status inquiries
+          within IIS applications or virtual directories configured with
+          a non-empty virtual path.  Suppose you have an IIS Application
+          that is available at the URL space beginning with
+          <literal>http://server.com/app1</literal>. All URLs handled by
+          that application will include the <literal>/app1</literal>
+          prefix.  Comparing only to the tail of the request allows a
+          simpler usage for the <codeInline>StatusInquiry</codeInline>
+          directive.
+        </para>
+      </content>
+    </section>
+
+
+
+    <section address="InDoubt">
+      <title>When in doubt, Use /iirfStatus as the url-path</title>
+      <content>
+
+        <para>
+          I recommend that you specify no url-path to this directive,
+          unless you have a very good reason for not doing so.
+        </para>
+
+        <para>
+          To aid in verifying installations, IIRF will turn on status
+          inquiries with that path, when no ini file is found.  If you
+          choose something different than this well-known path, then,
+          when verifying the IIRF installation, you&apos;ll have to
+          perform a GET on the path you specifed, and if that
+          doesn&apos;t work, also perform a GET on the "no ini file"
+          path, which is always <literal>/iirfstatus</literal>.  It
+          makes it simpler if you have just one thing to check. If you
+          are confident in your ability to get the filter initially set
+          up, then this recommendation is not as important.
+        </para>
+
+        <alert class="note">
+          The "default" status inquiry behavior described above applies only when no
+          ini file is found.  If an ini file is found and read, and it does not
+          contain a <codeInline>StatusInquiry</codeInline> directive, then status
+          inquiries are disabled for that vdir.  Status Inquiries may also be disabled
+          by the use of a
+          <link xlink:href="073042fc-11c2-4c9a-a28a-49d07447685b">StatusInquiry</link>
+          directive in the IirfGlobal.ini file.
+        </alert>
+
+        <para>
+          If you must set the status inquiry URL to something other than
+          <literal>/iirfStatus</literal>, I suggest that you use
+          something simple to remember.
+        </para>
+
+      </content>
+    </section>
+
+
+    <section address="RewriteBase">
+      <title>Interaction with RewriteBase</title>
+      <content>
+
+        <para>
+          If you do specify a url-path for the status inquiry, it should
+          include the full virtual path for the virtual directory,
+          unless you include a <codeInline>RewriteBase ON</codeInline>
+          statement in the ini file.
+        </para>
+
+        <para>
+          If there is no <codeInline>RewriteBase
+          ON</codeInline> statement in the ini file, then the vdir
+          virtual path is not stripped from the incoming URL request
+          before comparing it to the status inquiry URL.
+        </para>
+
+      </content>
+    </section>
+
+
+    <relatedTopics>
+      <link xlink:href="073042fc-11c2-4c9a-a28a-49d07447685b">StatusInquiry
+      for IirfGlobal.ini</link>
+      <link xlink:href="bc80da98-83e2-4d22-8b71-2fd116e2610a">RewriteBase</link>
+    </relatedTopics>
+
+  </developerConceptualDocument>
+</topic>
+
+
+
+

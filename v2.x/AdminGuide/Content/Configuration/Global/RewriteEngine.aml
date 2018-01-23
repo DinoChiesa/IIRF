@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="f8098dc4-45a7-4f9b-aec9-4114a3af4086" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>RewriteEngine {ON|OFF}</title>
+      <content>
+        <para>
+          This directive enables or disables the
+          Rewriting capabilities of IIRF.  It can be present in
+          IirfGlobal.ini, or in Iirf.ini .
+        </para>
+
+        <para>
+          In some cases you may want none of the rules in the ini file to be
+          effective, but you also don&apos;t want to comment all the rules out.  This
+          directive provides a simple way to turn OFF the rewriting capability,
+          temporarily, for a site, with a one-line configuration file change.
+        </para>
+
+        <para>Example usage: <code lang="ini">
+              RewriteEngine OFF
+          </code>
+        </para>
+
+        <para>
+          When <codeInline>RewriteEngine OFF</codeInline> is present in the site-specific
+          ini file, none of the redirection or rewriting rules in the ini file are
+          processed.  The ISAPI filter is still active, and still receives notification of
+          each incoming IIS request.  But it does nothing with the requests.  There is one
+          exception: IIRF will reply to a Status inquiry.  See
+          the <link xlink:href="06643ce7-6c93-4d2f-ad3b-01e97fade9ef">StatusInquiry</link>
+          directive for more information.
+        </para>
+
+        <alert class="note">
+          It&apos;s ok to leave <codeInline>RewriteEngine ON</codeInline> in your ini file during
+          normal operation.
+        </alert>
+
+        <para>
+          If you specify a <codeInline>RewriteEngine</codeInline> directive in the global ini
+          file (IirfGlobal.ini), it applies to all sites, and you cannot
+          change this setting until you restart the filter or restart
+          IIS itself. If there is no
+          <codeInline>RewriteEngine</codeInline> directive in IirfGlobal.ini, then the filter is
+          enabled by default.
+        </para>
+
+      </content>
+    </section>
+
+    <relatedTopics/>
+  </developerConceptualDocument>
+</topic>
+

@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="433ee271-392b-4f14-9558-3c40265552d2" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+    <!--
+        <summary>
+          <para>Optional summary abstract</para>
+        </summary>
+        -->
+    <introduction>
+      <autoOutline />
+      <para></para>
+    </introduction>
+
+    <section address="Section1">
+      <title>Example: Rewrite based on Language code in the URL path - Ex 1</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+             <autoOutline /> -->
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for the ISAPI rewriter.
+#
+
+RewriteLog  c:\inetpub\iirfLogs\iirf
+RewriteLogLevel 1
+RewriteEngine ON
+StatusInquiry ON
+
+
+# Rule #1 - do not redirect if mylang is set
+RewriteCond %{QUERY_STRING} mylang=(.+)
+RewriteRule ^/(.*)$  -    [L]
+
+
+## if any URLS get this far, mylang is not set
+
+RewriteRule ^/ar/(.+)\.aspx     /pages/$1.aspx?mylang=arabic     [QSA,I,L]
+RewriteRule ^/hy/(.+)\.aspx     /pages/$1.aspx?mylang=armenian   [QSA,I,L]
+RewriteRule ^/bs/(.+)\.aspx     /pages/$1.aspx?mylang=bosnian    [QSA,I,L]
+RewriteRule ^/pt-BR/(.+)\.aspx  /pages/$1.aspx?mylang=brazilian  [QSA,I,L]
+RewriteRule ^/ht/(.+)\.aspx     /pages/$1.aspx?mylang=creole     [QSA,I,L]
+RewriteRule ^/hr/(.+)\.aspx     /pages/$1.aspx?mylang=croatian   [QSA,I,L]
+RewriteRule ^/da/(.+)\.aspx     /pages/$1.aspx?mylang=danish     [QSA,I,L]
+RewriteRule ^/nl/(.+)\.aspx     /pages/$1.aspx?mylang=dutch      [QSA,I,L]
+RewriteRule ^/en/(.+)\.aspx     /pages/$1.aspx?mylang=english    [QSA,I,L]
+RewriteRule ^/fr/(.+)\.aspx     /pages/$1.aspx?mylang=french     [QSA,I,L]
+RewriteRule ^/de/(.+)\.aspx     /pages/$1.aspx?mylang=german     [QSA,I,L]
+RewriteRule ^/el/(.+)\.aspx     /pages/$1.aspx?mylang=greek      [QSA,I,L]
+RewriteRule ^/he/(.+)\.aspx     /pages/$1.aspx?mylang=hebrew     [QSA,I,L]
+RewriteRule ^/id/(.+)\.aspx     /pages/$1.aspx?mylang=indonesian [QSA,I,L]
+RewriteRule ^/it/(.+)\.aspx     /pages/$1.aspx?mylang=italian    [QSA,I,L]
+RewriteRule ^/ja/(.+)\.aspx     /pages/$1.aspx?mylang=japanese   [QSA,I,L]
+RewriteRule ^/lv/(.+)\.aspx     /pages/$1.aspx?mylang=latvian    [QSA,I,L]
+RewriteRule ^/lt/(.+)\.aspx     /pages/$1.aspx?mylang=lithuanian [QSA,I,L]
+RewriteRule ^/fa/(.+)\.aspx     /pages/$1.aspx?mylang=persian    [QSA,I,L]
+RewriteRule ^/pl/(.+)\.aspx     /pages/$1.aspx?mylang=polish     [QSA,I,L]
+RewriteRule ^/ro/(.+)\.aspx     /pages/$1.aspx?mylang=romanian   [QSA,I,L]
+RewriteRule ^/ru/(.+)\.aspx     /pages/$1.aspx?mylang=russian    [QSA,I,L]
+RewriteRule ^/sr/(.+)\.aspx     /pages/$1.aspx?mylang=serbian    [QSA,I,L]
+RewriteRule ^/es/(.+)\.aspx     /pages/$1.aspx?mylang=spanish    [QSA,I,L]
+RewriteRule ^/rs/(.+)\.aspx     /pages/$1.aspx?mylang=srpski     [QSA,I,L]
+RewriteRule ^/tr/(.+)\.aspx     /pages/$1.aspx?mylang=turkish    [QSA,I,L]
+RewriteRule ^/vi/(.+)\.aspx     /pages/$1.aspx?mylang=vietnamese [QSA,I,L]
+</code>
+
+        <para>Explanation: The first RewriteRule does nothing (no
+          rewrite) if the QUERY_STRING includes a mylang parameter with
+          a known value.  If that rule does not fire, the other rules
+          are evaluated, in order.  These rules convert a URL path of
+          the form <codeInline>/XX/PAGE.aspx</codeInline> into
+          <codeInline>/pages/PAGE.aspx?mylang=XX</codeInline>, when the
+          XX is any of the given language abbreviations, and PAGE is any
+          ASPX page.  The user sees a simple, clean URL, while the
+          server-side script gets a language name.
+        </para>
+
+        <para>
+          When you have many Rules that are very similar, you may want
+          to employ a map.  See the example below.
+        </para>
+
+
+      </content>
+    </section>
+
+
+    <section address="Section2">
+      <title>Example: Rewrite based on Language code in the URL path - Ex 2</title>
+      <content>
+
+        <para>The ini file.</para>
+<code lang="ini">
+# Iirf.ini
+#
+# ini file for the ISAPI rewriter.
+# This version of the ini file uses a map file.
+#
+
+RewriteLog  c:\inetpub\iirfLogs\iirf
+RewriteLogLevel 1
+RewriteEngine ON
+StatusInquiry ON
+
+# load in the language map. Specify the path relatively, or
+# fully qualified.
+RewriteMap  langmap   txt:maps\languages.txt
+
+# Rule #1 - do not redirect if mylang is set
+RewriteCond %{QUERY_STRING} mylang=(.+)
+RewriteRule ^/(.*)$  -    [L]
+
+## If any URLS get this far, mylang is not set.
+
+# Rule #2 - apply the map. The first segment of the URL path is
+# looked up in the map file, and the value of the lookup is passed as
+# the value of a querystring param.  If the abbreviation is not in the
+# map, then the default value of English is used.
+RewriteRule ^/([^\/]+)/(.+)\.aspx     /pages/$2.aspx?mylang=${langmap:$1|English}    [QSA,I,L]
+</code>
+
+        <para>The map file.</para>
+<code lang="ini">
+#
+# Language map file for use with IIRF
+#
+# It relates language abbrevations to longer language names.
+#
+
+hy    armenian
+bs    bosnian
+pt-BR brazilian
+ht    creole
+hr    croatian
+da    danish
+nl    dutch
+en    english
+fr    french
+de    german
+el    greek
+he    hebrew
+id    indonesian
+it    italian
+ja    japanese
+lv    latvian
+lt    lithuanian
+fa    persian
+pl    polish
+ro    romanian
+ru    russian
+sr    serbian
+es    spanish
+rs    srpski
+tr    turkish
+vi    vietnamese
+</code>
+
+        <para>Explanation: This configuration does the same thing as the
+          prior example, via a RewriteMap.  The first RewriteRule
+          does nothing (no rewrite) if the QUERY_STRING includes a
+          mylang parameter with a non-empty value.  If that rule does
+          not fire, the other rule is evaluated.  This rule rewrites URL
+          requests, applying the map defined in languages.txt.  The map
+          relates the 2-letter language abbreviation, to a full language
+          name. In the rewrite, the URL path segment is mapped, then
+          transformed into a query string parameter.  The user sees a
+          simple, clean URL, while the server-side script gets a
+          language name.
+        </para>
+
+      </content>
+    </section>
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>

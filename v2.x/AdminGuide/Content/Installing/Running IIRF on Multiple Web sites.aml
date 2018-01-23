@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="0b1d8121-b143-4aa4-8a76-d789b3b02a74" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <!-- <autoOutline /> -->
+      <para>You can run IIRF independently on multiple web sites.</para>
+    </introduction>
+
+
+    <section address="Section1">
+      <title>Running IIRF on Multiple Web sites on the same IIS Server.</title>
+      <content>
+        <para>
+          On Windows Server 2003 or Windows Server 2008, if you have multiple web
+          sites, or multiple IIS web applications within a site, in
+          which you want to use rewriting capabilities of IIRF, then 
+          you can install IIRF v2.0 just once, at the server level.
+          You can then configure IIRF independently for
+          each individual web application, by specifying an independent ini
+          file in the documentation root directory for each application. 
+          You need to configure the IIRF.DLL as an ISAPI Filter within IIS, just once.  
+              <mediaLink>
+                <caption placement="after" lead="Figure 4">Installing IIRF
+                  for the entire server </caption>
+                <image placement="center" xlink:href="a432121f-b736-47b6-96df-0c05a6dc9b5c"/>
+              </mediaLink>
+        </para>
+
+        <para>
+          If you've configured IIRF at the server level, and you have an
+          IIS application for which you don't want to use rewriting, you
+          can specify an IIRF.ini file that contains a 
+          <computerOutputInline>RewriteEngine</computerOutputInline>
+          directive, which disables rewriting for that IIS application.
+          See <link xlink:href="e4d59f04-fd89-447a-ba23-60bb8b4c9a68">the
+          documentation for the  RewriteEngine directive</link> for more details
+        </para>
+
+        <para>
+          For more information on configuring IIRF independently for separate web
+          sites or web applications, 
+          see <link xlink:href="8f5e8495-babc-4dfb-9da9-4e9101e8d029">the
+            documentation on Configuring IIRF</link>.
+        </para>
+
+      </content>
+    </section>
+
+
+    <relatedTopics/>
+
+  </developerConceptualDocument>
+</topic>
+

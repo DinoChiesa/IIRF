@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="cd8bda6c-6db8-417c-a2e9-d7030014ed02" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <para>
+      </para>
+    </introduction>
+
+    <section address="Section1">
+      <title>IncludeIni [filename]</title>
+      <content>
+        <para>
+          Use this directive to specify a separate file from which
+          additional rules and other directives can be read.  This is
+          especially helpful when using IIRF in multiple virtual
+          directories or web sites on the same server.  You can use
+          the <codeInline>IncludeIni</codeInline> directive to
+          modularize the IIRF configuration, collecting commonly used
+          rules into a single file.
+        </para>
+
+        <para>
+          This directive is only usable from within the directory-specific
+          configuration file (IIRF.ini), and files it includes. You can
+          include as many files as you like.  The resulting
+          configuration is the same as if each included file were
+          expanded in place, and all rules were read from a single file.
+        </para>
+
+        <para>Example usage: <code lang="ini">
+            IncludeIni ..\commonIirf.ini
+          </code>
+        </para>
+
+        <para>
+          The filename can be relatively or fully qualified.  It can have
+          any extension, although "ini" is recommended.
+        </para>
+
+        <para>
+          The included ini files should specify directives using the
+          same syntax as used within IIRF.ini , the vdir-specific
+          IIRF configuration file.
+        </para>
+
+        <alert class="note">
+          The
+          <link xlink:href="f370a131-d13c-4d01-ab91-2f629641954e">RewriteLog</link> and
+          <link xlink:href="9bde2e1d-f26b-480f-8d75-062cd06cf795">RewriteLogLevel</link>
+          directives should not be used within an included ini file.
+          They are ignored.
+        </alert>
+
+        <para>
+          Included ini files may themselves, include other ini files.
+          Changes in any file are detected automatically, and are
+          immediately put into use on subsequent requests processed by
+          the filter.
+        </para>
+
+      </content>
+    </section>
+
+    <relatedTopics/>
+  </developerConceptualDocument>
+</topic>
+
+
+

@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="a8988008-feb2-4a91-9abc-03043ba308fe" revisionNumber="1">
+  <developerConceptualDocument
+     xmlns       ="http://ddue.schemas.microsoft.com/authoring/2003/5"
+     xmlns:xlink ="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <autoOutline lead="        IIRF was patterned after Apache&apos;s mod_rewrite. While
+        IIRF supports most of the more common capabilities and syntax
+        used in mod_rewrite, there are some differences that operators
+        should understand. This section summarizes those differences." />
+    </introduction>
+
+
+    <section address="Basics">
+      <title>Basic Differences</title>
+      <content>
+
+        <para>
+          The primary differences are in configuration and log file naming and
+          behavior, and flow control. This table provides a summary:
+        </para>
+
+        <table>
+          <tableHeader>
+            <row>
+              <entry>Difference</entry>
+              <entry>Comment</entry>
+            </row>
+          </tableHeader>
+
+          <row>
+            <entry>config files</entry>
+            <entry>
+              <para>
+                IIRF obtains its configuration information from the
+                IIRF.ini file. mod_rewrite obtains it from the
+                .htaccess file.
+              </para>
+              <para>
+                Also, IIRF configuration is specified on a <phrase>per-virtual
+                  directory</phrase> basis. mod_rewrite gets its configuration
+                on a per-directory basis.
+              </para>
+
+            </entry>
+          </row>
+
+          <row>
+            <entry>RewriteLog</entry>
+            <entry>
+              In IIRF,
+              the <link xlink:href='f370a131-d13c-4d01-ab91-2f629641954e'>RewriteLog</link>
+              directive specifies a log
+              file <phrase>stub</phrase>. The actual log file name
+              is constructed bby appending the process ID to the
+              stub. In mod_rewrite,
+              the <codeInline>RewriteLog</codeInline> directive
+              specifies the actual name of the log file.
+            </entry>
+          </row>
+
+          <row>
+            <entry>Flow control</entry>
+            <entry>
+              IIRF automatically
+              iterates on the rulesset after a single rule fires.
+              mod_rewrite iterates on the ruleset if a particular
+              rule includes the <literal>[next]</literal>
+              or <literal>[N]</literal> modifier, which is not
+              supported on IIRF.  To force IIRF to not iterate, use
+              the <literal>[NI]</literal> modifier on the rule.
+            </entry>
+          </row>
+        </table>
+
+      </content>
+    </section>
+
+
+    <section address="Options">
+      <title>Differences in Options and Modifiers</title>
+      <content>
+
+        <para>
+          There are numerous modifiers, or options as the Apache
+          documentation calls them, supported on various rules,
+          primarily  <link xlink:href="bdaf0dbe-e539-4bf5-9231-1dae3b0e27a5">
+            RewriteRule</link>.  The
+          basic modifiers are available on both IIRF and
+          mod_rewrite. Some modifiers are supported on only one of the
+          two extensions, and some behave slightly differently though
+          they are supported on both.  The following table summarizes
+          these differences.
+        </para>
+
+
+        <table>
+          <tableHeader>
+            <row>
+              <entry>Difference</entry>
+              <entry>Comment</entry>
+            </row>
+          </tableHeader>
+
+          <row>
+            <entry>long forms of modifiers</entry>
+            <entry>
+              IIRF does not support the long form of the modifier
+              flags.  Apache supports <literal>[forbidden]</literal>
+              and <literal>[F]</literal> as synonyms; IIRF supports
+              only the latter. Likewise for all other long-form
+              options.
+            </entry>
+          </row>
+
+          <row>
+            <entry>[C]</entry>
+            <entry>
+              mod_rewrite supports a <literal>[C]</literal>
+              modifier, to chain a set of rules. This is not supported in IIRF.
+            </entry>
+          </row>
+
+          <row>
+            <entry>[co]</entry>
+            <entry>
+              mod_rewrite supports a <literal>[co]</literal>
+              modifier, to set a cookie in the response. IIRF does not support
+              this.
+            </entry>
+          </row>
+
+          <row>
+            <entry>[E]</entry>
+            <entry>
+              mod_rewrite supports a <literal>[E=VAR:VAL]</literal>
+              modifier, to set an environment variable. This isn&apos;t
+              supported within IIRF, or IIS.
+            </entry>
+          </row>
+
+          <row>
+            <entry>[I]</entry>
+            <entry>
+              IIRF supports the <literal>[I]</literal>
+              modifier, as a synonym to <literal>[NC]</literal>.
+              mod_rewrite does not support
+              the  <literal>[I]</literal> modifier.
+            </entry>
+          </row>
+
+          <row>
+            <entry>[N]</entry>
+            <entry>
+              As noted above, only mod_rewrite supports this modifier.
+            </entry>
+          </row>
+
+          <row>
+            <entry>[NE]</entry>
+            <entry>
+              mod_rewrite supports a <literal>[NE]</literal>
+              modifier, to indicate output results should not be
+              escaped. This isn&apos;t
+              supported within IIRF.
+            </entry>
+          </row>
+
+          <row>
+            <entry>[NI]</entry>
+            <entry>
+              As noted above, only IIRF supports this modifier.
+            </entry>
+          </row>
+
+          <row>
+            <entry>[NS]</entry>
+            <entry>
+              mod_rewrite uses this modifier to
+              force the rewrite engine to skip a rewrite rule if the current request
+              is an internal sub-request. There&apos;s no such thing as
+              a sub-request in IIRF or IIS; this flag is not supported.
+            </entry>
+          </row>
+
+          <row>
+            <entry>[PT]</entry>
+            <entry>
+              mod_rewrite supports a <literal>[PT]</literal>
+              (passthrough) modifier. This isn&apos;t
+              supported within IIRF.
+            </entry>
+          </row>
+
+          <row>
+            <entry>[S]</entry>
+            <entry>
+              mod_rewrite supports a <literal>[S]</literal>
+              (skip next <phrase>N</phrase> rules) modifier. This isn&apos;t
+              supported within IIRF.
+            </entry>
+          </row>
+
+          <row>
+            <entry>[T]</entry>
+            <entry>
+              mod_rewrite supports a <literal>[T]</literal>
+              modifier, to set
+              the Content-Type of the request. This isn&apos;t
+              supported within IIRF via a modifier, but can be
+              accomplished with
+              the  <link xlink:href="3d1ea0d0-eabd-43b3-a913-de7128a74bb6">RewriteHeader</link>
+              directive.
+            </entry>
+          </row>
+
+          <row>
+            <entry>RewriteBase</entry>
+            <entry>
+              The <link xlink:href='bc80da98-83e2-4d22-8b71-2fd116e2610a'>RewriteBase</link> directive in
+              IIRF allows a simple <literal>ON|OFF</literal> option to
+              turn it on to a default value.  mod_rewrite does not support
+              this.
+            </entry>
+          </row>
+
+          <row>
+            <entry>RewriteCond</entry>
+            <entry>
+              The <codeInline>RewriteCond</codeInline> in mod_rewrite
+              supports a number of <phrase>"special variants"</phrase>.
+              Among them, IIRF&apos;s
+               <link xlink:href='39dbb30e-2afd-4cb1-aaff-45497fe2cbe6'>RewriteCond</link>
+               directive supports
+               the <literal>-d</literal>, <literal>-f</literal>,
+               and <literal>-s</literal> variants, and
+               the lexicographic comparison variants.  IIRF does not handle the
+               condition variant that tests for the presence of symbolic links (-l), nor the variants
+               related to subrequests.
+            </entry>
+          </row>
+
+        </table>
+
+
+      </content>
+    </section>
+
+
+    <section address="OtherFeatures">
+      <title>Other Features</title>
+      <content>
+
+        <para>
+          There are some other features that are supported on only one
+          of the two extensions.  These aren&apos;t
+          really <phrase>fundamental</phrase> differences; they&apos;re
+          more minor. so I&apos;ve collected them separately:
+        </para>
+
+        <table>
+          <tableHeader>
+            <row>
+              <entry>Difference</entry>
+              <entry>Comment</entry>
+            </row>
+          </tableHeader>
+
+          <row>
+            <entry>StatusInquiry</entry>
+            <entry>
+              IIRF supports a <link xlink:href='06643ce7-6c93-4d2f-ad3b-01e97fade9ef'>StatusInquiry</link> directive
+              that is not supported on mod_rewrite.
+            </entry>
+          </row>
+
+          <row>
+            <entry>case folding</entry>
+            <entry>
+              IIRF supports case folding options in the replacement string via the
+              # flag characters.  In mod_rewrite, a similar effect is possible
+              using a <codeInline>RewriteMap</codeInline> with an "internal
+              function" of <literal>toUpper</literal>
+              or <literal>toLower</literal>.
+            </entry>
+          </row>
+
+          <row>
+            <entry>CondSubstringBackrefFlag</entry>
+            <entry>
+              To avoid confusion with URL-escaped strings, IIRF permits administrators to specify the
+              back-reference flag character for references to
+              matched substrings
+              in <codeInline>RewriteCond</codeInline> directives, via
+              the <link xlink:href='4c7e4d84-6177-4cde-8bbb-3ffe37bcb84c'>CondSubstringBackrefFlag</link>
+              directive,
+              mod_rewrite does not provide this option.
+            </entry>
+          </row>
+
+          <row>
+            <entry>RewriteOptions</entry>
+            <entry>
+              mod_rewrite includes
+              a <codeInline>RewriteOptions</codeInline> directive.
+              IIRF does not.
+            </entry>
+          </row>
+
+          <row>
+            <entry>RewriteMap</entry>
+            <entry>
+              IIRF does not support the <phrase>dbm</phrase>, <phrase>int</phrase>,
+              or <phrase>prg</phrase> map types
+              for <link xlink:href='6d072500-64b1-4efc-970a-64e94faf1bbd'>RewriteMap</link>.
+            </entry>
+          </row>
+        </table>
+
+
+      </content>
+    </section>
+
+
+
+    <section address="RelatedIssues">
+      <title>Related Issues</title>
+      <content>
+
+        <para>
+          Of course, there are many other differences in the operation,
+          administration and behavior, when comparing the Apache HTTP Server
+          to IIS.  Among these are logging, security, the process model, the
+          integration of rewriting with other extension modules, and so on.
+          It would be impossible and inappropriate to articulate all the
+          differences here.
+        </para>
+
+      </content>
+    </section>
+
+
+    <relatedTopics>
+      <link xlink:href="2a84f55d-b0ae-422a-9071-a31e35b7d3e3">Please Donate</link>
+    </relatedTopics>
+
+  </developerConceptualDocument>
+</topic>
+
+
+
+
+
+
+
+
